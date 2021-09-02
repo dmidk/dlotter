@@ -19,6 +19,7 @@ import argparse
 from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
+from .read import grib2Read
 
 
 class MyParser(argparse.ArgumentParser):
@@ -78,6 +79,11 @@ if __name__ == '__main__':
                     default='.',
                     required=False)
 
+    parser_prepare.add_argument('--verbose',
+                    action='store_true',
+                    help='Verbose output', 
+                    default=False)
+
 
     if len(sys.argv)==1:
         parent_parser.print_help()
@@ -85,5 +91,18 @@ if __name__ == '__main__':
 
     args = parent_parser.parse_args()
 
+    if args.verbose:
+        print('---- Input Arguments ----', flush=True)
+        for p in args._get_kwargs():
+                print("{}: {}".format(p[0], p[1]), flush=True)
+        print('---- --------------- ----', flush=True)
+
     if args.cmd == 'plot':
         prepwork = prepare(args)
+        files_to_read = prepwork.files_to_read
+        
+        if args.filetype == 'grib2':
+            grib2Read(args, files_to_read)
+        else:
+            print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
+            sys.exit(1)

@@ -13,7 +13,7 @@ class prepare:
 
         self.check_meta(args)
 
-        files_to_read = self.find_files_to_read(args)
+        self.files_to_read = self.find_files_to_read(args)
         
         return
 
@@ -29,7 +29,7 @@ class prepare:
 
         dir_state = ostools.does_dir_exist(args.directory)
         if not dir_state:
-            print("Input directory: {}, does not exist".format(args.directory))
+            print("Input directory: {}, does not exist".format(args.directory), flush=True)
             sys.exit(1)
 
         return
