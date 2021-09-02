@@ -44,10 +44,19 @@ if __name__ == '__main__':
                     help='Parameters to plot. Seperate with ":", eg: "t2m:w10m".',
                     required=True)
     
+    parser_prepare.add_argument('-f',
+                    '--filetype',
+                    metavar='FILETYPE',
+                    type=str,
+                    help='What filetype are we using? (Options are: grib2)',
+                    default='grib2',
+                    required=False)
+    
     parser_prepare.add_argument('-d',
                     '--directory',
                     type=str,
-                    help='directory to read data from')
+                    help='directory to read data from',
+                    default='.')
     
     parser_prepare.add_argument('--prefix',
                     type=str,
