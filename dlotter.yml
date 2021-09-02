@@ -8,6 +8,7 @@ dependencies:
   - matplotlib
   - eccodes
   - pandas
+  - xarray
   - metpy
   - sphinx
   - pip:

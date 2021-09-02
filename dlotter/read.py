@@ -5,7 +5,7 @@ Called from dlotter.__main__
 """
 import sys
 import argparse
-import pandas as pd
+import xarray as xr
 import eccodes as ec
 import pygrib
 import numpy as np
@@ -16,16 +16,76 @@ class grib2Read:
         if args.verbose:
             print("Reading GRIB2", flush=True)
 
+        self.parameters = args.parameters
+
+        self.set_bools()
+
         data = self.read(args, files_to_read)
-        
+
+        print(data)
         return
 
 
-    def read(self, args:argparse.Namespace, files_to_read:list) -> pd.DataFrame:
+    def set_bools(self) -> None:
+        """Set bools for use in the module
+        """
+        if 't2m' in self.parameters: 
+            self.search_t2m=True
+            self.found_t2m=False
+        if 'w10m' in self.parameters: 
+            self.search_uv=True
+            self.found_uv=False
+        return
+
+
+    def read(self, args:argparse.Namespace, files_to_read:list) -> xr.Dataset:
+        """Fetch data from the gribfile and return an xarray.Dataset()
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments to dlotter.__main__
+        files_to_read : list
+            List of str with paths to gribfiles
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset with found parameters
+        """
+
         grid_idx = 0 # Set to 0
         lats, lons = self.get_latlons(files_to_read[grid_idx])
 
-        return
+        Nt = len(files_to_read)
+
+        if self.search_t2m: t2m = np.zeros([Nt,lats.shape[0],lons.shape[1]])
+
+        for k,f in enumerate(files_to_read):
+            gids = self.get_gids(f)
+            
+            for i, gid in enumerate(gids):
+                shortName = ec.codes_get(gid, 'shortName')
+                level = ec.codes_get(gid, 'level')
+                typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
+                levelType = ec.codes_get(gid, 'levelType')
+                #date = ec.codes_get(gid, 'dataTime')
+
+                Ni = ec.codes_get(gid, 'Ni')
+                Nj = ec.codes_get(gid, 'Nj')
+
+                if self.search_t2m and shortName=='t' and level==2 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_t2m = True
+                    t2m[k,:,:] = values.reshape(Nj, Ni)
+
+                ec.codes_release(gid)
+            
+        ds_grib = xr.Dataset()
+
+        if self.found_t2m: ds_grib['t2m'] = (['time', 'latitude', 'longitude'], t2m)
+
+        return ds_grib
 
 
     def get_latlons(self, gribfile:str) -> tuple:
@@ -47,6 +107,30 @@ class grib2Read:
         gr.close()
 
         return lats, lons
+
+    
+    def get_gids(self, gribfile:str) -> list:
+        """Get GribIDs (gid) for all the messages in one gribfile
+
+        Parameters
+        ----------
+        gribfile : str
+            path to gribfile
+
+        Returns
+        -------
+        list
+            list of grib-ids
+        """
+        
+        f = open(gribfile, 'rb')
+        msg_count = ec.codes_count_in_file(f)
+        gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
+        f.close()
+
+        return gids
+
+
 
 
 #  print(gribfile)

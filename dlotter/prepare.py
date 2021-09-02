@@ -11,10 +11,14 @@ class prepare:
 
     def __init__(self, args:argparse.Namespace) -> None:
 
+        self.valid_parameters = ['t2m', 'w10m']
+
         self.check_meta(args)
 
         self.files_to_read = self.find_files_to_read(args)
         
+        
+
         return
 
 
@@ -30,6 +34,15 @@ class prepare:
         dir_state = ostools.does_dir_exist(args.directory)
         if not dir_state:
             print("Input directory: {}, does not exist".format(args.directory), flush=True)
+            sys.exit(1)
+
+        allowed_found = False
+        parameters = args.parameters.split(':')
+        for p in parameters:
+            if p in self.valid_parameters:
+                allowed_found = True
+        if not allowed_found:
+            print("No valid parameters found in input argument", flush=True)
             sys.exit(1)
 
         return
