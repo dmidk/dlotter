@@ -7,7 +7,6 @@ dependencies:
   - numpy
   - matplotlib
   - eccodes
-  - pygrib
   - pandas
   - metpy
   - sphinx
@@ -17,3 +16,4 @@ dependencies:
     - myst-parser
     - furo
     - dmit
+    - pygrib
