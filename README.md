@@ -11,6 +11,10 @@ Submodules can be imported, but this software is designed to be used as a CLI (C
 
 `python -m dlotter plot -p t2m:w10m -d /path/to/grib2/files/ --filetype grib2 --verbose`: Plots t2m and w10m from grib2 files in the directory specified.
 
+# Important assumptions
+- All files should be in the same projection. This is to speed up the plotting.
+- All files will be plotted in the same domain. This is also to speed up plotting.
+
 # Prerequisites
 *dlotter* is a script tool based on python. Dependencies is defined in `dlotter.yml` and a python environment can be made using (mini)conda:
 
