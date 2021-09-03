@@ -21,7 +21,7 @@ class grib2Read:
 
         self.set_bools()
 
-        data = self.read(args, files_to_read)
+        self.data = self.read(args, files_to_read)
 
         return
 

@@ -20,6 +20,7 @@ from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
 from .read import grib2Read
+from .plot import plot
 
 
 class MyParser(argparse.ArgumentParser):
@@ -87,6 +88,14 @@ if __name__ == '__main__':
                     default=0,
                     required=False)
 
+    parser_prepare.add_argument('-a',
+                    '--area',
+                    metavar='AREA',
+                    type=str,
+                    help='Over which area to plot (Options are: dk)',
+                    default="dk",
+                    required=False)
+
     parser_prepare.add_argument('--verbose',
                     action='store_true',
                     help='Verbose output', 
@@ -110,7 +119,10 @@ if __name__ == '__main__':
         files_to_read = prepwork.files_to_read
         
         if args.filetype == 'grib2':
-            grib2Read(args, files_to_read)
+            datareader = grib2Read(args, files_to_read)
+            data = datareader.data
         else:
             print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
             sys.exit(1)
+
+        plotwork = plot(args, data)
