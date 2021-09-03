@@ -9,6 +9,7 @@ import xarray as xr
 import eccodes as ec
 import pygrib
 import numpy as np
+import datetime as dt
 
 class grib2Read:
 
@@ -22,7 +23,6 @@ class grib2Read:
 
         data = self.read(args, files_to_read)
 
-        print(data)
         return
 
 
@@ -58,22 +58,33 @@ class grib2Read:
         lats, lons = self.get_latlons(files_to_read[grid_idx])
 
         Nt = len(files_to_read)
-
-        if self.search_t2m: t2m = np.zeros([Nt,lats.shape[0],lons.shape[1]])
+        Nt_coords = np.zeros(Nt, dtype=dt.datetime)
+        
+        if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         for k,f in enumerate(files_to_read):
             gids = self.get_gids(f)
-            
+
+            time_gid = gids[0]
+
+            ec.codes_set(time_gid, 'stepUnits', 'm')
+
+            date = ec.codes_get(time_gid, 'dataDate')
+            time = ec.codes_get(time_gid, 'dataTime')
+            lead = ec.codes_get(time_gid, 'step')
+
+            analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
+            forecast = analysis + dt.timedelta(minutes=lead)
+            Nt_coords[k] = forecast
+
             for i, gid in enumerate(gids):
                 shortName = ec.codes_get(gid, 'shortName')
                 level = ec.codes_get(gid, 'level')
                 typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
                 levelType = ec.codes_get(gid, 'levelType')
-                #date = ec.codes_get(gid, 'dataTime')
 
                 Ni = ec.codes_get(gid, 'Ni')
                 Nj = ec.codes_get(gid, 'Nj')
-                #print(shortName)
 
                 if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
                                         typeOfLevel=='heightAboveGround' and levelType=='sfc':
@@ -83,9 +94,11 @@ class grib2Read:
 
                 ec.codes_release(gid)
             
-        ds_grib = xr.Dataset()
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
+                                     "lon": (["x","y"], lons), 
+                                     "time": (["t"], Nt_coords)})
 
-        if self.found_t2m: ds_grib['t2m'] = (['time', 'latitude', 'longitude'], t2m)
+        if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
 
         return ds_grib
 
