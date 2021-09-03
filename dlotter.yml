@@ -8,6 +8,7 @@ dependencies:
   - matplotlib
   - eccodes
   - pandas
+  - xarray
   - metpy
   - sphinx
   - pip:
@@ -16,3 +17,4 @@ dependencies:
     - myst-parser
     - furo
     - dmit
+    - pygrib

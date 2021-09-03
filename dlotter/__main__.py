@@ -19,6 +19,8 @@ import argparse
 from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
+from .read import grib2Read
+from .plot import plot
 
 
 class MyParser(argparse.ArgumentParser):
@@ -44,10 +46,19 @@ if __name__ == '__main__':
                     help='Parameters to plot. Seperate with ":", eg: "t2m:w10m".',
                     required=True)
     
+    parser_prepare.add_argument('-f',
+                    '--filetype',
+                    metavar='FILETYPE',
+                    type=str,
+                    help='What filetype are we using? (Options are: grib2)',
+                    default='grib2',
+                    required=False)
+    
     parser_prepare.add_argument('-d',
                     '--directory',
                     type=str,
-                    help='directory to read data from')
+                    help='directory to read data from',
+                    default='.')
     
     parser_prepare.add_argument('--prefix',
                     type=str,
@@ -69,6 +80,27 @@ if __name__ == '__main__':
                     default='.',
                     required=False)
 
+    parser_prepare.add_argument('-l',
+                    '--limit-files',
+                    metavar='LIMIT',
+                    type=int,
+                    help='Only use the first LIMIT files. If set to 0, not limit is used. If Limit > 0, files will be sorted by name first',
+                    default=0,
+                    required=False)
+
+    parser_prepare.add_argument('-a',
+                    '--area',
+                    metavar='AREA',
+                    type=str,
+                    help='Over which area to plot (Options are: dk)',
+                    default="dk",
+                    required=False)
+
+    parser_prepare.add_argument('--verbose',
+                    action='store_true',
+                    help='Verbose output', 
+                    default=False)
+
 
     if len(sys.argv)==1:
         parent_parser.print_help()
@@ -76,5 +108,21 @@ if __name__ == '__main__':
 
     args = parent_parser.parse_args()
 
+    if args.verbose:
+        print('---- Input Arguments ----', flush=True)
+        for p in args._get_kwargs():
+                print("{}: {}".format(p[0], p[1]), flush=True)
+        print('---- --------------- ----', flush=True)
+
     if args.cmd == 'plot':
         prepwork = prepare(args)
+        files_to_read = prepwork.files_to_read
+        
+        if args.filetype == 'grib2':
+            datareader = grib2Read(args, files_to_read)
+            data = datareader.data
+        else:
+            print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
+            sys.exit(1)
+
+        plotwork = plot(args, data)
