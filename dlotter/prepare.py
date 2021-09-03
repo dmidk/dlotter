@@ -63,6 +63,12 @@ class prepare:
         """
 
         directory = args.directory
+
+        if args.limit_files > 0:
+            inorder = True
+        else:
+            inorder = False
+
         files = ostools.find_files(directory, 
                                    prefix=args.prefix, 
                                    postfix=args.postfix,
@@ -70,6 +76,14 @@ class prepare:
                                    onlyfiles=True,
                                    fullpath=True,
                                    olderthan=None,
-                                   inorder=False)
+                                   inorder=inorder)
+
+        if args.limit_files > 0: 
+            if args.limit_files >= len(files):
+                limit = len(files)
+            else:
+                limit = args.limit_files
+
+            files = files[0:limit]
 
         return files

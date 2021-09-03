@@ -73,8 +73,10 @@ class grib2Read:
 
                 Ni = ec.codes_get(gid, 'Ni')
                 Nj = ec.codes_get(gid, 'Nj')
+                #print(shortName)
 
-                if self.search_t2m and shortName=='t' and level==2 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
                     values = ec.codes_get_values(gid)
                     self.found_t2m = True
                     t2m[k,:,:] = values.reshape(Nj, Ni)

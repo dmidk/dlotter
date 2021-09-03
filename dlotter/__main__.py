@@ -79,6 +79,14 @@ if __name__ == '__main__':
                     default='.',
                     required=False)
 
+    parser_prepare.add_argument('-l',
+                    '--limit-files',
+                    metavar='LIMIT',
+                    type=int,
+                    help='Only use the first LIMIT files. If set to 0, not limit is used. If Limit > 0, files will be sorted by name first',
+                    default=0,
+                    required=False)
+
     parser_prepare.add_argument('--verbose',
                     action='store_true',
                     help='Verbose output', 
