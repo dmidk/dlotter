@@ -15,8 +15,7 @@ from matplotlib.colors import ListedColormap
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
-# from cartopy.feature import NaturalEarthFeature
-# import shapely.geometry as sgeom
+
 
 class plot:
 
@@ -53,64 +52,86 @@ class plot:
 
         print('Plotting')
         # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data['lon'], data['lat']
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.t2m.colors)
         levels = [k for k in levels_and_colors.t2m.levels]
+        contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
         
         norm = self.color_norm(levels)
 
 # -------------------
         for k in range(self.nt):
-            data['t2m'][k,:,:] = data['t2m'][0,:,:] + k*2 #+ np.random.rand(plons.shape[0]-1, plats.shape[1]-1)*3 #Only for dev purpose
+            data['t2m'][k,:,:] = data['t2m'][0,:,:] + k*2 #+ np.random.rand(plons.shape[0]-1, plats.shape[1]-1)*3 #Only for dev purpose 
 # -------------------
 
-        fig, axes = self.fig_ax('T2m', 10, 8, subplot_kw={'projection': self.projection})
+        data = data.sortby('time')
+        
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+            
+            self.add_title(axes,valid_time,analysis,'2m Temperature')
+
+            
+
             cs = plt.pcolormesh(plons, plats, data['t2m'][k,:,:], 
                                 cmap=colors, 
                                 norm=norm,
                                 transform=self.data_crs)
 
-            cb = plt.colorbar(cs)
-           # plt.title(anl.strftime('ANL: %Y-%m-%d %Hz (%a)'), loc='left')
-            #plt.title(dl.strftime('VAL: %Y-%m-%d %Hz (%a)'), loc='right')
-            # cb_ax = fig.add_axes([.93,.2,.02,.6])
-            # cbar = fig.colorbar(cs,orientation='vertical',cax=cb_ax, ticks=levels)
-            # cbar.set_label('J/kg', rotation=270)
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$^\circ C$", rotation=270)
+            
+            # cc = plt.contour(clons, clats, data['t2m'][k,:,:], 
+            #                  levels=contour_levels, 
+            #                  transform=self.data_crs, 
+            #                  colors='black',
+            #                  linewidths=0.5)
 
             fig.canvas.draw()       
                          
             plt.savefig("{}.png".format(k))
-            # cbar.remove()
             cb.remove()
             cs.remove()
+            #cc.remove()
             print(k)
-            
         
         return
 
 
-    def fig_ax(self, title:str, w:int, h:int, **kwargs:dict) -> tuple:
+    def fig_ax(self, w:int, h:int, **kwargs:dict) -> tuple:
         fig = plt.figure(figsize=(w, h))
         ax = fig.subplots(1,1, **kwargs)
-        ax.set_title(title)
         ax.add_feature(cfeature.BORDERS, linestyle=':')
         return fig, ax
 
 
-    # def add_contour(ax, X, Y, data, levels, **kwargs) -> None:
-    #     cs = ax.contour(X, Y, data, levels, **kwargs)
-    #     ax.clabel(cs, fmt='%2.0f', inline=True, fontsize=10)
-    #     return
+    def add_contour(self, ax, X, Y, data, levels, **kwargs) -> None:
+        cc = plt.contour(X, Y, data, levels, **kwargs)
+        ax.clabel(cc, fmt='%2.0f', inline=True, fontsize=10)
+        return cc
 
 
     def add_coastlines(self, ax:plt.subplots, **kwargs:dict) -> tuple:
         extent = ax.set_extent(self.extent, self.data_crs)
         coastline = ax.coastlines(resolution='10m', color=(0.2,0.2,0.2), linewidth=0.7)
         return extent, coastline
+
+    def add_title(self, ax:plt.subplots, validtime:dt.datetime, 
+                  analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
+        title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%M'), fontsize=10, loc='left')
+        title_center = ax.set_title(headline, fontsize=9, loc='center')
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right')
+        return title_left, title_center, title_right
 
 
     def get_pcolormesh_center_coordinates(self, data:xr.Dataset) -> tuple:
@@ -151,3 +172,5 @@ class levels_and_colors:
                       (0.96, 0.42, 0.00),(0.96, 0.31, 0.00),(0.96, 0.22, 0.00),(0.96, 0.12, 0.00),
                       (0.96, 0.00, 0.00),(0.95, 0.00, 0.00),(0.95, 0.00, 0.13),(0.93, 0.00, 0.33),
                       (0.96, 0.00, 0.54),(0.96, 0.00, 0.77)]
+
+        contour_levels = [-10, -5, 0, 5, 10, 15, 20, 25]
