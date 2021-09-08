@@ -50,7 +50,7 @@ class plot:
 
     def plot_t2m(self, args:argparse.Namespace, data:xr.Dataset) -> None:
 
-        print('Plotting')
+        print('- Plotting', flush=True)
         # Fix that pcolormesh uses cell lower left corners
         clons, clats = data['lon'], data['lat']
         plons, plats = self.get_pcolormesh_center_coordinates(data)
@@ -60,11 +60,6 @@ class plot:
         contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
         
         norm = self.color_norm(levels)
-
-# -------------------
-        for k in range(self.nt):
-            data['t2m'][k,:,:] = data['t2m'][0,:,:] + k*2 #+ np.random.rand(plons.shape[0]-1, plats.shape[1]-1)*3 #Only for dev purpose 
-# -------------------
 
         data = data.sortby('time')
         
@@ -78,10 +73,10 @@ class plot:
         for k in range(self.nt):
             valid_time = data['time'][k].values
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
-            
-            self.add_title(axes,valid_time,analysis,'2m Temperature')
 
-            
+            if self.check_for_empty_array(data['t2m'][k,:,:]): continue
+       
+            self.add_title(axes,valid_time,analysis,'2m Temperature')
 
             cs = plt.pcolormesh(plons, plats, data['t2m'][k,:,:], 
                                 cmap=colors, 
@@ -98,12 +93,15 @@ class plot:
             #                  linewidths=0.5)
 
             fig.canvas.draw()       
-                         
-            plt.savefig("{}.png".format(k))
+            
+            figure_name = "{}/T2M_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             #cc.remove()
-            print(k)
+            print("-- {}".format(figure_name), flush=True)
         
         return
 
@@ -156,6 +154,17 @@ class plot:
         norm_bins = np.sort([*levels])
         norm = matplotlib.colors.BoundaryNorm(norm_bins, len_lab, clip=True)
         return norm
+
+
+    def check_for_empty_array(self, da:xr.DataArray) -> bool:
+
+        empty = False
+        flat = da.values.ravel()
+        notna = flat[~np.isnan(flat)]
+        if len(notna) == 0:
+            empty = True
+
+        return empty
 
 
 class levels_and_colors:
