@@ -29,12 +29,21 @@ class grib2Read:
     def set_bools(self) -> None:
         """Set bools for use in the module
         """
+
+        self.search_t2m=False
+        self.found_t2m=False
+
         if 't2m' in self.parameters: 
             self.search_t2m=True
-            self.found_t2m=False
+            
+        self.search_uv=False    
+        self.found_u = False
+        self.found_v = False
+        self.found_uv=False
         if 'w10m' in self.parameters: 
             self.search_uv=True
-            self.found_uv=False
+            
+
         return
 
 
@@ -61,6 +70,11 @@ class grib2Read:
         Nt_coords = np.zeros(Nt, dtype=dt.datetime)
         
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        if self.search_uv: 
+            u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
 
         for k,f in enumerate(files_to_read):
             gids = self.get_gids(f)
@@ -92,13 +106,28 @@ class grib2Read:
                     self.found_t2m = True
                     t2m[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_uv and (shortName=='u' or shortName=='10u') and level==10 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_u = True
+                    u10[k,:,:] = values.reshape(Nj, Ni)
+
+                if self.search_uv and (shortName=='v' or shortName=='10v') and level==10 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_v = True
+                    v10[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
+
             
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
                                      "lon": (["x","y"], lons), 
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+        if self.found_u: ds_grib['u10m'] = (['time', 'lat', 'lon'], u10 )
+        if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
 
         return ds_grib
 
