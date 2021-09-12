@@ -7,7 +7,7 @@ __author__ = "K. Hintz"
 __copyright__ = "Danish Meteorological Institute"
 
 __license__ = "MIT"
-__version__ = "0.0.1"
+__version__ = "0.0.2.2"
 __maintainer__ = "K. Hintz"
 __email__ = "kah@dmi.dk"
 __status__ = "Development"

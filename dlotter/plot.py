@@ -42,6 +42,12 @@ class plot:
                 sys.exit(1)
             self.plot_w10m(args, data)
 
+        if 'precip' in parameters:
+            if 'precip' not in avail_parameters:
+                print('precip was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                sys.exit(1)
+            self.plot_precip(args, data)
+
         return
 
 
@@ -69,7 +75,7 @@ class plot:
         
         norm = self.color_norm(levels)
 
-        data = data.sortby('time')
+        #data = data.sortby('time')
         
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
@@ -118,7 +124,7 @@ class plot:
         
         norm = self.color_norm(levels)
 
-        data = data.sortby('time')
+        #data = data.sortby('time')
         
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
@@ -171,6 +177,54 @@ class plot:
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
         
+        return
+
+    
+    def plot_precip(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        # Fix that pcolormesh uses cell lower left corners
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.precip.colors)
+        levels = [k for k in levels_and_colors.precip.levels]
+        
+        norm = self.color_norm(levels)
+
+        #data = data.sortby('time')
+        
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['precip'][k,:,:]): continue
+            precip = data['precip'][k,:,:].values
+       
+            self.add_title(axes,valid_time,analysis,'Precipitation')
+
+            cs = plt.pcolormesh(plons, plats, precip, 
+                                cmap=colors, 
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$^\circ C$", rotation=270)
+
+            fig.canvas.draw()       
+            
+            figure_name = "{}/PRECIP_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
         return
 
 
@@ -268,6 +322,16 @@ class levels_and_colors:
                        (0.62,0.00,0.15),(0.71,0.00,0.33),(0.96,0.00,0.54),(0.96,0.00,0.77),
                        (0.96,0.00,1.00),(0.82,0.00,0.90),(0.70,0.00,0.77),(0.60,0.00,0.65),
                        (0.49,0.00,0.54),(0.39,0.00,0.44),(0.31,0.00,0.33)]
+
+    class precip:
+        # 17 levels
+        levels = [0.0, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0]
+        
+        # 16 colors
+        colors = [(1.00, 1.00, 1.00), (0.84, 0.69, 0.63), (0.72, 0.56, 0.51), (0.80, 0.86, 1.00),
+                  (0.65, 0.73, 1.00), (0.49, 0.63, 1.00), (0.25, 0.52, 0.97), (0.00, 0.00, 0.98),
+                  (0.13, 0.57, 0.09), (0.20, 0.71, 0.18), (0.41, 0.80, 0.36), (0.68, 0.99, 0.36),
+                  (1.00, 1.00, 0.08), (0.99, 0.57, 0.05), (0.86, 0.00, 0.02), (0.68, 0.00, 0.02)]
 
 
 
