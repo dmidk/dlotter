@@ -75,8 +75,6 @@ class plot:
         
         norm = self.color_norm(levels)
 
-        #data = data.sortby('time')
-        
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
@@ -124,8 +122,6 @@ class plot:
         
         norm = self.color_norm(levels)
 
-        #data = data.sortby('time')
-        
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
@@ -188,8 +184,6 @@ class plot:
         levels = [k for k in levels_and_colors.precip.levels]
         
         norm = self.color_norm(levels)
-
-        #data = data.sortby('time')
         
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
@@ -213,7 +207,7 @@ class plot:
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
-            cb.set_label(r"$^\circ C$", rotation=270)
+            cb.set_label(r"$mm$", rotation=270)
 
             fig.canvas.draw()       
             
