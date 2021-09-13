@@ -58,6 +58,13 @@ class plot:
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [6, 16, 53, 59]
+
+        if args.area == 'neu':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-2.1, 20, 51, 65]
             
 
         return

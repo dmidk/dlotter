@@ -86,7 +86,7 @@ class arguments:
                         '--area',
                         metavar='AREA',
                         type=str,
-                        help='Over which area to plot (Options are: dk)',
+                        help='Over which area to plot (Options are: dk, neu)',
                         default="dk",
                         required=False)
 
