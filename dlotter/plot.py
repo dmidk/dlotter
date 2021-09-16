@@ -256,9 +256,9 @@ class plot:
 
     def add_title(self, ax:plt.subplots, validtime:dt.datetime, 
                   analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
-        title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%M'), fontsize=10, loc='left')
+        title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%Mz'), fontsize=10, loc='left')
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right')
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%Mz'), fontsize=10, loc='right')
         return title_left, title_center, title_right
 
 
