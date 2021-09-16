@@ -71,7 +71,7 @@ class plot:
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
-            self.extent = [10, 13, 54.3, 56.5]
+            self.extent = [10, 13.4, 54.3, 56.45]
             
 
         return
@@ -166,7 +166,7 @@ class plot:
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
-            cb.set_label(r"$^\circ C$", rotation=270)
+            cb.set_label(r"$m/s$", rotation=270)
             
             
             axes.barbs(clons[::bt,::bt], clats[::bt,::bt], 
