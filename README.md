@@ -20,6 +20,12 @@ Submodules can be imported, but this software is designed to be used as a CLI (C
 
 `python -m dlotter plot -p t2m:w10m -d /path/to/grib2/files/ --prefix 0 --filetype grib2 --limit-files 4 --verbose`: Limits to use the first 4 files sorted by name and only use files starting with "0" in their name.
 
+## Flags and commands
+'-a' *or* '--area' `dk,neu`\
+'-d' *or* '--directory' `/path/to/files/`\
+'-p' *or* '--parameters' `t2m,w10m,precip`
+
+
 # Important assumptions
 - All files should be in the same projection. This is to speed up the plotting.
 - All files will be plotted in the same domain. This is also to speed up plotting.

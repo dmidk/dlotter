@@ -31,16 +31,16 @@ class arguments:
         subparser = parent_parser.add_subparsers(dest="cmd")
 
         # Parser for NWP Deterministic
-        parser_prepare = subparser.add_parser('plot', help='Plot NWP output')
+        parser_plot = subparser.add_parser('plot', help='Plot NWP output')
 
-        parser_prepare.add_argument('-p',
+        parser_plot.add_argument('-p',
                         '--parameters',
                         metavar='PARAMETERS',
                         type=str,
                         help='Parameters to plot. Seperate with ":", eg: "t2m:w10m".',
                         required=True)
         
-        parser_prepare.add_argument('-f',
+        parser_plot.add_argument('-f',
                         '--filetype',
                         metavar='FILETYPE',
                         type=str,
@@ -48,25 +48,25 @@ class arguments:
                         default='grib2',
                         required=False)
         
-        parser_prepare.add_argument('-d',
+        parser_plot.add_argument('-d',
                         '--directory',
                         type=str,
                         help='directory to read data from',
                         default='.')
         
-        parser_prepare.add_argument('--prefix',
+        parser_plot.add_argument('--prefix',
                         type=str,
                         help='Set to prefix of files if any',
                         default='',
                         required=False)
 
-        parser_prepare.add_argument('--postfix',
+        parser_plot.add_argument('--postfix',
                         type=str,
                         help='Set to postfix of files if any',
                         default='',
                         required=False)
         
-        parser_prepare.add_argument('-o',
+        parser_plot.add_argument('-o',
                         '--output-dir',
                         metavar='OUTDIR',
                         type=str,
@@ -74,7 +74,7 @@ class arguments:
                         default='.',
                         required=False)
 
-        parser_prepare.add_argument('-l',
+        parser_plot.add_argument('-l',
                         '--limit-files',
                         metavar='LIMIT',
                         type=int,
@@ -82,15 +82,15 @@ class arguments:
                         default=0,
                         required=False)
 
-        parser_prepare.add_argument('-a',
+        parser_plot.add_argument('-a',
                         '--area',
                         metavar='AREA',
                         type=str,
-                        help='Over which area to plot (Options are: dk)',
+                        help='Over which area to plot (Options are: dk, neu, sjalland)',
                         default="dk",
                         required=False)
 
-        parser_prepare.add_argument('--verbose',
+        parser_plot.add_argument('--verbose',
                         action='store_true',
                         help='Verbose output', 
                         default=False)

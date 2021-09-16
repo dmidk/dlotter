@@ -30,18 +30,23 @@ class grib2Read:
         """Set bools for use in the module
         """
 
-        self.search_t2m=False
-        self.found_t2m=False
+        self.search_t2m = False
+        self.found_t2m = False
 
         if 't2m' in self.parameters: 
-            self.search_t2m=True
+            self.search_t2m = True
             
         self.search_uv=False    
         self.found_u = False
         self.found_v = False
         self.found_uv=False
         if 'w10m' in self.parameters: 
-            self.search_uv=True
+            self.search_uv = True
+
+        self.search_precip = False
+        self.found_precip = False
+        if 'precip' in self.parameters:
+            self.search_precip = True
             
 
         return
@@ -75,6 +80,7 @@ class grib2Read:
             u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
+        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         for k,f in enumerate(files_to_read):
             gids = self.get_gids(f)
@@ -118,6 +124,12 @@ class grib2Read:
                     self.found_v = True
                     v10[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_precip and (shortName=='tp' or shortName=='tprate') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_precip = True
+                    precip[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
             
@@ -128,8 +140,31 @@ class grib2Read:
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
         if self.found_u: ds_grib['u10m'] = (['time', 'lat', 'lon'], u10 )
         if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
+        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip )
+
+        if len(list(ds_grib.data_vars)) == 0:
+            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
+ 
+        ds_grib = self.sort_by_time(ds_grib)
 
         return ds_grib
+
+    
+    def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
+
+        nt = dataarray.dims['time']
+        parameters = list(dataarray.data_vars)
+
+        time = dataarray['time'].values
+        idx = np.argsort(time)
+
+        da = dataarray.sortby('time')
+
+        for p in parameters:
+            for k in range(nt):
+                da[p][k,:,:] = dataarray[p][idx[k],:,:]
+        
+        return da
 
 
     def get_latlons(self, gribfile:str) -> tuple:
