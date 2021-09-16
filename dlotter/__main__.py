@@ -22,6 +22,7 @@ from .prepare import prepare
 from .read import grib2Read
 from .plot import plot
 from .arguments import arguments
+from .meteogram import meteogram
 
 
 class MyParser(argparse.ArgumentParser):
@@ -54,3 +55,17 @@ if __name__ == '__main__':
             sys.exit(1)
 
         plotwork = plot(args, data)
+
+    if args.cmd == 'epsmeteogram':
+        prepwork = prepare(args)
+        files_to_read = prepwork.files_to_read
+
+        # if args.filetype == 'grib2':
+        #     datareader = grib2Read(args, files_to_read)
+        #     data = datareader.data
+        # else:
+        #     print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
+        #     sys.exit(1)
+
+        #plotwork = meteogram(args, data)
+        plotwork = meteogram(args)

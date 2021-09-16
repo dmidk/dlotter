@@ -10,14 +10,14 @@ from dmit import ostools
 class prepare:
 
     def __init__(self, args:argparse.Namespace) -> None:
-
-        self.valid_parameters = ['t2m', 'w10m', 'precip']
-
-        self.check_meta(args)
-
-        self.files_to_read = self.find_files_to_read(args)
         
+        if args.cmd == 'plot':
+            self.valid_parameters = ['t2m', 'w10m', 'precip']
+            self.check_meta(args)
+            self.files_to_read = self.find_files_to_read(args)
         
+        if args.cmd == 'epsmeteogram':
+            self.files_to_read = self.find_files_to_read(args)
 
         return
 
