@@ -124,7 +124,7 @@ class grib2Read:
                     self.found_v = True
                     v10[k,:,:] = values.reshape(Nj, Ni)
 
-                if self.search_precip and shortName=='tp' and level==0 and \
+                if self.search_precip and (shortName=='tp' or shortName=='tprate') and level==0 and \
                                         typeOfLevel=='heightAboveGround' and levelType=='sfc':
                     values = ec.codes_get_values(gid)
                     self.found_precip = True
