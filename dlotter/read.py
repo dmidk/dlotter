@@ -142,6 +142,9 @@ class grib2Read:
         if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
         if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip )
 
+        if len(list(ds_grib.data_vars)) == 0:
+            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
+ 
         ds_grib = self.sort_by_time(ds_grib)
 
         return ds_grib
