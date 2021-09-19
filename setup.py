@@ -23,6 +23,7 @@ setuptools.setup(
          'cartopy',
          'eccodes',
          'pygrib',
+         'scipy',
          ],
      url="https://dmidk.github.io/dlotter/",
      classifiers=[

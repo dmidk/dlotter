@@ -104,6 +104,23 @@ class arguments:
                             help='directory to read data from',
                             default='.')
 
+        parser_epsmeteogram.add_argument('-m',
+                            '--members',
+                            type=int,
+                            help='Number of members',
+                            required=True)
+
+        parser_epsmeteogram.add_argument('-f',
+                            '--files-per-member',
+                            type=int,
+                            help='Number of gribfiles per member',
+                            required=True)
+        
+        parser_epsmeteogram.add_argument('--latlon',
+                            type=str,
+                            help='Coordinates to plot. Seperate with ":", eg: "55,12:60,14"',
+                            required=True)
+
         parser_epsmeteogram.add_argument('--prefix',
                             type=str,
                             help='Set to prefix of files if any',
@@ -114,14 +131,6 @@ class arguments:
                             type=str,
                             help='Set to postfix of files if any',
                             default='',
-                            required=False)
-        
-        parser_epsmeteogram.add_argument('-l',
-                            '--limit-files',
-                            metavar='LIMIT',
-                            type=int,
-                            help='Only use the first LIMIT files. If set to 0, not limit is used. If Limit > 0, files will be sorted by name first',
-                            default=0,
                             required=False)
 
         parser_epsmeteogram.add_argument('-o',
