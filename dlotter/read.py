@@ -106,6 +106,8 @@ class grib2Read:
                 Ni = ec.codes_get(gid, 'Ni')
                 Nj = ec.codes_get(gid, 'Nj')
 
+                if levelType=='103': levelType='sfc' # For grib2, leveltype 103 is surface
+
                 if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
                                         typeOfLevel=='heightAboveGround' and levelType=='sfc':
                     values = ec.codes_get_values(gid)
@@ -132,7 +134,6 @@ class grib2Read:
 
                 ec.codes_release(gid)
 
-            
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
                                      "lon": (["x","y"], lons), 
                                      "time": (["t"], Nt_coords)})

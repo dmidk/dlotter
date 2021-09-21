@@ -34,6 +34,7 @@ class plot:
             if 't2m' not in avail_parameters:
                 print('t2m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
+
             self.plot_t2m(args, data)
         
         if 'w10m' in parameters:
@@ -72,6 +73,13 @@ class plot:
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [10, 13.4, 54.3, 56.45]
+
+        if args.area == 'europe':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-20, 30, 40, 75]
             
 
         return
@@ -91,9 +99,9 @@ class plot:
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-
+        
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-
+        
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -250,6 +258,7 @@ class plot:
 
 
     def add_coastlines(self, ax:plt.subplots, **kwargs:dict) -> tuple:
+        # set_extent causes segmentation faults on some old cartopy installations
         extent = ax.set_extent(self.extent, self.data_crs)
         coastline = ax.coastlines(resolution='10m', color=(0.2,0.2,0.2), linewidth=0.7)
         return extent, coastline

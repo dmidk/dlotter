@@ -45,6 +45,10 @@ if __name__ == '__main__':
     if args.cmd == 'plot':
         prepwork = prepare(args)
         files_to_read = prepwork.files_to_read
+
+        if args.verbose:
+            print('Found the following files:', flush=True)
+            print(files_to_read, flush=True)
         
         if args.filetype == 'grib2':
             datareader = grib2Read(args, files_to_read)
