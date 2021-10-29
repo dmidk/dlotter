@@ -71,8 +71,23 @@ class plot:
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
-            self.extent = [10, 13.4, 54.3, 56.45]
+            self.extent = [10, 13.4, 54.45, 56.45]
             
+        if args.area == 'faroes':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=353.0, central_latitude=62.0,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-8, -6, 61.3, 62.5]
+
+        return
+
+        if args.area == 'scoresbysund':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-25., central_latitude=71.5,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-30.5, -20.5, 69.7, 73.7]
 
         return
 
