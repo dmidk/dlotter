@@ -10,6 +10,7 @@ import eccodes as ec
 import pygrib
 import numpy as np
 import datetime as dt
+from dmit import regrot
 
 class grib2Read:
 
@@ -183,7 +184,29 @@ class grib2Read:
         """
 
         gr = pygrib.open(gribfile)
-        lats, lons = gr[1].latlons()
+        g = gr[1]
+
+        if g['gridType'] == 'rotated_ll':
+            print('Found rotated grid, discarding pygrib extraction')
+            latdim = g.Nj
+            londim = g.Ni
+
+            latFirst = g.latitudeOfFirstGridPointInDegrees
+            lonFirst = g.longitudeOfFirstGridPointInDegrees
+            latLast = g.latitudeOfLastGridPointInDegrees
+            lonLast = g.longitudeOfLastGridPointInDegrees
+            dy = g.jDirectionIncrementInDegrees
+            dx = g.iDirectionIncrementInDegrees
+            latPole = g.latitudeOfSouthernPoleInDegrees
+            lonPole = g.longitudeOfSouthernPoleInDegrees
+
+            lons, lats = np.meshgrid(np.linspace(
+                lonFirst, lonLast, londim), np.linspace(latFirst, latLast, latdim))
+
+            lons, lats = regrot.rot_to_reg(lonPole, latPole, lons, lats)
+        else:
+            lats, lons = gr[1].latlons()
+
         gr.close()
 
         return lats, lons
