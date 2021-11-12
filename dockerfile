@@ -58,6 +58,8 @@ RUN rm ${CARTOPY_DIR}/*.zip
 #DownloadWarning: Downloading: https://naturalearth.s3.amazonaws.com/10m_cultural/ne_10m_admin_0_boundary_lines_land.zip
 # COPY entrypoint.sh /home/${USER}/entrypoint.sh
 
+ENV ECCODES_DEFINITION_PATH /home/${USER}/dlotter/dlotter/ec_definitions/bin:/home/${USER}/miniconda3/envs/dlotter/share/eccodes/definitions/
+
 # ENTRYPOINT [ "/bin/bash", "entrypoint.sh" ]
 ENV PATH /home/${USER}/miniconda3/envs/dlotter/bin:$PATH
 CMD ["python", "-m", "dlotter"]
