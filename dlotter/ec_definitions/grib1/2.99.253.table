@@ -1,0 +1,214 @@
+1 pres PRES Pressure Pa
+10 tco TCO Total column ozone kg m**-2
+11 t T Temperature K
+111 nswrs NSWRS Net shortwave radiation flux (surface) J m**-2
+112 nlwrs NLWRS Net longwave radiation flux (surface) J m**-2
+113 nswrt NSWRT Net shortwave radiation flux(atmosph.top) J m**-2
+114 nlwrt NLWRT Net longwave radiation flux(atmosph.top) J m**-2
+115 lwavr LWAVR Longwave radiation flux J m**-2
+116 swavr SWAVR Shortwave radiation flux J m**-2
+117 grad GRAD Global radiation flux J m**-2
+12 vtmp VTMP Virtual temperature K
+120 swrad SWRAD Radiance (with respect to wave length) J m**-1 sr**-1
+121 lhf LHF Latent heat flux J m**-2
+122 shf SHF Sensible heat flux J m**-2
+123 bld BLD Boundary layer dissipation J m**-2
+124 uflx UFLX Momentum flux, u-component N m**-2
+125 vflx VFLX Momentum flux, v-component N m**-2
+126 wmixe WMIXE Wind mixing energy J
+127 imgd IMGD Image data -
+128 armsp ARMSP Analysed RMS of PHI (CANARI) m**2 s**-2
+129 frmsp FRMSP Forecasted RMS of PHI (CANARI) m**2 s**-2
+13 pt PT Potential temperature K
+130 cssw CSSW SW net clear sky rad J m**-2
+131 cslw CSLW LW net clear sky rad J m**-2
+132 lhe LHE Latent heat flux through evaporation J m**-2
+133 msca MSCA Mask of significant cloud amount 0-1
+134 icei2 ICEI2 Icing index version 2 -
+135 icei ICEI Icing index -
+136 psct PSCT Pseudo satellite image: cloud top temperature (infrared) K
+137 pstb PSTB Pseudo satellite image: water vapour Tb K
+138 pstbc PSTBC Pseudo satellite image: water vapour Tb + correction for clouds K
+139 pscw PSCW Pseudo satellite image: cloud water reflectivity (visible) -
+14 papt PAPT Pseudo-adiabatic potential temperature K
+140 dne DNE Direct normal exposure J m**-2
+141 mxicegr MXICEGR Max icing growth index -
+142 lmxws LMXWS Level of max wind speed m
+143 lmxice LMXICE Level of max icing m
+144 prtp PRTP Precipitation Type code
+145 cat CAT CAT index -
+146 blice BLICE Bottom level of icing m
+147 tlice TLICE Top level of icing m
+148 hti HTI Helicopter Triggered ligthning Index -
+15 tmax TMAX Maximum temperature K
+150 cat_maxlev CAT_MAXLEV Level of max CAT index m
+151 cat_max CAT_MAX Max CAT index -
+152 cat_b CAT_B Bottom level of CAT m
+153 cat_t CAT_T Top level of CAT m
+158 mrad MRAD Surface downward moon radiation J m**-2
+159 bvf BVF Brunt Vaisala frequency s**-1
+16 tmin TMIN Minimum temperature K
+160 cape CAPE Convective Available Potential Energy J kg**-1
+161 xhail XHAIL AROME hail diagnostic kg m**-2
+162 ugst UGST Gust, u-component m s**-1
+163 vgst VGST Gust, v-component m s**-1
+164 maxucol MAXUCOL Max u-component in column m s**-1
+165 cin CIN Convective inhibition J kg**-1
+166 mcn MCN MOCON out of the model kg kg**-1 s**-1
+167 lcl LCL Lifting condensation level m
+168 lfc LFC Level of free convection m
+169 lnb LNB Level of neutral buoyancy m
+17 td TD Dew point temperature K
+170 bt_oz_cs BT_OZ_CS Brightness temperature OZ clear K
+171 bt_oz_cl BT_OZ_CL Brightness temperature OZ cloud K
+172 bt_ir_cs BT_IR_CS Brightness temperature IR clear K
+173 bt_ir_cl BT_IR_CL Brightness temperature IR cloud K
+174 bt_wv_cs BT_WV_CS Brightness temperature WV clear K
+175 bt_wv_cl BT_WV_CL Brightness temperature WV cloud K
+176 vptmp VPTMP Virtual potential temperature K
+177 maxvcol MAXVCOL Max v-component in column m s**-1
+18 depr DEPR Dew point depression (or deficit) K
+181 rain_cond RAIN_COND Specific rain water content kg kg**-1
+182 srain SRAIN Stratiform rain kg m**-2
+183 crain CRAIN Convective rain kg m**-2
+184 snow_cond SNOW_COND Specific snow water content kg kg**-1
+185 tpsolid TPSOLID Total solid precipitation kg m**-2
+186 cb CB Cloud base m
+187 ct CT Cloud top m
+188 ful FUL Fraction of urban land 0-1
+189 cb38 CB38 Cloud base >3/8 m
+19 lapr LAPR Lapse rate K m**-1
+191 rsn RSN Snow density kg m**-3
+192 w_i W_I Water on canopy (Interception content) kg m**-2
+193 w_so_ice W_SO_ICE Deep soil ice kg m**-2
+195 gwdu GWDU Gravity wave stress U-comp kg m**-1 s**-1
+196 gwdv GWDV Gravity wave stress V-comp kg m**-1 s**-1
+199 tv TV Vegetation type -
+2 msl MSL Pressure reduced to mean sea level Pa
+20 vis VIS Visibility m
+200 tke TKE Turbulent Kinetic Energy J kg**-1
+201 grpl_cond GRPL_COND Specific graupel kg kg**-1
+202 grpl_lsp GRPL_LSP Stratiform Graupel kg m**-2
+203 grpl_cp GRPL_CP Convective Graupel kg m**-2
+204 hail HAIL Hail precipitation rate kg m**-2
+205 hail_lsp HAIL_LSP Stratiform Hail kg m**-2
+206 hail_cp HAIL_CP Convective Hail kg m**-2
+209 lgt LGT Lightning flash h**-1
+21 rdsp1 RDSP1 Radar spectra (1) -
+210 refl REFL Simulated reflectivity dBz
+212 pdep PDEP Pressure departure Pa
+213 vdiv VDIV Vertical Divergence s**-1
+214 upom UPOM Updraft omega m s**-1
+215 dnom DNOM Downdraft omega m s**-1
+216 upmf UPMF Updraft mesh fraction -
+217 dnmf DNMF Downdraft mesh fraction -
+218 PSHI_CONV_CL PSHI_CONV_CL PSHI_CONV_CL -
+22 rdsp2 RDSP2 Radar spectra (2) -
+220 stdo STDO Standard deviation of orography * g m**2 s**-2
+221 atop ATOP Anisotropy coeff of topography -
+222 dtop DTOP Direction of main axis of topography rad
+223 zgb ZGB Roughness length of bare surface * g m**2 s**-2
+224 zgv ZGV Roughness length for vegetation * g m**2 s**-2
+225 clfr CLFR Fraction of clay within soil -
+226 slfr SLFR Fraction of sand within soil -
+227 veg_max VEG_MAX Maximum proportion of vegetation 0-1
+228 fg FG Gust wind speed m s**-1
+229 alb ALB Albedo of bare ground 0-1
+23 rdsp3 RDSP3 Radar spectra (3) -
+230 alv ALV Albedo of vegetation 0-1
+231 smnr SMNR Stomata minimum resistance s m**-1
+232 lai LAI Leaf area index m**2 m**-2
+233 sfl_thprwpr SFL_THPRWPR Thetaprimwprim surface flux km s**-1
+234 dvi DVI Dominant vegetation index -
+235 se SE Surface emissivity -
+236 sodp_max SODP_MAX Maximum soil depth m
+237 sld SLD Soil depth m
+238 swv SWV Soil Wetness kg m**-2
+239 zt ZT Thermal roughness length * g m**2 s**-2
+24 pli PLI Parcel lifted index (to 500 hPa) K
+240 rev REV Resistance to evapotranspiration s m**-1
+241 rmn2m RMN2M Minimum relative moisture at 2 meters 0-1
+242 rmx2m RMX2M Maximum relative moisture at 2 meters 0-1
+243 dutp DUTP Duration of total precipitation s
+244 lhsub LHSUB Latent Heat Sublimation J kg**-1
+245 wevap WEVAP Water evaporation kg m**-2
+246 snsub SNSUB Snow sublimation kg m**-2
+248 ao AO A Ozone kg kg**-1
+249 bo BO B Ozone kg kg**-1
+25 ta TA Temperature anomaly K
+250 co CO C Ozone kg kg**-1
+251 aers AERS Surface aerosol sea kg kg**-1
+252 aerl AERL Surface aerosol land kg kg**-1
+253 aerc AERC Surface carbon aerosol kg kg**-1
+254 aerd AERD Surface aerosol desert kg kg**-1
+27 gpa GPA Geopotential height anomaly m**2 s**-2
+28 wvsp1 WVSP1 Wave spectra (1) -
+29 wvsp2 WVSP2 Wave spectra (2) -
+3 ptend PTEND Pressure tendency Pa s**-1
+30 wvsp3 WVSP3 Wave spectra (3) -
+31 wdir WDIR Wind direction Degree true
+32 ws WS Wind speed m s**-1
+33 u U u-component of wind m s**-1
+34 v V v-component of wind m s**-1
+35 strf STRF Stream function m**2 s**-1
+36 vp VP Velocity potential m**2 s**-1
+37 mntsf MNTSF Montgomery stream Function m**2 s**-1
+38 sgcvv SGCVV Sigma coordinate vertical velocity s**-1
+39 omega OMEGA Pressure vertical velocity Pa s**-1
+4 pv PV Potential vorticity K m**2 kg**-1 s**-1
+40 w W Geometrical vertical velocity m s**-1
+41 absv ABSV Absolute vorticity s**-1
+42 absd ABSD Absolute divergence s**-1
+43 vo VO Relative vorticity s**-1
+44 d D Relative divergence s**-1
+45 vucsh VUCSH Vertical u-component shear s**-1
+46 vvcsh VVCSH Vertical v-component shear s**-1
+48 spc SPC Speed of current m s**-1
+5 icaht ICAHT ICAO Standard Atmosphere reference height m
+51 q Q Specific humidity kg kg**-1
+52 r R Relative humidity 0-1
+53 mixr MIXR Humidity mixing ratio kg m**-2
+54 wvint WVINT Total column integral water vapour kg m**-2
+56 satd SATD Saturation deficit Pa
+58 ciwc_cond CIWC_COND Specific cloud ice water content kg kg**-1
+59 prate PRATE Precipitation rate kg m**-2 s**-1
+6 z Z Geopotential m**2 s**-2
+60 tstm TSTM Thunderstorm probability %
+61 tp TP Total precipitation kg m**-2
+62 lsp LSP Large scale precipitation (water) kg m**-2
+63 acpcp ACPCP Convective precipitation (water) kg m**-2
+64 srweq SRWEQ Snow fall rate water equivalent kg m**-2 s**-1
+65 sdwe SDWE Snow depth water equivalent kg m**-2
+67 mld MLD Mixed layer depth m
+68 tthdp TTHDP Transient thermocline depth m
+69 mthd MTHD Main thermocline depth m
+7 gh GH Geopotential height m**2 s**-2
+70 mtha MTHA Main thermocline anomaly m
+71 tcc TCC Total cloud cover 0-1
+72 ccc CCC Convective cloud cover 0-1
+73 lcc LCC Low cloud cover 0-1
+74 mcc MCC Medium cloud cover 0-1
+75 hcc HCC High cloud cover 0-1
+76 cwat_cond CWAT_COND Specific cloud liquid water content kg kg**-1
+77 bli BLI Best lifted index (to 500 hPa) K
+78 csf CSF Convective snowfall m of water equivalent
+79 lsf LSF Large scale snowfall m of water equivalent
+8 h H Geometrical height m
+80 wtmp WTMP Water temperature K
+81 lsm LSM Land-sea mask 0-1
+82 dslm DSLM Deviation of sea-level from mean m
+83 srg SRG Surface roughness * g m**2 s**-2
+84 al AL Albedo 0-1
+85 slt SLT Soil Temperature K
+86 sm SM Soil Moisture kg m**-3
+87 veg VEG Vegetation fraction 0-1
+88 s S Salinity kg kg**-1
+89 den DEN Density kg m**-3
+9 hstdv HSTDV Standard deviation of height m
+90 ro RO Runoff m
+91 icec ICEC Ice cover (1=land, 0=sea) 0-1
+92 icetk ICETK Ice thickness m
+97 iceg ICEG Ice growth rate m s**-1
+98 iced ICED Ice divergence s**-1
+99 snom SNOM Snow melt kg m**-2
+255 - - Missing

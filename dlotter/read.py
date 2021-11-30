@@ -10,6 +10,7 @@ import eccodes as ec
 import pygrib
 import numpy as np
 import datetime as dt
+from dmit import regrot
 
 class grib2Read:
 
@@ -93,7 +94,7 @@ class grib2Read:
             time = ec.codes_get(time_gid, 'dataTime')
             lead = ec.codes_get(time_gid, 'step')
 
-            analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
+            analysis = dt.datetime.strptime("{:d}-{:04d}".format(date,time), '%Y%m%d-%H%M')
             forecast = analysis + dt.timedelta(minutes=lead)
             Nt_coords[k] = forecast
 
@@ -105,6 +106,8 @@ class grib2Read:
 
                 Ni = ec.codes_get(gid, 'Ni')
                 Nj = ec.codes_get(gid, 'Nj')
+
+                if levelType=='103': levelType='sfc' # For grib2, leveltype 103 is surface
 
                 if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
                                         typeOfLevel=='heightAboveGround' and levelType=='sfc':
@@ -132,7 +135,6 @@ class grib2Read:
 
                 ec.codes_release(gid)
 
-            
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
                                      "lon": (["x","y"], lons), 
                                      "time": (["t"], Nt_coords)})
@@ -182,7 +184,29 @@ class grib2Read:
         """
 
         gr = pygrib.open(gribfile)
-        lats, lons = gr[1].latlons()
+        g = gr[1]
+
+        if g['gridType'] == 'rotated_ll':
+            print('Found rotated grid, discarding pygrib extraction')
+            latdim = g.Nj
+            londim = g.Ni
+
+            latFirst = g.latitudeOfFirstGridPointInDegrees
+            lonFirst = g.longitudeOfFirstGridPointInDegrees
+            latLast = g.latitudeOfLastGridPointInDegrees
+            lonLast = g.longitudeOfLastGridPointInDegrees
+            dy = g.jDirectionIncrementInDegrees
+            dx = g.iDirectionIncrementInDegrees
+            latPole = g.latitudeOfSouthernPoleInDegrees
+            lonPole = g.longitudeOfSouthernPoleInDegrees
+
+            lons, lats = np.meshgrid(np.linspace(
+                lonFirst, lonLast, londim), np.linspace(latFirst, latLast, latdim))
+
+            lons, lats = regrot.rot_to_reg(lonPole, latPole, lons, lats)
+        else:
+            lats, lons = gr[1].latlons()
+
         gr.close()
 
         return lats, lons

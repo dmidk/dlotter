@@ -1,0 +1,1100 @@
+### HARMONIE tables ###
+#PSHI_CONV_CL
+'94253218' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 218 ;
+        }
+#Absolute divergence
+'94253042' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 42 ;
+        }
+#Absolute vorticity
+'94253041' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 41 ;
+        }
+#Convective precipitation (water)
+'94253063' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 63 ;
+        }
+#Surface carbon aerosol
+'94253253' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 253 ;
+        }
+#Surface aerosol desert
+'94253254' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 254 ;
+        }
+#Surface aerosol land
+'94253252' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 252 ;
+        }
+#Surface aerosol sea
+'94253251' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 251 ;
+        }
+#Albedo
+'94253084' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 84 ;
+        }
+#Albedo of bare ground
+'94253229' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 229 ;
+        }
+#Albedo of vegetation
+'94253230' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 230 ;
+        }
+#A Ozone
+'94253248' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 248 ;
+        }
+#Analysed RMS of PHI (CANARI)
+'94253128' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 128 ;
+        }
+#Anisotropy coeff of topography
+'94253221' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 221 ;
+        }
+#Boundary layer dissipation
+'94253123' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 123 ;
+        }
+#Best lifted index (to 500 hPa)
+'94253077' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 77 ;
+        }
+#Bottom level of icing
+'94253146' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 146 ;
+        }
+#B Ozone
+'94253249' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 249 ;
+        }
+#Brightness temperature IR cloud
+'94253173' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 173 ;
+        }
+#Brightness temperature IR clear
+'94253172' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 172 ;
+        }
+#Brightness temperature OZ cloud
+'94253171' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 171 ;
+        }
+#Brightness temperature OZ clear
+'94253170' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 170 ;
+        }
+#Brightness temperature WV cloud
+'94253175' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 175 ;
+        }
+#Brightness temperature WV clear
+'94253174' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 174 ;
+        }
+#Brunt Vaisala frequency
+'94253159' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 159 ;
+        }
+#Convective Available Potential Energy
+'94253160' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 160 ;
+        }
+#CAT index
+'94253145' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 145 ;
+        }
+#Bottom level of CAT
+'94253152' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 152 ;
+        }
+#Max CAT index
+'94253151' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 151 ;
+        }
+#Level of max CAT index
+'94253150' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 150 ;
+        }
+#Top level of CAT
+'94253153' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 153 ;
+        }
+#Cloud base
+'94253186' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 186 ;
+        }
+#Cloud base >3/8
+'94253189' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 189 ;
+         level = 3 ;
+        }
+#Convective cloud cover
+'94253072' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 72 ;
+        }
+#Convective inhibition
+'94253165' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 165 ;
+        }
+#Cloud ice water content
+'942530580' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 58 ;
+         level = 0 ;
+        }
+#Specific cloud ice water content
+'942530581' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 58 ;
+        }
+#Fraction of clay within soil
+'94253225' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 225 ;
+        }
+#C Ozone
+'94253250' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 250 ;
+        }
+#Convective rain
+'94253183' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 183 ;
+        }
+#Convective snowfall
+'94253078' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 78 ;
+        }
+#LW net clear sky rad
+'94253131' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 131 ;
+        }
+#SW net clear sky rad
+'94253130' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 130 ;
+        }
+#Cloud top
+'94253187' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 187 ;
+        }
+#Specific cloud liquid water content
+'94253076' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 76 ;
+        }
+#Relative divergence
+'94253044' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 44 ;
+        }
+#Density
+'94253089' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 89 ;
+        }
+#Dew point depression (or deficit)
+'94253018' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 18 ;
+        }
+#Direct normal exposure
+'94253140' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 140 ;
+        }
+#Downdraft mesh fraction
+'94253217' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 217 ;
+        }
+#Downdraft omega
+'94253215' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 215 ;
+        }
+#Deviation of sea-level from mean
+'94253082' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 82 ;
+        }
+#Direction of main axis of topography
+'94253222' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 222 ;
+        }
+#Duration of total precipitation
+'94253243' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 243 ;
+        }
+#Dominant vegetation index
+'94253234' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 234 ;
+        }
+#Gust wind speed
+'94253228' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 228 ;
+        }
+#Forecasted RMS of PHI (CANARI)
+'94253129' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 129 ;
+        }
+#Fraction of urban land
+'94253188' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 188 ;
+        }
+#Geopotential height
+'94253007' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 7 ;
+        }
+#Geopotential height anomaly
+'94253027' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 27 ;
+        }
+#Global radiation flux
+'94253117' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 117 ;
+        }
+#Graupel precipitation rate
+'942532010' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 201 ;
+         level = 0 ;
+        }
+#Specific graupel
+'942532011' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 201 ;
+        }
+#Convective Graupel
+'94253203' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 203 ;
+        }
+#Stratiform Graupel
+'94253202' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 202 ;
+        }
+#Gravity wave stress U-comp
+'94253195' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 195 ;
+        }
+#Gravity wave stress V-comp
+'94253196' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 196 ;
+        }
+#Geometrical height
+'94253008' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 8 ;
+        }
+#Hail precipitation rate
+'94253204' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 204 ;
+        }
+#Convective Hail
+'94253206' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 206 ;
+        }
+#Stratiform Hail
+'94253205' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 205 ;
+        }
+#High cloud cover
+'94253075' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 75 ;
+        }
+#Standard deviation of height
+'94253009' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 9 ;
+        }
+#Helicopter Triggered ligthning Index
+'94253148' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 148 ;
+        }
+#Transmittance
+'94253149' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 149 ;
+        }
+#ICAO Standard Atmosphere reference height
+'94253005' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 5 ;
+        }
+#Ice cover (1=land, 0=sea)
+'94253091' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 91 ;
+        }
+#Ice divergence
+'94253098' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 98 ;
+        }
+#Ice growth rate
+'94253097' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 97 ;
+        }
+#Icing index
+'94253135' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 135 ;
+        }
+#Icing index version 2
+'94253134' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 134 ;
+        }
+#Ice thickness
+'94253092' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 92 ;
+        }
+#Image data
+'94253127' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 127 ;
+        }
+#Leaf area index
+'94253232' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 232 ;
+        }
+#Lapse rate
+'94253019' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 19 ;
+        }
+#Low cloud cover
+'94253073' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 73 ;
+        }
+#Lifting condensation level
+'94253167' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 167 ;
+        }
+#Level of free convection
+'94253168' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 168 ;
+        }
+#Lightning
+'94253209' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 209 ;
+        }
+#Latent heat flux through evaporation
+'94253132' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 132 ;
+        }
+#Latent heat flux
+'94253121' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 121 ;
+        }
+#Latent Heat Sublimation
+'94253244' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 244 ;
+        }
+#Level of max icing
+'94253143' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 143 ;
+        }
+#Level of max wind speed
+'94253142' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 142 ;
+        }
+#Level of neutral buoyancy
+'94253169' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 169 ;
+        }
+#Large scale snowfall
+'94253079' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 79 ;
+        }
+#Land-sea mask
+'94253081' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 81 ;
+        }
+#Large scale precipitation (water)
+'94253062' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 62 ;
+        }
+#Longwave radiation flux
+'94253115' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 115 ;
+        }
+#Max u-component in column
+'94253164' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 164 ;
+        }
+#Max v-component in column
+'94253177' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 177 ;
+        }
+#Medium cloud cover
+'94253074' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 74 ;
+        }
+#MOCON out of the model
+'94253166' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 166 ;
+        }
+#Humidity mixing ratio
+'94253053' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 53 ;
+        }
+#Mixed layer depth
+'94253067' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 67 ;
+        }
+#Montgomery stream Function
+'94253037' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 37 ;
+        }
+#Surface downward moon radiation
+'94253158' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 158 ;
+        }
+#Mask of significant cloud amount
+'94253133' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 133 ;
+        }
+#Pressure reduced to mean sea level
+'94253002' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 2 ;
+        }
+#Main thermocline anomaly
+'94253070' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 70 ;
+        }
+#Main thermocline depth
+'94253069' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 69 ;
+        }
+#Max icing growth index
+'94253141' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 141 ;
+        }
+#Net longwave radiation flux (surface)
+'94253112' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 112 ;
+         level = 0 ;
+        }
+#Net longwave radiation flux(atmosph.top)
+'94253114' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 114 ;
+        }
+#Net shortwave radiation flux (surface)
+'94253111' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 111 ;
+         level = 0 ;
+        }
+#Net shortwave radiation flux(atmosph.top)
+'94253113' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 113 ;
+        }
+#Pressure vertical velocity
+'94253039' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 39 ;
+        }
+#Pseudo-adiabatic potential temperature
+'94253014' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 14 ;
+        }
+#Pressure departure
+'94253212' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 212 ;
+        }
+#Parcel lifted index (to 500 hPa)
+'94253024' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 24 ;
+        }
+#Precipitation rate
+'94253059' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 59 ;
+        }
+#Pressure
+'94253001' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 1 ;
+        }
+#Precipitation Type
+'94253144' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 144 ;
+        }
+#Pseudo satellite image: cloud top temperature (infrared)
+'94253136' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 136 ;
+        }
+#Pseudo satellite image: cloud water reflectivity (visible)
+'94253139' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 139 ;
+        }
+#Pseudo satellite image: water vapour Tb
+'94253137' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 137 ;
+        }
+#Pseudo satellite image: water vapour Tb + correction for clouds
+'94253138' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 138 ;
+        }
+#Potential temperature
+'94253013' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 13 ;
+        }
+#Pressure tendency
+'94253003' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 3 ;
+        }
+#Potential vorticity
+'94253004' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 4 ;
+        }
+#Specific humidity
+'94253051' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 51 ;
+        }
+#Relative humidity
+'94253052' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 52 ;
+        }
+#Rain
+'942531810' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 181 ;
+         level = 0 ;
+        }
+#Specific rain water content
+'942531811' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 181 ;
+        }
+#Radar spectra (1)
+'94253021' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 21 ;
+        }
+#Radar spectra (2)
+'94253022' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 22 ;
+        }
+#Radar spectra (3)
+'94253023' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 23 ;
+        }
+#Simulated reflectivity
+'94253210' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 210 ;
+        }
+#Resistance to evapotranspiration
+'94253240' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 240 ;
+        }
+#Minimum relative moisture at 2 meters
+'94253241' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 241 ;
+         level = 2 ;
+        }
+#Maximum relative moisture at 2 meters
+'94253242' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 242 ;
+         level = 2 ;
+        }
+#Runoff
+'94253090' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 90 ;
+        }
+#Snow density
+'94253191' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 191 ;
+        }
+#Salinity
+'94253088' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 88 ;
+        }
+#Saturation deficit
+'94253056' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 56 ;
+        }
+#Snow depth water equivalent
+'94253065' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 65 ;
+        }
+#Surface emissivity
+'94253235' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 235 ;
+        }
+#Thetaprimwprim surface flux
+'94253233' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 233 ;
+        }
+#Sigma coordinate vertical velocity
+'94253038' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 38 ;
+        }
+#Sensible heat flux
+'94253122' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 122 ;
+        }
+#Soil depth
+'94253237' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 237 ;
+        }
+#Fraction of sand within soil
+'94253226' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 226 ;
+        }
+#Soil Temperature
+'94253085' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 85 ;
+        }
+#Soil Moisture
+'94253086' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 86 ;
+        }
+#Stomata minimum resistance
+'94253231' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 231 ;
+        }
+#Snow melt
+'94253099' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 99 ;
+        }
+#Total snowfall rate water equivalent
+'942531840' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 184 ;
+         level = 0 ;
+        }
+#Specific snow water content
+'942531841' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 184 ;
+        }
+#Snow sublimation
+'94253246' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 246 ;
+        }
+#Maximum soil depth
+'94253236' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 236 ;
+        }
+#Speed of current
+'94253048' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 48 ;
+        }
+#Stratiform rain
+'94253182' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 182 ;
+        }
+#Surface roughness * g
+'94253083' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 83 ;
+        }
+#Snow fall rate water equivalent
+'94253064' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 64 ;
+        }
+#Standard deviation of orography * g
+'94253220' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 220 ;
+        }
+#Stream function
+'94253035' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 35 ;
+        }
+#Shortwave radiation flux
+'94253116' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 116 ;
+        }
+#Radiance (with respect to wave length)
+'94253120' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 120 ;
+        }
+#Soil Wetness
+'94253238' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 238 ;
+        }
+#Temperature
+'94253011' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 11 ;
+        }
+#Temperature anomaly
+'94253025' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 25 ;
+        }
+#Total cloud cover
+'94253071' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 71 ;
+        }
+#Total column ozone
+'94253010' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 10 ;
+        }
+#Dew point temperature
+'94253017' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 17 ;
+        }
+#Turbulent Kinetic Energy
+'94001200' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 200 ;
+        }
+#Top level of icing
+'94253147' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 147 ;
+        }
+#Maximum temperature
+'94253015' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 15 ;
+        }
+#Minimum temperature
+'94253016' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 16 ;
+        }
+#Total precipitation
+'94253061' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 61 ;
+        }
+#Total solid precipitation
+'94253185' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 185 ;
+        }
+#Thunderstorm probability
+'94253060' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 60 ;
+        }
+#Transient thermocline depth
+'94253068' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 68 ;
+        }
+#Vegetation type
+'94253199' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 199 ;
+        }
+#u-component of wind
+'94253033' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 33 ;
+        }
+#Momentum flux, u-component
+'94253124' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 124 ;
+        }
+#Gust, u-component
+'94253162' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 162 ;
+        }
+#Updraft mesh fraction
+'94253216' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 216 ;
+        }
+#Updraft omega
+'94253214' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 214 ;
+        }
+#v-component of wind
+'94253034' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 34 ;
+        }
+#Vertical Divergence
+'94253213' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 213 ;
+        }
+#Vegetation fraction
+'94253087' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 87 ;
+        }
+#Maximum proportion of vegetation
+'94253227' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 227 ;
+        }
+#Momentum flux, v-component
+'94253125' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 125 ;
+        }
+#Gust, v-component
+'94253163' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 163 ;
+        }
+#Visibility
+'94253020' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 20 ;
+        }
+#Relative vorticity
+'94253043' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 43 ;
+        }
+#Velocity potential
+'94253036' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 36 ;
+        }
+#Virtual potential temperature
+'94253176' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 176 ;
+        }
+#Virtual temperature
+'94253012' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 12 ;
+        }
+#Vertical u-component shear
+'94253045' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 45 ;
+        }
+#Vertical v-component shear
+'94253046' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 46 ;
+        }
+#Geometrical vertical velocity
+'94253040' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 40 ;
+        }
+#Water on canopy (Interception content)
+'94253192' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 192 ;
+        }
+#Deep soil ice
+'94253193' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 193 ;
+        }
+#Wind direction
+'94253031' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 31 ;
+        }
+#Water evaporation
+'94253245' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 245 ;
+        }
+#Wind mixing energy
+'94253126' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 126 ;
+        }
+#Wind speed
+'94253032' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 32 ;
+        }
+#Water temperature
+'94253080' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 80 ;
+        }
+#Total column integral water vapour
+'94253054' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 54 ;
+        }
+#Wave spectra (1)
+'94253028' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 28 ;
+        }
+#Wave spectra (2)
+'94253029' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 29 ;
+        }
+#Wave spectra (3)
+'94253030' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 30 ;
+        }
+#AROME hail diagnostic
+'94253161' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 161 ;
+        }
+#Geopotential
+'94253006' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 6 ;
+        }
+#Roughness length of bare surface * g
+'94253223' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 223 ;
+        }
+#Roughness length for vegetation * g
+'94253224' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 224 ;
+        }
+#Thermal roughness length * g
+'94253239' = {
+         table2Version = 253 ;
+         indicatorOfParameter = 239 ;
+        }

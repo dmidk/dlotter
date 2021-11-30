@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='dlotter',
-     version='0.0.2.1',
+     version='0.0.2.2',
      author="Kasper Hintz",
      author_email="kah@dmi.dk",
      description="Quick and dirty static plots of NWP output",
