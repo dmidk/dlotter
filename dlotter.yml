@@ -8,13 +8,11 @@ dependencies:
   - matplotlib
   - eccodes
   - pandas
+  - pygrib
   - xarray
   - metpy
-  - sphinx
+  - nomkl
   - pip:
     - eccodes
-    - sphinx-rtd-theme
-    - myst-parser
-    - furo
     - dmit
-    - pygrib
+    

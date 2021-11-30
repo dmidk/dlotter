@@ -67,6 +67,13 @@ class plot:
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-2.1, 20, 51, 65]
 
+        if args.area == 'disko':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-51.7, central_latitude=70,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-56, -46.5, 66.33, 71.52]
+
         if args.area == 'sjalland':
             self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
                                     false_easting=0.0, false_northing=0.0,
