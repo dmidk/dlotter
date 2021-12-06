@@ -192,9 +192,9 @@ class grib2Read:
             londim = g.Ni
 
             latFirst = g.latitudeOfFirstGridPointInDegrees
-            lonFirst = g.longitudeOfFirstGridPointInDegrees
-            latLast = g.latitudeOfLastGridPointInDegrees
-            lonLast = g.longitudeOfLastGridPointInDegrees
+            latLast  = g.latitudeOfLastGridPointInDegrees
+            lonFirst = (g.longitudeOfFirstGridPointInDegrees % 180.)-180.
+            lonLast  = g.longitudeOfLastGridPointInDegrees
             dy = g.jDirectionIncrementInDegrees
             dx = g.iDirectionIncrementInDegrees
             latPole = g.latitudeOfSouthernPoleInDegrees
