@@ -33,9 +33,13 @@ class grib2Read:
 
         self.search_t2m = False
         self.found_t2m = False
-
         if 't2m' in self.parameters: 
             self.search_t2m = True
+
+        self.search_td2m = False
+        self.found_td2m = False
+        if 'td2m' in self.parameters:
+            self.search_td2m = True
             
         self.search_uv=False    
         self.found_u = False
@@ -48,7 +52,23 @@ class grib2Read:
         self.found_precip = False
         if 'precip' in self.parameters:
             self.search_precip = True
-            
+
+        self.search_slp = False
+        self.found_slp  = False
+        if 'slp' in self.parameters:
+            self.search_slp = True
+
+        self.search_tcc = False
+        self.found_tcc  = False
+        if 'tcc' in self.parameters:
+            self.search_tcc = True
+
+        self.search_lmhc = False
+        self.found_lcc = False
+        self.found_mcc = False
+        self.found_hcc = False
+        if 'lmhc' in self.parameters:
+            self.search_lmhc = True
 
         return
 
@@ -76,12 +96,21 @@ class grib2Read:
         Nt_coords = np.zeros(Nt, dtype=dt.datetime)
         
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_td2m: td2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         if self.search_uv: 
             u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_slp: slp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_tcc: tcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        if self.search_lmhc: 
+            lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
 
         for k,f in enumerate(files_to_read):
             gids = self.get_gids(f)
@@ -115,6 +144,12 @@ class grib2Read:
                     self.found_t2m = True
                     t2m[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_td2m and (shortName=='td' or shortName=='2td') and level==2 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_td2m = True
+                    td2m[k,:,:] = values.reshape(Nj, Ni)
+
                 if self.search_uv and (shortName=='u' or shortName=='10u') and level==10 and \
                                         typeOfLevel=='heightAboveGround' and levelType=='sfc':
                     values = ec.codes_get_values(gid)
@@ -133,6 +168,30 @@ class grib2Read:
                     self.found_precip = True
                     precip[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_slp and (shortName=='pres') and level==0 and \
+                                        typeOfLevel=='heightAboveSea' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_slp = True
+                    slp[k,:,:] = values.reshape(Nj, Ni)
+
+                if self.search_lmhc and (shortName=='lcc') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_lcc = True
+                    lcc[k,:,:] = values.reshape(Nj, Ni)
+
+                if self.search_lmhc and (shortName=='mcc') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_mcc = True
+                    mcc[k,:,:] = values.reshape(Nj, Ni)
+
+                if self.search_lmhc and (shortName=='hcc') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_hcc = True
+                    hcc[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
@@ -140,9 +199,15 @@ class grib2Read:
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+        if self.found_td2m: ds_grib['td2m'] = (['time', 'lat', 'lon'], td2m - 273.15 )
         if self.found_u: ds_grib['u10m'] = (['time', 'lat', 'lon'], u10 )
         if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
         if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip )
+        if self.found_slp: ds_grib['slp'] = (['time', 'lat', 'lon'], slp * 0.01)
+        if self.found_tcc: ds_grib['tcc'] = (['time', 'lat', 'lon'], tcc )
+        if self.found_lcc: ds_grib['lcc'] = (['time', 'lat', 'lon'], lcc )
+        if self.found_mcc: ds_grib['mcc'] = (['time', 'lat', 'lon'], mcc )
+        if self.found_hcc: ds_grib['hcc'] = (['time', 'lat', 'lon'], hcc )
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
@@ -192,9 +257,9 @@ class grib2Read:
             londim = g.Ni
 
             latFirst = g.latitudeOfFirstGridPointInDegrees
-            lonFirst = g.longitudeOfFirstGridPointInDegrees
-            latLast = g.latitudeOfLastGridPointInDegrees
-            lonLast = g.longitudeOfLastGridPointInDegrees
+            latLast  = g.latitudeOfLastGridPointInDegrees
+            lonFirst = (g.longitudeOfFirstGridPointInDegrees % 180.)-180.
+            lonLast  = g.longitudeOfLastGridPointInDegrees
             dy = g.jDirectionIncrementInDegrees
             dx = g.iDirectionIncrementInDegrees
             latPole = g.latitudeOfSouthernPoleInDegrees

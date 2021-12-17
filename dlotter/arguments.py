@@ -37,7 +37,7 @@ class arguments:
                         '--parameters',
                         metavar='PARAMETERS',
                         type=str,
-                        help='Parameters to plot. Seperate with ":", eg: "t2m:w10m".',
+                        help='Parameters to plot. Seperate with ":", eg: "t2m:w10m:precip:slp:td2m:tcc:lmhc".',
                         required=True)
         
         parser_plot.add_argument('-f',
@@ -86,7 +86,7 @@ class arguments:
                         '--area',
                         metavar='AREA',
                         type=str,
-                        help='Over which area to plot (Options are: dk, neu, sjalland)',
+                        help='Over which area to plot (Options are: dk, neu, sjalland, disko)',
                         default="dk",
                         required=False)
 
