@@ -23,7 +23,26 @@ Submodules can be imported, but this software is designed to be used as a CLI (C
 ## Flags and commands
 '-a' *or* '--area' `dk,neu`\
 '-d' *or* '--directory' `/path/to/files/`\
-'-p' *or* '--parameters' `t2m,w10m,precip`
+'-p' *or* '--parameters' `t2m:w10m:precip:slp:td2m:tcc:lmhc`
+
+areas:
+- `dk`: Denmark
+- `neu`: Northern Europe
+- `gl`: Greenland
+- `disko`: Disko Bay
+- `sjalland`: Zealand
+- `europe`: Europe
+- `faroes`: Faroe Islands
+- `scoresbysund`: Scoresbysund (Greenland)
+
+Parameters:
+- `t2m`: 2 Meter Temperature
+- `w10m`: 10 Meter Wind Speed
+- `precip`: Accumulated Precipitation
+- `slp`: Sea Level Pressure
+- `td2m`: 2 Meter Dewpoint Temperature
+- `tcc`: Total Cloud Cover
+- `lmhc`: Low, Medium, High clouds
 
 
 # Important assumptions
