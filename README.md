@@ -10,7 +10,7 @@ Install using pip: `pip install dlotter`
 *One dependency is "cartopy". pip installation of cartopy seems to be currently broken, thus leads to a failed installation of dlotter. If this happens, either build cartopy from source or with conda (see section "Prerequisites").*
 
 # Usage
-Submodules can be imported, but this software is designed to be used as a CLI (Command-Line-Interface), by calling the `__main__` module.
+Submodules can be imported, but this software is designed to be used as a CLI (Command-Line-Interface), by calling the `__main__` module. See examples on the wiki page: https://github.com/dmidk/dlotter/wiki
 
 `python -m dlotter`: Prints a help message
 
