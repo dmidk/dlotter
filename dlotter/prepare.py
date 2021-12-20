@@ -11,14 +11,12 @@ class prepare:
 
     def __init__(self, args:argparse.Namespace) -> None:
 
-        self.valid_parameters = ['t2m', 'w10m', 'precip']
+        self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc']
 
         self.check_meta(args)
 
         self.files_to_read = self.find_files_to_read(args)
         
-        
-
         return
 
 
