@@ -192,6 +192,12 @@ class grib2Read:
                     self.found_hcc = True
                     hcc[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_tcc and (shortName=='tcc') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_tcc = True
+                    tcc[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
