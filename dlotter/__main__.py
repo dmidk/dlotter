@@ -19,7 +19,7 @@ import argparse
 from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
-from .read import grib2Read
+from .read import grib2Read, netcdf2read
 from .plot import plot
 from .arguments import arguments
 
@@ -58,6 +58,9 @@ if __name__ == '__main__':
         
         if args.filetype == 'grib2':
             datareader = grib2Read(args, files_to_read)
+            data = datareader.data
+        elif args.filetype == 'nc':
+            datareader = netcdf2read(args, files_to_read)
             data = datareader.data
         else:
             print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)

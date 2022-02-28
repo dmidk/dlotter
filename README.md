@@ -20,6 +20,8 @@ Submodules can be imported, but this software is designed to be used as a CLI (C
 
 `python -m dlotter plot -p t2m:w10m -d /path/to/grib2/files/ --prefix 0 --filetype grib2 --limit-files 4 --verbose`: Limits to use the first 4 files sorted by name and only use files starting with "0" in their name.
 
+`python -m dlotter plot -p t2m:w10m -d /path/to/netcdf/files/ --postfix .nc --filetype netcdf --verbose`: Plots data from netcdf files with the postfix ".nc" in the directory specified.
+
 ## Flags and commands
 '-a' *or* '--area' `dk,neu`\
 '-d' *or* '--directory' `/path/to/files/`\

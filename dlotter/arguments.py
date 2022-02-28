@@ -44,7 +44,7 @@ class arguments:
                         '--filetype',
                         metavar='FILETYPE',
                         type=str,
-                        help='What filetype are we using? (Options are: grib2)',
+                        help='What filetype are we using? (Options are: grib2, nc)',
                         default='grib2',
                         required=False)
         
