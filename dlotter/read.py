@@ -330,6 +330,11 @@ class netcdf2read:
         if 't2m' in self.parameters: 
             self.search_t2m = True
 
+        self.search_precip = False
+        self.found_precip = False
+        if 'precip' in self.parameters: 
+            self.search_precip = True
+
         return
 
     
@@ -372,18 +377,30 @@ class netcdf2read:
         Nt_coords = np.zeros(Nt, dtype=dt.datetime)
 
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
+        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         for k,f in enumerate(files_to_read):
             print(k,f)
 
             f = nc.Dataset(files_to_read[k])
 
+            forecast = f.getncattr('ValidDate')
+            forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
+
+            Nt_coords[k] = forecast
+
             if self.search_t2m:
                 t2m_key = self.find_relevant_key(f, 't2m')
                 if t2m_key is not None:
                     t2m[k,:,:] = f[t2m_key][:,:]
                     self.found_t2m = True
+
+            if self.search_precip:
+                precip_key = self.find_relevant_key(f, 'precip')
+                if precip_key is not None:
+                    precip[k,:,:] = f[precip_key][:,:]
+                    self.found_precip = True
+            
 
             f.close()
 
@@ -393,13 +410,12 @@ class netcdf2read:
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
  
         ds_grib = self.sort_by_time(ds_grib)
-            # self.found_t2m = True
-            # t2m[k,:,:] = values.reshape(Nj, Ni)
 
         return ds_grib
 
@@ -468,5 +484,10 @@ class netcdf2read:
             if 't2m' in available_keys: return_key = 't2m'
             elif 't2maboveground' in available_keys: return_key = 't2maboveground'
             elif 'T2M' in available_keys: return_key = 'T2M'
+
+        elif key == 'precip':
+            if 'precip' in available_keys: return_key = 'precip'
+            elif 'precipitation' in available_keys: return_key = 'precipitation'
+            elif 'PRECIP' in available_keys: return_key = 'PRECIP'
 
         return return_key
