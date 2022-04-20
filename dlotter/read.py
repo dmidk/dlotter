@@ -7,10 +7,12 @@ import sys
 import argparse
 import xarray as xr
 import eccodes as ec
+import netCDF4 as nc
 import pygrib
 import numpy as np
 import datetime as dt
 from dmit import regrot
+from typing import Union
 
 class grib2Read:
 
@@ -306,36 +308,186 @@ class grib2Read:
 
 
 
+class netcdf2read:
 
-#  print(gribfile)
-#         f = open(gribfile, 'rb')
-#         msg_count = ec.codes_count_in_file(f)
-#         gid_list = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
-#         f.close()
+    def __init__(self, args:argparse.Namespace, files_to_read:list) -> None:
+        if args.verbose:
+            print("Reading NetCDF", flush=True)
 
-    # gid = gid_list[0]
+        self.parameters = args.parameters
+
+        self.set_bools()
+
+        self.data = self.read(args, files_to_read)
+
+        return
 
 
-    # def get_grid(self, gid: int) -> None:
+    def set_bools(self) -> None:
 
+        self.search_t2m = False
+        self.found_t2m = False
+        if 't2m' in self.parameters: 
+            self.search_t2m = True
 
-    #     Ni = ec.codes_get(gid, 'Ni')
-    #     Nj = ec.codes_get(gid, 'Nj')
+        self.search_precip = False
+        self.found_precip = False
+        if 'precip' in self.parameters: 
+            self.search_precip = True
 
-    #     gridtype = ec.codes_get(gid, 'gridType')
+        return
 
-    #     test = ec.codes_grib_get_data(gid)
-    #     print(test)
-    #     # if gridtype == 'lambert':
-    #     #     projparams['proj']='lcc'
-    #     #     projparams['lon_0']=self['LoVInDegrees']
-    #     #     projparams['lat_0']=self['LaDInDegrees']
-    #     #     projparams['lat_1']=self['Latin1InDegrees']
-    #     #     projparams['lat_2']=self['Latin2InDegrees']
+    
+    def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
 
-    #     lat_first = ec.codes_get(gid, 'latitudeOfFirstGridPointInDegrees')
-    #     lon_first = ec.codes_get(gid, 'longitudeOfFirstGridPointInDegrees')
-    #     # lat_last  = ec.codes_get(gid, 'latitudeOfLastGridPointInDegrees')
-    #     # lon_last  = ec.codes_get(gid, 'longitudeOfLastGridPointInDegrees')
+        nt = dataarray.dims['time']
+        parameters = list(dataarray.data_vars)
+
+        time = dataarray['time'].values
+        idx = np.argsort(time)
+
+        da = dataarray.sortby('time')
+
+        for p in parameters:
+            for k in range(nt):
+                da[p][k,:,:] = dataarray[p][idx[k],:,:]
         
-    #     return 
+        return da
+
+
+    def read(self, args:argparse.Namespace, files_to_read:list) -> xr.Dataset:
+        """Fetch data from the netcdf files and return an xarray.Dataset()
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments to dlotter.__main__
+        files_to_read : list
+            List of str with paths to netcdf files
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset with found parameters
+        """
+
+        lats, lons = self.get_latlons(files_to_read[0])
+
+        Nt = len(files_to_read)
+        Nt_coords = np.zeros(Nt, dtype=dt.datetime)
+
+        if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        for k,f in enumerate(files_to_read):
+            print(k,f)
+
+            f = nc.Dataset(files_to_read[k])
+
+            forecast = f.getncattr('ValidDate')
+            forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
+
+            Nt_coords[k] = forecast
+
+            if self.search_t2m:
+                t2m_key = self.find_relevant_key(f, 't2m')
+                if t2m_key is not None:
+                    t2m[k,:,:] = f[t2m_key][:,:]
+                    self.found_t2m = True
+
+            if self.search_precip:
+                precip_key = self.find_relevant_key(f, 'precip')
+                if precip_key is not None:
+                    precip[k,:,:] = f[precip_key][:,:]
+                    self.found_precip = True
+            
+
+            f.close()
+
+
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
+                                     "lon": (["x","y"], lons), 
+                                     "time": (["t"], Nt_coords)})
+
+        if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
+
+        if len(list(ds_grib.data_vars)) == 0:
+            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
+ 
+        ds_grib = self.sort_by_time(ds_grib)
+
+        return ds_grib
+
+
+    def get_latlons(self, netcdf_file:str) -> tuple:
+        """Get latitudes and longitudes from file. Uses netcdf4-python as eccodes have no easy interface for that.
+
+        Parameters
+        ----------
+        netcdf_file : str
+            Path to netcdf file
+
+        Returns
+        -------
+        tuple
+            tuple of latitudes, longitudes
+        """
+
+        f = nc.Dataset(netcdf_file)
+        
+        latkey = self.find_relevant_key(f, 'latitude')
+        lonkey = self.find_relevant_key(f, 'longitude')
+
+        if latkey is None or lonkey is None:
+            raise SystemExit('No lat/lon found in netcdf file')
+
+        lats = f[latkey][:,:]
+        lons = f[lonkey][:,:]
+
+        f.close()
+
+        return lats, lons
+
+
+    def find_relevant_key(self, dataset:nc._netCDF4.Dataset, key:str) -> Union[str, None]:
+        """Check if a key is in the netcdf file.
+
+        Parameters
+        ----------
+        nc._netCDF4.Dataset
+            Netcdf file
+        key : str
+            Key to search for
+
+        Returns
+        -------
+        str
+            None if no key is found, otherwise returns the best guess key
+        """
+
+        available_keys = dataset.variables.keys()
+
+        return_key = None
+
+        if key == 'latitude':
+            if 'lat' in available_keys: return_key = 'lat'
+            elif 'latitude' in available_keys: return_key = 'latitude'
+            elif 'LAT' in available_keys: return_key = 'LAT'
+
+        elif key == 'longitude':
+            if 'lon' in available_keys: return_key = 'lon'
+            elif 'longitude' in available_keys: return_key = 'longitude'
+            elif 'LON' in available_keys: return_key = 'LON'
+
+        elif key == 't2m':
+            if 't2m' in available_keys: return_key = 't2m'
+            elif 't2maboveground' in available_keys: return_key = 't2maboveground'
+            elif 'T2M' in available_keys: return_key = 'T2M'
+
+        elif key == 'precip':
+            if 'precip' in available_keys: return_key = 'precip'
+            elif 'precipitation' in available_keys: return_key = 'precipitation'
+            elif 'PRECIP' in available_keys: return_key = 'PRECIP'
+
+        return return_key
