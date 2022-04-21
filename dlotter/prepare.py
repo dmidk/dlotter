@@ -11,7 +11,7 @@ class prepare:
 
     def __init__(self, args:argparse.Namespace) -> None:
 
-        self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc']
+        self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc', 'snow']
 
         self.check_meta(args)
 

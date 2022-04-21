@@ -72,6 +72,12 @@ class grib2Read:
         if 'lmhc' in self.parameters:
             self.search_lmhc = True
 
+        self.search_snow = False
+        self.found_snow = False
+        if 'snow' in self.parameters:
+            self.search_snow = True
+
+
         return
 
 
@@ -112,6 +118,8 @@ class grib2Read:
             lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
 
         for k,f in enumerate(files_to_read):
@@ -200,6 +208,12 @@ class grib2Read:
                     self.found_tcc = True
                     tcc[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_snow and (shortName=='tpsolid') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_snow = True
+                    snow[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
@@ -216,6 +230,7 @@ class grib2Read:
         if self.found_lcc: ds_grib['lcc'] = (['time', 'lat', 'lon'], lcc )
         if self.found_mcc: ds_grib['mcc'] = (['time', 'lat', 'lon'], mcc )
         if self.found_hcc: ds_grib['hcc'] = (['time', 'lat', 'lon'], hcc )
+        if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
