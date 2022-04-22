@@ -152,7 +152,7 @@ class plot:
 
         colors = ListedColormap(levels_and_colors.t2m.colors)
         levels = [k for k in levels_and_colors.t2m.levels]
-        if args.dtype == 'monthly':
+        if args.dataset == 'DANRAmm':
             levels=[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
         contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
         

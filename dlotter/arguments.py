@@ -95,9 +95,9 @@ class arguments:
                         help='Verbose output', 
                         default=False)
 
-        parser_plot.add_argument('--dtype',
+        parser_plot.add_argument('--dataset',
                         type=str,
-                        help='Set to monthly if DANRA monthly means are used',
+                        help='Set to DANRAmm if DANRA monthly means are used.',
                         default='',
                         required=False)
 
