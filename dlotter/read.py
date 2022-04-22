@@ -400,8 +400,8 @@ class netcdf2read:
             f = nc.Dataset(files_to_read[k])
 
             if not 'ValidDate' in f.ncattrs():
-                print('ValidDate not in attributes, setting date to May 18th 1988 12 UTC')
-                forecast = '1988-May-18 '+str(12+k)+':00:00'
+                print('Warning: ValidDate not in attributes, setting date to Jan 1st 1900 UTC 12.') #If more than 12 files are used, this may cause trouble...
+                forecast = '1900-Jan-01 '+str(12+k)+':00:00'
             else:
                 forecast = f.getncattr('ValidDate')
 
