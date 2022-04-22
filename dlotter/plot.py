@@ -152,6 +152,8 @@ class plot:
 
         colors = ListedColormap(levels_and_colors.t2m.colors)
         levels = [k for k in levels_and_colors.t2m.levels]
+        if args.dtype == 'monthly':
+            levels=[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]
         contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
         
         norm = self.color_norm(levels)
@@ -183,7 +185,8 @@ class plot:
                              colors='black',
                              levels=contour_levels,
                              linewidths=0.7,
-                             transform=self.data_crs)
+                             transform=self.data_crs,
+                             transform_first=True)
             
             fig.canvas.draw()       
             
@@ -643,6 +646,7 @@ class plot:
 class levels_and_colors:
 
     class t2m:
+
         levels=[-24,-22,-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,22,24,26,28,30,32,34,36,38,40,42]
 
         colors = [(0.14, 0.00, 0.15),(0.31, 0.00, 0.33), (0.49, 0.00, 0.54), (0.71, 0.00, 0.77),

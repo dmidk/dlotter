@@ -399,7 +399,12 @@ class netcdf2read:
 
             f = nc.Dataset(files_to_read[k])
 
-            forecast = f.getncattr('ValidDate')
+            if not 'ValidDate' in f.ncattrs():
+                print('ValidDate not in attributes, setting date to May 18th 1988 12 UTC')
+                forecast = '1988-May-18 '+str(12+k)+':00:00'
+            else:
+                forecast = f.getncattr('ValidDate')
+
             forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
 
             Nt_coords[k] = forecast

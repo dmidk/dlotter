@@ -95,6 +95,11 @@ class arguments:
                         help='Verbose output', 
                         default=False)
 
+        parser_plot.add_argument('--dtype',
+                        type=str,
+                        help='Set to monthly if DANRA monthly means are used',
+                        default='',
+                        required=False)
 
         if len(sysargs)==1:
             parent_parser.print_help()
