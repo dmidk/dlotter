@@ -98,7 +98,7 @@ class arguments:
         parser_plot.add_argument('--dataset',
                         type=str,
                         help='Set to DANRAmm if DANRA monthly means are used.',
-                        default='',
+                        default=None,
                         required=False)
 
         if len(sysargs)==1:
