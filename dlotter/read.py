@@ -393,15 +393,18 @@ class netcdf2read:
 
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
         if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
+        
+        dummy_time = dt.datetime(1900,1,1,0)
+        
         for k,f in enumerate(files_to_read):
             print(k,f)
 
             f = nc.Dataset(files_to_read[k])
 
             if not 'ValidDate' in f.ncattrs():
-                print('Warning: ValidDate not in attributes, setting date to Jan 1st 1900 UTC 12.') #If more than 12 files are used, this may cause trouble...
-                forecast = '1900-Jan-01 '+str(12+k)+':00:00'
+                dummy_time+=dt.timedelta(minutes=1)
+                print('Warning: ValidDate not in attributes, setting date to {}'.format(dummy_time.strftime('%Y-%b-%d %H:%M:%S')))
+                forecast = dummy_time.strftime('%Y-%b-%d %H:%M:%S')
             else:
                 forecast = f.getncattr('ValidDate')
 
