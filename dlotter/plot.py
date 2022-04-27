@@ -78,6 +78,12 @@ class plot:
                 sys.exit(1)
             self.plot_snow(args, data)
 
+        if 'ws' in parameters:
+            if 'ws' not in avail_parameters:
+                print('ws was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                sys.exit(1)
+            self.plot_ws(args, data)
+
         return
 
 
@@ -563,6 +569,55 @@ class plot:
             fig.canvas.draw()       
             
             figure_name = "{}/SNOW_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+        
+        return
+
+
+    def plot_ws(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = np.array(data['lon']), np.array(data['lat'])
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.w10m.colors)
+        levels = [k for k in levels_and_colors.w10m.levels]
+        
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['ws'][k,:,:]): continue
+       
+            self.add_title(axes,valid_time,analysis,'WindSpeed (ws)')
+
+            ws = data['ws'][k,:,:].values
+
+            cs = plt.pcolormesh(plons, plats, ws, 
+                                cmap=colors, 
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$m/s$", rotation=270)
+            
+            fig.canvas.draw()       
+            
+            figure_name = "{}/WS_{}-{}.png".format(args.output_dir,
                                                     analysis.strftime('%Y%m%d_%H%M'), 
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
