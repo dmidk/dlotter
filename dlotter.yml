@@ -12,6 +12,7 @@ dependencies:
   - xarray
   - metpy
   - nomkl
+  - netCDF4 
   - pip:
     - eccodes
     - dmit

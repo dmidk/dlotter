@@ -156,9 +156,14 @@ class plot:
         clons, clats = data['lon'], data['lat']
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
-        colors = ListedColormap(levels_and_colors.t2m.colors)
-        levels = [k for k in levels_and_colors.t2m.levels]
-        contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
+        if args.dataset == 'DANRAmm':
+            colors = ListedColormap(levels_and_colors.t2mdanra.colors)
+            levels = [k for k in levels_and_colors.t2mdanra.levels]
+            contour_levels = [k for k in levels_and_colors.t2mdanra.contour_levels]
+        else:
+            colors = ListedColormap(levels_and_colors.t2m.colors)
+            levels = [k for k in levels_and_colors.t2m.levels]
+            contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
         
         norm = self.color_norm(levels)
 
@@ -189,7 +194,8 @@ class plot:
                              colors='black',
                              levels=contour_levels,
                              linewidths=0.7,
-                             transform=self.data_crs)
+                             transform=self.data_crs,
+                             transform_first=True)
             
             fig.canvas.draw()       
             
@@ -698,6 +704,7 @@ class plot:
 class levels_and_colors:
 
     class t2m:
+
         levels=[-24,-22,-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,22,24,26,28,30,32,34,36,38,40,42]
 
         colors = [(0.14, 0.00, 0.15),(0.31, 0.00, 0.33), (0.49, 0.00, 0.54), (0.71, 0.00, 0.77),
@@ -711,6 +718,20 @@ class levels_and_colors:
                       (0.96, 0.00, 0.54),(0.96, 0.00, 0.77)]
 
         contour_levels = [-10, -5, 0, 5, 10, 15, 20, 25]
+
+    class t2mdanra:
+
+        levels=[-10,-6,-2,-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,25]
+        colors=[(0.37, 0.31, 0.64), (0.30, 0.40, 0.68), (0.23, 0.49, 0.72), (0.24, 0.58, 0.72), 
+                (0.32, 0.67, 0.68), (0.41, 0.76, 0.65), (0.52, 0.81, 0.65), (0.68, 0.87, 0.64),
+                (0.75, 0.90, 0.63), (0.82, 0.93, 0.61), (0.91, 0.96, 0.60), (0.96, 0.98, 0.68),
+                (1.00, 0.99, 0.74), (1.00, 0.95, 0.66), (1.00, 0.91, 0.60), (1.00, 0.83, 0.50),
+                (0.99, 0.77, 0.45), (0.99, 0.71, 0.40), (0.99, 0.64, 0.36), (0.98, 0.56, 0.33),
+                (0.96, 0.43, 0.27), (0.92, 0.38, 0.28), (0.89, 0.32, 0.29), (0.85, 0.26, 0.31),
+                (0.79, 0.20, 0.30), (0.71, 0.10, 0.28), (0.62, 0.00, 0.26)]
+
+        contour_levels = [-10, -5, 0, 5, 10, 15, 20, 25]
+
 
     class w10m:
         levels=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35]
