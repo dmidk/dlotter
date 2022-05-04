@@ -11,10 +11,11 @@ dependencies:
   - xarray
   - metpy
   - sphinx
+  - netCDF4
+  - pygrib
   - pip:
     - eccodes
     - sphinx-rtd-theme
     - myst-parser
     - furo
     - dmit
-    - pygrib
