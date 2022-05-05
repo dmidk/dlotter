@@ -14,9 +14,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
-from scipy.spatial import cKDTree
-
-#from pywaffle import Waffle
 
 class meteogram:
 
@@ -88,11 +85,8 @@ class meteogram:
 
         locations = args.latlon.split(':')
 
-        data_locations = list(zip(data['lat'].values.flatten(), data['lon'].values.flatten()))
-        tree = cKDTree(data_locations)
-
+        l=0
         for loc in locations:
-            location_idx = self.get_location_index(loc, tree)
 
             fig, ax = plt.subplots(figsize=(10,8))
             self.add_title(ax,analysis,'somewhere')
@@ -102,10 +96,10 @@ class meteogram:
                 #filenumber = x0 #aka time-dimension
                 #member = y0
                 
-                cloud = data['tcc'][x0,y0,:,:].values.flatten()[location_idx]
-                precip = data['precip'][x0,y0,:,:].values.flatten()[location_idx]
+                cloud = data['tcc'][x0,y0,l]
+                precip = data['precip'][x0,y0,l]
                 #rain = data['rain'][x0,y0,:,:].values.flatten()[location_idx]
-                visibility = data['visibility'][x0,y0,:,:].values.flatten()[location_idx]
+                visibility = data['visibility'][x0,y0,l]
 
                 precip_type = 'ra' # TODO fix this
                 
@@ -125,6 +119,7 @@ class meteogram:
             plt.xticks(x[::2], xlabel[::2])
 
             plt.show()
+            l+=1
 
         return
 
@@ -142,16 +137,6 @@ class meteogram:
         title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right')
         return title_center, title_right
 
-
-    def get_location_index(self, location, tree) -> int:
-        location = location.split(',')
-
-        ref_lat = float(location[0])
-        ref_lon = float(location[1])
-
-        dist, idx = tree.query((ref_lat,ref_lon))
-
-        return idx
 
 
     def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float) -> str:

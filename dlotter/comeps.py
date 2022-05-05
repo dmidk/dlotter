@@ -13,11 +13,24 @@ import datetime as dt
 from dmit import ostools
 from .read import grib2Read
 
+from scipy.spatial import cKDTree
+
 class comeps:
 
     def __init__(self, args:argparse.Namespace) -> None:
         self.data = self.read_comeps(args)
         return
+
+
+    def get_location_index(self, location, tree) -> int:
+        location = location.split(',')
+
+        ref_lat = float(location[0])
+        ref_lon = float(location[1])
+
+        dist, idx = tree.query((ref_lat,ref_lon))
+
+        return idx
 
 
     def read_comeps(self, args:argparse.Namespace) -> xr.Dataset:
@@ -32,75 +45,92 @@ class comeps:
         nt = args.files_per_member
         Nt_coords = np.zeros(nt, dtype=dt.datetime)
         
-        precip = np.full([nt,no_members,lats.shape[0],lons.shape[1]], np.nan)
-        rain = np.full([nt,no_members,lats.shape[0],lons.shape[1]], np.nan)
-        cloudcover = np.full([nt,no_members,lats.shape[0],lons.shape[1]], np.nan)
-        visibility = np.full([nt,no_members,lats.shape[0],lons.shape[1]], np.nan)
+        locations = args.latlon.split(':')
+        no_locations = len(locations)
 
-        for k in range(nt):
-            for m in range(no_members):
+        data_locations = list(zip(lats.flatten(), lons.flatten()))
+        tree = cKDTree(data_locations)
 
-                epsfile = "{}/mbr{:03d}/{:03d}".format(args.directory,m,k)
-                if not ostools.does_file_exist(epsfile): continue
+        data_indexes = np.empty(no_locations, dtype=int)
 
-                gids = grib2Read.get_gids(self, epsfile)
+        i=0
+        for loc in locations:
+            location_idx = self.get_location_index(loc, tree)
+            data_indexes[i] = location_idx
+            i+=1
+        
+        precip = np.full([nt, no_members, no_locations], np.nan)
+        rain = np.full([nt, no_members, no_locations], np.nan)
+        cloudcover = np.full([nt, no_members, no_locations], np.nan)
+        visibility = np.full([nt, no_members, no_locations], np.nan)
 
-                time_gid = gids[0]
+        for l in range(no_locations):
+            loc_idx = data_indexes[l]
 
-                ec.codes_set(time_gid, 'stepUnits', 'm')
+            for k in range(nt):
+                for m in range(no_members):
 
-                date = ec.codes_get(time_gid, 'dataDate')
-                time = ec.codes_get(time_gid, 'dataTime')
-                lead = ec.codes_get(time_gid, 'step')
+                    epsfile = "{}/mbr{:03d}/{:03d}".format(args.directory,m,k)
+                    if not ostools.does_file_exist(epsfile): continue
 
-                analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
-                forecast = analysis + dt.timedelta(minutes=lead)
+                    gids = grib2Read.get_gids(self, epsfile)
 
-                Nt_coords[k] = forecast
+                    time_gid = gids[0]
 
-                for i, gid in enumerate(gids):
-                    shortName = ec.codes_get(gid, 'shortName')
-                    level = ec.codes_get(gid, 'level')
-                    typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
-                    levelType = ec.codes_get(gid, 'levelType')
-                    iop = ec.codes_get(gid, 'indicatorOfParameter')
+                    ec.codes_set(time_gid, 'stepUnits', 'm')
 
-                    Ni = ec.codes_get(gid, 'Ni')
-                    Nj = ec.codes_get(gid, 'Nj')
+                    date = ec.codes_get(time_gid, 'dataDate')
+                    time = ec.codes_get(time_gid, 'dataTime')
+                    lead = ec.codes_get(time_gid, 'step')
 
-                    if iop==61 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                        values = ec.codes_get_values(gid)
-                        if k == 0:
-                            precip[k,m,:,:] = values.reshape(Nj, Ni)
-                        else:
-                            precip[k,m,:,:] = values.reshape(Nj, Ni) - precip[k-1,m,:,:]
-                    
-                    if iop==71 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                        values = ec.codes_get_values(gid)
-                        cloudcover[k,m,:,:] = values.reshape(Nj, Ni)
+                    analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
+                    forecast = analysis + dt.timedelta(minutes=lead)
 
-                    if iop==20 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                        values = ec.codes_get_values(gid)
-                        visibility[k,m,:,:] = values.reshape(Nj, Ni)
-                    
-                    if iop==181 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                        values = ec.codes_get_values(gid)
-                        if k == 0:
-                            rain[k,m,:,:] = values.reshape(Nj, Ni)
-                        else:
-                            rain[k,m,:,:] = values.reshape(Nj, Ni) - rain[k-1,m,:,:]
+                    Nt_coords[k] = forecast
+
+                    for i, gid in enumerate(gids):
+                        shortName = ec.codes_get(gid, 'shortName')
+                        level = ec.codes_get(gid, 'level')
+                        typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
+                        levelType = ec.codes_get(gid, 'levelType')
+                        iop = ec.codes_get(gid, 'indicatorOfParameter')
+
+                        Ni = ec.codes_get(gid, 'Ni')
+                        Nj = ec.codes_get(gid, 'Nj')
+
+                        if iop==61 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                            values = ec.codes_get_values(gid)
+                            if k == 0:
+                                precip[k,m,l] = values[loc_idx]
+                            else:
+                                precip[k,m,l] = values[loc_idx] - precip[k-1,m,l]
                         
-                ec.codes_release(gid)
+                        if iop==71 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                            values = ec.codes_get_values(gid)
+                            cloudcover[k,m,l] = values[loc_idx]
 
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
-                                     "lon": (["x","y"], lons),
+                        if iop==20 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                            values = ec.codes_get_values(gid)
+                            visibility[k,m,l] = values[loc_idx]
+                        
+                        if iop==181 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                            values = ec.codes_get_values(gid)
+                            if k == 0:
+                                rain[k,m,l] = values[loc_idx]
+                            else:
+                                rain[k,m,l] = values[loc_idx] - rain[k-1,m,l]
+                            
+                    ec.codes_release(gid)
+
+
+        ds_grib = xr.Dataset(coords={"location": (["l"], np.arange(no_locations)), 
                                      "member": (["m"], np.arange(no_members)),
                                      "time": (["t"], Nt_coords)})
 
-        ds_grib['precip'] = (['time', 'member', 'lat', 'lon'], precip )
-        ds_grib['tcc'] = (['time', 'member', 'lat', 'lon'], cloudcover )
-        ds_grib['rain'] = (['time', 'member', 'lat', 'lon'], rain )
-        ds_grib['visibility'] = (['time', 'member', 'lat', 'lon'], visibility )
+        ds_grib['precip'] = (['time', 'member', 'locations'], precip )
+        ds_grib['tcc'] = (['time', 'member', 'locations'], cloudcover )
+        ds_grib['rain'] = (['time', 'member', 'locations'], rain )
+        ds_grib['visibility'] = (['time', 'member', 'locations'], visibility )
 
 
         return ds_grib
