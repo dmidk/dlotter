@@ -88,9 +88,9 @@ class meteogram:
         l=0
         for loc in locations:
 
-            fig, ax = plt.subplots(figsize=(10,8))
-            self.add_title(ax,analysis,'somewhere')
-
+            fig, ax = plt.subplots(figsize=(14,8))
+            self.add_title(ax, analysis, "location: {}".format(loc))
+            
             k = 0
             for x0, y0 in zip(xx.flatten(), yy.flatten()):
                 #filenumber = x0 #aka time-dimension
@@ -117,6 +117,13 @@ class meteogram:
 
             xlabel = [(analysis+dt.timedelta(hours=int(k))).strftime('%a\n%Hz') for k in x]
             plt.xticks(x[::2], xlabel[::2])
+            plt.margins(x=0, y=10)
+
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['bottom'].set_visible(False)
+            ax.spines['left'].set_visible(False)
+            ax.tick_params(axis='both', which='major', pad=25)
 
             plt.show()
             l+=1
@@ -134,7 +141,7 @@ class meteogram:
 
     def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right')
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right', pad=20)
         return title_center, title_right
 
 
