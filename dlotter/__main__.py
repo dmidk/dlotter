@@ -16,7 +16,6 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('./dlotter/'))
 import argparse
-from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
 from .read import grib2Read, netcdf2read
@@ -55,7 +54,7 @@ if __name__ == '__main__':
         if args.verbose:
             print('Found the following files:', flush=True)
             print(files_to_read, flush=True)
-        
+
         if args.filetype == 'grib2':
             datareader = grib2Read(args, files_to_read)
             data = datareader.data

@@ -12,4 +12,7 @@ jobs:
         python-version: 3.x
     - run: pip install --upgrade pip
     - run: pip install pylint
-    - run: pylint $(git ls-files '*.py')
+    - run: pylint --disable=all \
+            --enable=unused-import,trailing-whitespace,missing-class-docstring,line-too-long,\
+            unused-variable,missing-docstring,missing-function-docstring,missing-module-docstring \
+            $(git ls-files '*.py')
