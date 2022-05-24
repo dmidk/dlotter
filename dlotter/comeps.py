@@ -11,7 +11,9 @@ import pygrib
 import numpy as np
 import datetime as dt
 from dmit import ostools
+import dmit.calc.sun as sun
 from .read import grib2Read
+import gc
 
 from scipy.spatial import cKDTree
 
@@ -50,30 +52,42 @@ class comeps:
 
         data_locations = list(zip(lats.flatten(), lons.flatten()))
         tree = cKDTree(data_locations)
-
+        
         data_indexes = np.empty(no_locations, dtype=int)
+        data_lats = np.empty(no_locations, dtype=np.single)
+        data_lons = np.empty(no_locations, dtype=np.single)
 
         i=0
         for loc in locations:
             location_idx = self.get_location_index(loc, tree)
             data_indexes[i] = location_idx
+            data_lats[i] = lats.flatten()[location_idx]
+            data_lons[i] = lons.flatten()[location_idx]
+
             i+=1
         
-        precip = np.full([nt, no_members, no_locations], np.nan)
-        rain = np.full([nt, no_members, no_locations], np.nan)
-        cloudcover = np.full([nt, no_members, no_locations], np.nan)
-        visibility = np.full([nt, no_members, no_locations], np.nan)
+        del tree
+
+        precip = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
+        rain = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
+        cloudcover = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
+        visibility = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
+        night = np.zeros([nt, no_locations], dtype=np.single) + np.nan # 0 if day, 1 if night (note not dependent on number of members)
 
         for l in range(no_locations):
             loc_idx = data_indexes[l]
 
             for k in range(nt):
-                for m in range(no_members):
 
+                for m in range(no_members):
+                    if args.verbose: print("\nTime: {}/{}, Member: {}/{}".format(k,nt,m,no_members))
                     epsfile = "{}/mbr{:03d}/{:03d}".format(args.directory,m,k)
                     if not ostools.does_file_exist(epsfile): continue
 
-                    gids = grib2Read.get_gids(self, epsfile)
+                    f = open(epsfile, 'r')
+                    if args.verbose: print("Reading: {}".format(epsfile))
+
+                    gids = grib2Read.get_gids(self, f, TextIOWrapper=True)
 
                     time_gid = gids[0]
 
@@ -85,6 +99,12 @@ class comeps:
 
                     analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
                     forecast = analysis + dt.timedelta(minutes=lead)
+
+                    if k==0 and m==0:
+                        # We'll save some time and only calculate one sunset and sunrise
+                        sunrise, sunset = self.get_sunrise_sunset(data_lats[l], data_lons[l], forecast)
+                    if m==0:
+                        night[k,l] = self.is_it_night(sunrise, sunset, forecast)
 
                     Nt_coords[k] = forecast
 
@@ -119,18 +139,44 @@ class comeps:
                                 rain[k,m,l] = values[loc_idx]
                             else:
                                 rain[k,m,l] = values[loc_idx] - rain[k-1,m,l]
-                            
-                    ec.codes_release(gid)
+
+                        ec.codes_release(gid)
+                    
+                    f.close()
+
+                # Member loop closed
+                gc.collect()
+            # Time loop closed
+        # Location loop closed
 
 
         ds_grib = xr.Dataset(coords={"location": (["l"], np.arange(no_locations)), 
                                      "member": (["m"], np.arange(no_members)),
                                      "time": (["t"], Nt_coords)})
 
-        ds_grib['precip'] = (['time', 'member', 'locations'], precip )
-        ds_grib['tcc'] = (['time', 'member', 'locations'], cloudcover )
-        ds_grib['rain'] = (['time', 'member', 'locations'], rain )
-        ds_grib['visibility'] = (['time', 'member', 'locations'], visibility )
+        ds_grib['precip'] = (['time', 'member', 'locations'], precip)
+        ds_grib['tcc'] = (['time', 'member', 'locations'], cloudcover)
+        ds_grib['rain'] = (['time', 'member', 'locations'], rain)
+        ds_grib['visibility'] = (['time', 'member', 'locations'], visibility)
+        ds_grib['night'] = (['time','locations'], night)
 
 
         return ds_grib
+
+    
+    def get_sunrise_sunset(self, latitude:float, longitude:float, time:dt.datetime) -> tuple:
+
+        sunrise = sun.calc_sun_time(longitude, latitude, time, setrise='sunrise')
+        sunset = sun.calc_sun_time(longitude, latitude, time, setrise='sunset')
+
+        return sunrise, sunset
+
+
+    def is_it_night(self, sunrise:dt.datetime, sunset:dt.datetime, time:dt.datetime) -> int:
+        
+        if time.hour >= sunrise.hour and time.hour < sunset.hour:
+            binary_day = 0 # Day
+        else:
+            binary_day = 1 # Night
+
+        return binary_day

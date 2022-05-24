@@ -185,13 +185,15 @@ class grib2Read:
         return lats, lons
 
     
-    def get_gids(self, gribfile:str) -> list:
+    def get_gids(self, gribfile:str, TextIOWrapper:bool=False) -> list:
         """Get GribIDs (gid) for all the messages in one gribfile
 
         Parameters
         ----------
         gribfile : str
             path to gribfile
+        TextIOWrapper : bool
+            if file is open send the object instead and set TextIOWrapper to True
 
         Returns
         -------
@@ -199,10 +201,18 @@ class grib2Read:
             list of grib-ids
         """
         
-        f = open(gribfile, 'rb')
-        msg_count = ec.codes_count_in_file(f)
-        gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
-        f.close()
+        if not TextIOWrapper:
+            f = open(gribfile, 'rb')
+            msg_count = ec.codes_count_in_file(f)
+            gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
+            f.close()
+        else:
+            msg_count = ec.codes_count_in_file(gribfile) #gribfile has already been opened into a TextIOWrapper in this case
+            gids = np.zeros(msg_count, dtype=int)
+            for i in range(msg_count):
+                gids[i] = ec.codes_grib_new_from_file(gribfile)
+              
+            #gids = [ec.codes_grib_new_from_file(gribfile) for i in range(msg_count)]
 
         return gids
         

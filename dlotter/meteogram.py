@@ -23,8 +23,9 @@ class meteogram:
         print('- Plotting', flush=True)
 
         self.define_icons()
-
         self.plot_epsmeteogram(args, data)
+
+        print('- Done Plotting', flush=True)
 
         return
 
@@ -100,11 +101,11 @@ class meteogram:
                 precip = data['precip'][x0,y0,l]
                 #rain = data['rain'][x0,y0,:,:].values.flatten()[location_idx]
                 visibility = data['visibility'][x0,y0,l]
-
-                precip_type = 'ra' # TODO fix this
                 
-                symbol = self.get_weather_symbol(cloud, precip, precip_type, visibility)
-                #path = self.sun
+                precip_type = 'ra' # TODO fix this
+                night = data['night'][x0,l]
+
+                symbol = self.get_weather_symbol(cloud, precip, precip_type, visibility, night)
 
                 path = symbol
                 k+=1
@@ -112,12 +113,12 @@ class meteogram:
                 ab = AnnotationBbox(self.getImage(path), (x0, y0), frameon=False)
                 ax.add_artist(ab)
 
-            ylabel = ['mbr{}'.format(k) for k in y]
+            ylabel = ['mbr{:02d}'.format(k) for k in y]
             plt.yticks(y, ylabel)
-
+            
             xlabel = [(analysis+dt.timedelta(hours=int(k))).strftime('%a\n%Hz') for k in x]
             plt.xticks(x[::2], xlabel[::2])
-            plt.margins(x=0, y=10)
+            #plt.margins(x=0, y=10)
 
             ax.spines['top'].set_visible(False)
             ax.spines['right'].set_visible(False)
@@ -125,7 +126,7 @@ class meteogram:
             ax.spines['left'].set_visible(False)
             ax.tick_params(axis='both', which='major', pad=25)
 
-            plt.show()
+            plt.savefig('{}/epsplot_{}.png'.format(args.output_dir, l))
             l+=1
 
         return
@@ -146,10 +147,15 @@ class meteogram:
 
 
 
-    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float) -> str:
+    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float, night:float) -> str:
 
         symbol = 0
-        night = False
+
+        is_night = False
+        if night==1: is_night = True
+        
+        bool_precip = False
+
 
         if precip >= 2.0: # Heavy Rain
             if precip_type == 'ra':
@@ -158,6 +164,7 @@ class meteogram:
                 symbol+=210
             elif precip_type == 'sn':
                 symbol+=310
+            bool_precip = True
         elif precip > 0.1: # Light Rain
             if precip_type == 'ra':
                 symbol+=100
@@ -165,6 +172,7 @@ class meteogram:
                 symbol+=200
             elif precip_type == 'sn':
                 symbol+=300
+            bool_precip = True
         elif precip <= 0.1: # No Rain
             symbol += 0
 
@@ -177,9 +185,12 @@ class meteogram:
             symbol+=2
         elif cloud > 0.2: # Broken
             symbol+=1
-        elif cloud <= 0.2: # Clear
+        elif cloud <= 0.2 and not bool_precip: # Clear
             symbol+=0
+        elif cloud <= 0.2 and bool_precip: # Clear but heavy shower
+            symbol+=1
+
+        if is_night: symbol+=1000
 
         icon = 'dlotter/icons/{}.png'.format(symbol)
-
         return icon
