@@ -99,10 +99,11 @@ class meteogram:
                 
                 cloud = data['tcc'][x0,y0,l]
                 precip = data['precip'][x0,y0,l]
-                #rain = data['rain'][x0,y0,:,:].values.flatten()[location_idx]
+                precip_solid = data['precip_solid'][x0,y0,l]
                 visibility = data['visibility'][x0,y0,l]
+
+                precip_type = self.get_precip_type(precip, precip_solid)
                 
-                precip_type = 'ra' # TODO fix this
                 night = data['night'][x0,l]
 
                 symbol = self.get_weather_symbol(cloud, precip, precip_type, visibility, night)
@@ -115,7 +116,7 @@ class meteogram:
 
             ylabel = ['mbr{:02d}'.format(k) for k in y]
             plt.yticks(y, ylabel)
-            
+
             xlabel = [(analysis+dt.timedelta(hours=int(k))).strftime('%a\n%Hz') for k in x]
             plt.xticks(x[::2], xlabel[::2])
             #plt.margins(x=0, y=10)
@@ -194,3 +195,17 @@ class meteogram:
 
         icon = 'dlotter/icons/{}.png'.format(symbol)
         return icon
+
+
+    def get_precip_type(self, precip:float, precip_solid:float) -> str:
+
+        if precip == 0:
+            precip_type = 'ra' # Default value, in this case it will not be used
+        elif precip != 0 and precip_solid == precip: # Everything is snow
+            precip_type = 'sn'
+        elif precip != 0 and precip_solid > 0 and precip > precip_solid: # Both rain and snow, choose sleet
+            precip_type = 'sl'
+        else:
+            precip_type = 'ra'
+
+        return precip_type

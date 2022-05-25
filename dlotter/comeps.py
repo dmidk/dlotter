@@ -69,7 +69,7 @@ class comeps:
         del tree
 
         precip = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
-        rain = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
+        precip_solid = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
         cloudcover = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
         visibility = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
         night = np.zeros([nt, no_locations], dtype=np.single) + np.nan # 0 if day, 1 if night (note not dependent on number of members)
@@ -133,12 +133,12 @@ class comeps:
                             values = ec.codes_get_values(gid)
                             visibility[k,m,l] = values[loc_idx]
                         
-                        if iop==181 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        if iop==185 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
                             values = ec.codes_get_values(gid)
                             if k == 0:
-                                rain[k,m,l] = values[loc_idx]
+                                precip_solid[k,m,l] = values[loc_idx]
                             else:
-                                rain[k,m,l] = values[loc_idx] - rain[k-1,m,l]
+                                precip_solid[k,m,l] = values[loc_idx] - precip_solid[k-1,m,l]
 
                         ec.codes_release(gid)
                     
@@ -156,7 +156,7 @@ class comeps:
 
         ds_grib['precip'] = (['time', 'member', 'locations'], precip)
         ds_grib['tcc'] = (['time', 'member', 'locations'], cloudcover)
-        ds_grib['rain'] = (['time', 'member', 'locations'], rain)
+        ds_grib['precip_solid'] = (['time', 'member', 'locations'], precip_solid)
         ds_grib['visibility'] = (['time', 'member', 'locations'], visibility)
         ds_grib['night'] = (['time','locations'], night)
 
