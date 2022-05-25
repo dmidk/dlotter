@@ -35,19 +35,19 @@ class grib2Read:
 
         self.search_t2m = False
         self.found_t2m = False
-        if 't2m' in self.parameters: 
+        if 't2m' in self.parameters:
             self.search_t2m = True
 
         self.search_td2m = False
         self.found_td2m = False
         if 'td2m' in self.parameters:
             self.search_td2m = True
-            
-        self.search_uv=False    
+
+        self.search_uv=False
         self.found_u = False
         self.found_v = False
         self.found_uv=False
-        if 'w10m' in self.parameters: 
+        if 'w10m' in self.parameters:
             self.search_uv = True
 
         self.search_precip = False
@@ -106,11 +106,11 @@ class grib2Read:
 
         Nt = len(files_to_read)
         Nt_coords = np.zeros(Nt, dtype=dt.datetime)
-        
+
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
         if self.search_td2m: td2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        if self.search_uv: 
+        if self.search_uv:
             u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
@@ -118,7 +118,7 @@ class grib2Read:
         if self.search_slp: slp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
         if self.search_tcc: tcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        if self.search_lmhc: 
+        if self.search_lmhc:
             lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
@@ -228,8 +228,8 @@ class grib2Read:
 
                 ec.codes_release(gid)
 
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
-                                     "lon": (["x","y"], lons), 
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                     "lon": (["x","y"], lons),
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
@@ -247,12 +247,12 @@ class grib2Read:
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
- 
+
         ds_grib = self.sort_by_time(ds_grib)
 
         return ds_grib
 
-    
+
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
 
         nt = dataarray.dims['time']
@@ -266,7 +266,7 @@ class grib2Read:
         for p in parameters:
             for k in range(nt):
                 da[p][k,:,:] = dataarray[p][idx[k],:,:]
-        
+
         return da
 
 
@@ -312,7 +312,7 @@ class grib2Read:
 
         return lats, lons
 
-    
+
     def get_gids(self, gribfile:str, TextIOWrapper:bool=False) -> list:
         """Get GribIDs (gid) for all the messages in one gribfile
 
@@ -328,7 +328,7 @@ class grib2Read:
         list
             list of grib-ids
         """
-        
+
         if not TextIOWrapper:
             f = open(gribfile, 'rb')
             msg_count = ec.codes_count_in_file(f)
@@ -339,7 +339,7 @@ class grib2Read:
             gids = np.zeros(msg_count, dtype=int)
             for i in range(msg_count):
                 gids[i] = ec.codes_grib_new_from_file(gribfile)
-              
+
             #gids = [ec.codes_grib_new_from_file(gribfile) for i in range(msg_count)]
 
         return gids
@@ -365,17 +365,17 @@ class netcdf2read:
 
         self.search_t2m = False
         self.found_t2m = False
-        if 't2m' in self.parameters: 
+        if 't2m' in self.parameters:
             self.search_t2m = True
 
         self.search_precip = False
         self.found_precip = False
-        if 'precip' in self.parameters: 
+        if 'precip' in self.parameters:
             self.search_precip = True
 
         return
 
-    
+
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
 
         nt = dataarray.dims['time']
@@ -389,7 +389,7 @@ class netcdf2read:
         for p in parameters:
             for k in range(nt):
                 da[p][k,:,:] = dataarray[p][idx[k],:,:]
-        
+
         return da
 
 
@@ -438,13 +438,13 @@ class netcdf2read:
                 if precip_key is not None:
                     precip[k,:,:] = f[precip_key][:,:]
                     self.found_precip = True
-            
+
 
             f.close()
 
 
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
-                                     "lon": (["x","y"], lons), 
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                     "lon": (["x","y"], lons),
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
@@ -452,7 +452,7 @@ class netcdf2read:
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
- 
+
         ds_grib = self.sort_by_time(ds_grib)
 
         return ds_grib
@@ -473,7 +473,7 @@ class netcdf2read:
         """
 
         f = nc.Dataset(netcdf_file)
-        
+
         latkey = self.find_relevant_key(f, 'latitude')
         lonkey = self.find_relevant_key(f, 'longitude')
 

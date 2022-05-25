@@ -22,12 +22,12 @@ class plot:
     def __init__(self, args:argparse.Namespace, data:xr.Dataset) -> None:
 
         self.projections(args)
-        
+
         parameters = args.parameters
         avail_parameters = list(data.data_vars)
 
         self.nt = data.dims['time']
-        
+
         print('- Plotting', flush=True)
 
         if 't2m' in parameters:
@@ -41,7 +41,7 @@ class plot:
                 print('td2m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_td2m(args, data)
-        
+
         if 'w10m' in parameters:
             if 'u10m' not in avail_parameters or 'v10m' not in avail_parameters:
                 print('u10m/v10m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
@@ -103,7 +103,7 @@ class plot:
                                      false_easting=0.0, false_northing=0.0,)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-75, -15, 58, 88]
-           
+
 
         if args.area == 'neu':
             self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
@@ -132,14 +132,14 @@ class plot:
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-20, 30, 40, 75]
- 
+
         if args.area == 'faroes':
             self.projection = ccrs.AlbersEqualArea(central_longitude=353.0, central_latitude=62.0,
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-8, -6, 61.3, 62.5]
- 
+
         if args.area == 'scoresbysund':
             self.projection = ccrs.AlbersEqualArea(central_longitude=-25., central_latitude=71.5,
                                     false_easting=0.0, false_northing=0.0,
@@ -159,14 +159,14 @@ class plot:
         colors = ListedColormap(levels_and_colors.t2m.colors)
         levels = [k for k in levels_and_colors.t2m.levels]
         contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
-        
+
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-        
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -174,11 +174,11 @@ class plot:
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
             if self.check_for_empty_array(data['t2m'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'2m Temperature')
 
-            cs = plt.pcolormesh(plons, plats, data['t2m'][k,:,:], 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, data['t2m'][k,:,:],
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
@@ -190,18 +190,18 @@ class plot:
                              levels=contour_levels,
                              linewidths=0.7,
                              transform=self.data_crs)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/T2M_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             [cl.collections[k].remove() for k in range(len(cl.collections))]
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
 
@@ -214,14 +214,14 @@ class plot:
         colors = ListedColormap(levels_and_colors.t2m.colors)
         levels = [k for k in levels_and_colors.t2m.levels]
         contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
-        
+
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-        
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -229,11 +229,11 @@ class plot:
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
             if self.check_for_empty_array(data['td2m'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'2m Dew Point Temperature')
 
-            cs = plt.pcolormesh(plons, plats, data['td2m'][k,:,:], 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, data['td2m'][k,:,:],
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
@@ -245,21 +245,21 @@ class plot:
                              levels=contour_levels,
                              linewidths=0.7,
                              transform=self.data_crs)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/TD2M_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             [cl.collections[k].remove() for k in range(len(cl.collections))]
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
-    
+
     def plot_w10m(self, args:argparse.Namespace, data:xr.Dataset) -> None:
 
         # Fix that pcolormesh uses cell lower left corners
@@ -268,7 +268,7 @@ class plot:
 
         colors = ListedColormap(levels_and_colors.w10m.colors)
         levels = [k for k in levels_and_colors.w10m.levels]
-        
+
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
@@ -287,7 +287,7 @@ class plot:
 
             if self.check_for_empty_array(data['u10m'][k,:,:]): continue
             if self.check_for_empty_array(data['v10m'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'10m Wind')
 
             u = data['u10m'][k,:,:].values
@@ -295,45 +295,45 @@ class plot:
 
             w10m = np.sqrt(u*u+v*v)
 
-            cs = plt.pcolormesh(plons, plats, w10m, 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, w10m,
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             cb.set_label(r"$m/s$", rotation=270)
-            
-            
-            axes.barbs(clons[::bt,::bt], clats[::bt,::bt], 
-                       u[::bt,::bt], v[::bt,::bt], 
+
+
+            axes.barbs(clons[::bt,::bt], clats[::bt,::bt],
+                       u[::bt,::bt], v[::bt,::bt],
                        length=5,
                        sizes=barbs_opts,
-                       linewidth=0.95, 
+                       linewidth=0.95,
                        transform=self.data_crs,
                        color='#404040')
 
-            fig.canvas.draw()       
-            
+            fig.canvas.draw()
+
             figure_name = "{}/W10M_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
-    
+
     def plot_precip(self, args:argparse.Namespace, data:xr.Dataset) -> None:
         # Fix that pcolormesh uses cell lower left corners
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.precip.colors)
         levels = [k for k in levels_and_colors.precip.levels]
-        
+
         norm = self.color_norm(levels)
-        
+
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
@@ -347,21 +347,21 @@ class plot:
 
             if self.check_for_empty_array(data['precip'][k,:,:]): continue
             precip = data['precip'][k,:,:].values
-       
+
             self.add_title(axes,valid_time,analysis,'Precipitation')
 
-            cs = plt.pcolormesh(plons, plats, precip, 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, precip,
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             cb.set_label(r"$mm$", rotation=270)
 
-            fig.canvas.draw()       
-            
+            fig.canvas.draw()
+
             figure_name = "{}/PRECIP_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
@@ -370,13 +370,13 @@ class plot:
 
         return
 
-    
+
     def plot_slp(self, args:argparse.Namespace, data:xr.Dataset) -> None:
         # Fix that pcolormesh uses cell lower left corners
         clons, clats = data['lon'], data['lat']
 
         levels = [k for k in levels_and_colors.slp.levels]
-        
+
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
@@ -390,7 +390,7 @@ class plot:
 
             if self.check_for_empty_array(data['slp'][k,:,:]): continue
             slp = data['slp'][k,:,:].values
-       
+
             self.add_title(axes,valid_time,analysis,'Sea Level Pressure')
 
             cl = plt.contour(clons,clats,slp,
@@ -399,10 +399,10 @@ class plot:
                              linewidths=0.8,
                              transform=self.data_crs)
 
-            fig.canvas.draw()       
-            
+            fig.canvas.draw()
+
             figure_name = "{}/SLP_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             [cl.collections[k].remove() for k in range(len(cl.collections))]
@@ -416,14 +416,14 @@ class plot:
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.tcc.colors)
-        levels = [k for k in levels_and_colors.tcc.levels]        
+        levels = [k for k in levels_and_colors.tcc.levels]
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-        
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -431,27 +431,27 @@ class plot:
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
             if self.check_for_empty_array(data['tcc'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'Total Cloud Cover')
 
-            cs = plt.pcolormesh(plons, plats, data['tcc'][k,:,:], 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, data['tcc'][k,:,:],
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             cb.set_label(r"$\%$", rotation=270)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/TCC_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
 
@@ -461,22 +461,22 @@ class plot:
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         lcc_colors = ListedColormap(levels_and_colors.lcc.colors)
-        lcc_levels = [k for k in levels_and_colors.lcc.levels]        
+        lcc_levels = [k for k in levels_and_colors.lcc.levels]
         lcc_norm = self.color_norm(lcc_levels)
 
         mcc_colors = ListedColormap(levels_and_colors.mcc.colors)
-        mcc_levels = [k for k in levels_and_colors.mcc.levels]        
+        mcc_levels = [k for k in levels_and_colors.mcc.levels]
         mcc_norm = self.color_norm(mcc_levels)
 
         hcc_colors = ListedColormap(levels_and_colors.hcc.colors)
-        hcc_levels = [k for k in levels_and_colors.hcc.levels]        
+        hcc_levels = [k for k in levels_and_colors.hcc.levels]
         hcc_norm = self.color_norm(hcc_levels)
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-        
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -486,49 +486,49 @@ class plot:
             if self.check_for_empty_array(data['lcc'][k,:,:]): continue
             if self.check_for_empty_array(data['mcc'][k,:,:]): continue
             if self.check_for_empty_array(data['hcc'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'Low Medium High clouds')
 
 
             #TODO: pcolormesh with multiple layers
             hcc = data['hcc'][k,:,:].values
             hcc[np.where(hcc<hcc_levels[0])] = np.nan
-            cs_hcc = plt.pcolormesh(plons, plats, hcc, 
-                                cmap=hcc_colors, 
+            cs_hcc = plt.pcolormesh(plons, plats, hcc,
+                                cmap=hcc_colors,
                                 norm=hcc_norm,
                                 transform=self.data_crs)
 
             mcc = data['mcc'][k,:,:].values
             mcc[np.where(mcc<mcc_levels[0])] = np.nan
-            cs_mcc = plt.pcolormesh(plons, plats, data['mcc'][k,:,:], 
-                                cmap=mcc_colors, 
+            cs_mcc = plt.pcolormesh(plons, plats, data['mcc'][k,:,:],
+                                cmap=mcc_colors,
                                 norm=mcc_norm,
                                 transform=self.data_crs)
 
             lcc = data['lcc'][k,:,:].values
             lcc[np.where(lcc<lcc_levels[0])] = np.nan
-            cs_lcc = plt.pcolormesh(plons, plats, lcc, 
-                                cmap=lcc_colors, 
+            cs_lcc = plt.pcolormesh(plons, plats, lcc,
+                                cmap=lcc_colors,
                                 norm=lcc_norm,
                                 transform=self.data_crs)
 
             #cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             #cb.set_label(r"$\%$", rotation=270)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/LMHC_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             #cb.remove()
-            
+
             cs_lcc.remove()
             cs_mcc.remove()
             cs_hcc.remove()
 
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
     def plot_snow(self, args:argparse.Namespace, data:xr.Dataset) -> None:
@@ -539,14 +539,14 @@ class plot:
 
         colors = ListedColormap(levels_and_colors.precip.colors)
         levels = [k for k in levels_and_colors.precip.levels]
-        
+
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
-        
+
         self.add_coastlines(axes)
 
         for k in range(self.nt):
@@ -554,10 +554,10 @@ class plot:
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
             if self.check_for_empty_array(data['snow'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'snow')
 
-            cs = plt.pcolormesh(plons, plats, data['snow'][k,:,:], 
+            cs = plt.pcolormesh(plons, plats, data['snow'][k,:,:],
                                 cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -565,17 +565,17 @@ class plot:
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
 #            cb = plt.colorbar(cs, fraction=0.046, pad=0.04)
             cb.set_label(r"$mm$", rotation=270)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/SNOW_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
 
@@ -587,7 +587,7 @@ class plot:
 
         colors = ListedColormap(levels_and_colors.w10m.colors)
         levels = [k for k in levels_and_colors.w10m.levels]
-        
+
         norm = self.color_norm(levels)
 
         analysis = data['time'][0].values
@@ -602,29 +602,29 @@ class plot:
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
             if self.check_for_empty_array(data['ws'][k,:,:]): continue
-       
+
             self.add_title(axes,valid_time,analysis,'WindSpeed (ws)')
 
             ws = data['ws'][k,:,:].values
 
-            cs = plt.pcolormesh(plons, plats, ws, 
-                                cmap=colors, 
+            cs = plt.pcolormesh(plons, plats, ws,
+                                cmap=colors,
                                 norm=norm,
                                 transform=self.data_crs)
 
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             cb.set_label(r"$m/s$", rotation=270)
-            
-            fig.canvas.draw()       
-            
+
+            fig.canvas.draw()
+
             figure_name = "{}/WS_{}-{}.png".format(args.output_dir,
-                                                    analysis.strftime('%Y%m%d_%H%M'), 
+                                                    analysis.strftime('%Y%m%d_%H%M'),
                                                     valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
-        
+
         return
 
 
@@ -648,7 +648,7 @@ class plot:
         coastline = ax.coastlines(resolution='10m', color=(0.2,0.2,0.2), linewidth=0.7)
         return extent, coastline
 
-    def add_title(self, ax:plt.subplots, validtime:dt.datetime, 
+    def add_title(self, ax:plt.subplots, validtime:dt.datetime,
                   analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
         title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%Mz'), fontsize=10, loc='left')
         title_center = ax.set_title(headline, fontsize=9, loc='center')
@@ -728,7 +728,7 @@ class levels_and_colors:
     class precip:
         # 17 levels
         levels = [0.0, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0]
-        
+
         # 16 colors
         colors = [(1.00, 1.00, 1.00), (0.84, 0.69, 0.63), (0.72, 0.56, 0.51), (0.80, 0.86, 1.00),
                   (0.65, 0.73, 1.00), (0.49, 0.63, 1.00), (0.25, 0.52, 0.97), (0.00, 0.00, 0.98),
@@ -748,7 +748,7 @@ class levels_and_colors:
         # 8 Colors
         colors = [(1.00, 1.00, 1.00), (0.95, 0.95, 0.95), (0.90, 0.90, 0.90), (0.80, 0.80, 0.80),
                       (0.70, 0.70, 0.70), (0.50, 0.50, 0.50), (0.40, 0.40, 0.40), (0.30, 0.30, 0.30)]
-        
+
     class lcc:
         # 9 levels
         levels=[2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8]

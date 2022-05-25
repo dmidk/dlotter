@@ -20,14 +20,14 @@ class arguments:
     def __init__(self) -> None:
 
         return
-    
-    
+
+
     def get_args(self, sysargs):
 
         parent_parser = MyParser(
             description='Plot data quick and dirty from NWP output',
             formatter_class=ArgumentDefaultsHelpFormatter)
-        
+
         subparser = parent_parser.add_subparsers(dest="cmd")
 
         # Parser for NWP Deterministic
@@ -39,7 +39,7 @@ class arguments:
                         type=str,
                         help='Parameters to plot. Seperate with ":", eg: "t2m:w10m:precip:slp:td2m:tcc:lmhc".',
                         required=True)
-        
+
         parser_plot.add_argument('-f',
                         '--filetype',
                         metavar='FILETYPE',
@@ -47,13 +47,13 @@ class arguments:
                         help='What filetype are we using? (Options are: grib2, nc)',
                         default='grib2',
                         required=False)
-        
+
         parser_plot.add_argument('-d',
                         '--directory',
                         type=str,
                         help='directory to read data from',
                         default='.')
-        
+
         parser_plot.add_argument('--prefix',
                         type=str,
                         help='Set to prefix of files if any',
@@ -65,7 +65,7 @@ class arguments:
                         help='Set to postfix of files if any',
                         default='',
                         required=False)
-        
+
         parser_plot.add_argument('-o',
                         '--output-dir',
                         metavar='OUTDIR',
@@ -92,7 +92,7 @@ class arguments:
 
         parser_plot.add_argument('--verbose',
                         action='store_true',
-                        help='Verbose output', 
+                        help='Verbose output',
                         default=False)
 
         # Parser for EPS Meteogram
@@ -115,7 +115,7 @@ class arguments:
                             type=int,
                             help='Number of gribfiles per member',
                             required=True)
-        
+
         parser_epsmeteogram.add_argument('--latlon',
                             type=str,
                             help='Coordinates to plot. Seperate with ":", eg: "55,12:60,14"',
@@ -143,7 +143,7 @@ class arguments:
 
         parser_epsmeteogram.add_argument('--verbose',
                             action='store_true',
-                            help='Verbose output', 
+                            help='Verbose output',
                             default=False)
 
 

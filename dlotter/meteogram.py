@@ -74,12 +74,12 @@ class meteogram:
         self.heavy_snow_night         = 'dlotter/icons/3120.png'
 
         return
-    
+
 
     def plot_epsmeteogram(self, args:argparse.Namespace, data:xr.Dataset) -> None:
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         x = np.arange(args.files_per_member)
         y = np.arange(args.members)
         xx, yy = np.meshgrid(x,y)
@@ -91,19 +91,19 @@ class meteogram:
 
             fig, ax = plt.subplots(figsize=(14,8))
             self.add_title(ax, analysis, "location: {}".format(loc))
-            
+
             k = 0
             for x0, y0 in zip(xx.flatten(), yy.flatten()):
                 #filenumber = x0 #aka time-dimension
                 #member = y0
-                
+
                 cloud = data['tcc'][x0,y0,l]
                 precip = data['precip'][x0,y0,l]
                 precip_solid = data['precip_solid'][x0,y0,l]
                 visibility = data['visibility'][x0,y0,l]
 
                 precip_type = self.get_precip_type(precip, precip_solid)
-                
+
                 night = data['night'][x0,l]
 
                 symbol = self.get_weather_symbol(cloud, precip, precip_type, visibility, night)
@@ -154,7 +154,7 @@ class meteogram:
 
         is_night = False
         if night==1: is_night = True
-        
+
         bool_precip = False
 
 

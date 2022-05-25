@@ -38,21 +38,21 @@ class comeps:
     def read_comeps(self, args:argparse.Namespace) -> xr.Dataset:
 
         base_file = "{}/mbr{:03d}/{:03d}".format(args.directory,0,0)
-        if not ostools.does_file_exist(base_file): 
+        if not ostools.does_file_exist(base_file):
             print("Base file: {} was not found").format(base_file)
-        
+
         lats, lons = grib2Read.get_latlons(self, base_file)
-        
+
         no_members = args.members
         nt = args.files_per_member
         Nt_coords = np.zeros(nt, dtype=dt.datetime)
-        
+
         locations = args.latlon.split(':')
         no_locations = len(locations)
 
         data_locations = list(zip(lats.flatten(), lons.flatten()))
         tree = cKDTree(data_locations)
-        
+
         data_indexes = np.empty(no_locations, dtype=int)
         data_lats = np.empty(no_locations, dtype=np.single)
         data_lons = np.empty(no_locations, dtype=np.single)
@@ -65,7 +65,7 @@ class comeps:
             data_lons[i] = lons.flatten()[location_idx]
 
             i+=1
-        
+
         del tree
 
         precip = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
@@ -124,7 +124,7 @@ class comeps:
                                 precip[k,m,l] = values[loc_idx]
                             else:
                                 precip[k,m,l] = values[loc_idx] - precip[k-1,m,l]
-                        
+
                         if iop==71 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
                             values = ec.codes_get_values(gid)
                             cloudcover[k,m,l] = values[loc_idx]
@@ -132,7 +132,7 @@ class comeps:
                         if iop==20 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
                             values = ec.codes_get_values(gid)
                             visibility[k,m,l] = values[loc_idx]
-                        
+
                         if iop==185 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
                             values = ec.codes_get_values(gid)
                             if k == 0:
@@ -141,7 +141,7 @@ class comeps:
                                 precip_solid[k,m,l] = values[loc_idx] - precip_solid[k-1,m,l]
 
                         ec.codes_release(gid)
-                    
+
                     f.close()
 
                 # Member loop closed
@@ -150,7 +150,7 @@ class comeps:
         # Location loop closed
 
 
-        ds_grib = xr.Dataset(coords={"location": (["l"], np.arange(no_locations)), 
+        ds_grib = xr.Dataset(coords={"location": (["l"], np.arange(no_locations)),
                                      "member": (["m"], np.arange(no_members)),
                                      "time": (["t"], Nt_coords)})
 
@@ -163,7 +163,7 @@ class comeps:
 
         return ds_grib
 
-    
+
     def get_sunrise_sunset(self, latitude:float, longitude:float, time:dt.datetime) -> tuple:
 
         sunrise = sun.calc_sun_time(longitude, latitude, time, setrise='sunrise')
@@ -173,7 +173,7 @@ class comeps:
 
 
     def is_it_night(self, sunrise:dt.datetime, sunset:dt.datetime, time:dt.datetime) -> int:
-        
+
         if time.hour >= sunrise.hour and time.hour < sunset.hour:
             binary_day = 0 # Day
         else:
