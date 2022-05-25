@@ -109,7 +109,7 @@ class meteogram:
         l=0
         for loc in locations:
 
-            fig, ax = plt.subplots(figsize=(14,8))
+            _, ax = plt.subplots(figsize=(14,8))
             self.add_title(ax, analysis, "location: {}".format(loc))
 
             k = 0

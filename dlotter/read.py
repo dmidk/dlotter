@@ -155,7 +155,7 @@ class grib2Read:
             forecast = analysis + dt.timedelta(minutes=lead)
             Nt_coords[k] = forecast
 
-            for i, gid in enumerate(gids):
+            for _, gid in enumerate(gids):
                 shortName = ec.codes_get(gid, 'shortName')
                 level = ec.codes_get(gid, 'level')
                 typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
@@ -324,8 +324,8 @@ class grib2Read:
             latLast  = g.latitudeOfLastGridPointInDegrees
             lonFirst = (g.longitudeOfFirstGridPointInDegrees % 180.)-180.
             lonLast  = g.longitudeOfLastGridPointInDegrees
-            dy = g.jDirectionIncrementInDegrees
-            dx = g.iDirectionIncrementInDegrees
+            # dy = g.jDirectionIncrementInDegrees
+            # dx = g.iDirectionIncrementInDegrees
             latPole = g.latitudeOfSouthernPoleInDegrees
             lonPole = g.longitudeOfSouthernPoleInDegrees
 

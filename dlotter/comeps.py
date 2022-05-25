@@ -51,8 +51,8 @@ class comeps:
         ref_lat = float(location[0])
         ref_lon = float(location[1])
 
-        dist, idx = tree.query((ref_lat,ref_lon))
-        del dist
+        _, idx = tree.query((ref_lat,ref_lon))
+
         return idx
 
 
@@ -144,14 +144,14 @@ class comeps:
                     Nt_coords[k] = forecast
 
                     for i, gid in enumerate(gids):
-                        shortName = ec.codes_get(gid, 'shortName')
+                        #shortName = ec.codes_get(gid, 'shortName')
                         level = ec.codes_get(gid, 'level')
                         typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
                         levelType = ec.codes_get(gid, 'levelType')
                         iop = ec.codes_get(gid, 'indicatorOfParameter')
 
-                        Ni = ec.codes_get(gid, 'Ni')
-                        Nj = ec.codes_get(gid, 'Nj')
+                        #Ni = ec.codes_get(gid, 'Ni')
+                        #Nj = ec.codes_get(gid, 'Nj')
 
                         if iop==61 and level==0 and typeOfLevel=='heightAboveGround' \
                             and levelType=='sfc':

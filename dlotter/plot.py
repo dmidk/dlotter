@@ -630,8 +630,6 @@ class plot:
             Data to plot
         """
 
-        # Fix that pcolormesh uses cell lower left corners
-        clons, clats = data['lon'], data['lat']
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.precip.colors)
@@ -687,8 +685,6 @@ class plot:
             Data to plot
         """
 
-        # Fix that pcolormesh uses cell lower left corners
-        clons, clats = np.array(data['lon']), np.array(data['lat'])
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.w10m.colors)
