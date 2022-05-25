@@ -191,8 +191,9 @@ class grib2Read:
                     self.found_v = True
                     v10[k,:,:] = values.reshape(Nj, Ni)
 
-                if self.search_precip and (shortName=='tp' or shortName=='tprate') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                if self.search_precip and (shortName=='tp' or shortName=='tprate') \
+                                        and level==0 and typeOfLevel=='heightAboveGround' \
+                                        and levelType=='sfc':
                     values = ec.codes_get_values(gid)
                     self.found_precip = True
                     precip[k,:,:] = values.reshape(Nj, Ni)
@@ -259,7 +260,9 @@ class grib2Read:
         if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
 
         if len(list(ds_grib.data_vars)) == 0:
-            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
+            raise SystemExit('No variables found. This can be due to missing tables \
+                              in ECCODES_DEFINITION_PATH or that the requested keys \
+                              are not yet implemented')
 
         ds_grib = self.sort_by_time(ds_grib)
 
@@ -296,7 +299,8 @@ class grib2Read:
 
 
     def get_latlons(self, gribfile:str) -> tuple:
-        """Get latitudes and longitudes from file. Uses pygrib as eccodes have no easy interface for that.
+        """Get latitudes and longitudes from file. Uses pygrib as
+        eccodes have no easy interface for that.
 
         Parameters
         ----------
@@ -360,12 +364,11 @@ class grib2Read:
             gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
             f.close()
         else:
-            msg_count = ec.codes_count_in_file(gribfile) #gribfile has already been opened into a TextIOWrapper in this case
+            #gribfile has already been opened into a TextIOWrapper in this case
+            msg_count = ec.codes_count_in_file(gribfile)
             gids = np.zeros(msg_count, dtype=int)
             for i in range(msg_count):
                 gids[i] = ec.codes_grib_new_from_file(gribfile)
-
-            #gids = [ec.codes_grib_new_from_file(gribfile) for i in range(msg_count)]
 
         return gids
 
@@ -501,7 +504,9 @@ class netcdf2read:
         if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
 
         if len(list(ds_grib.data_vars)) == 0:
-            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
+            raise SystemExit('No variables found. This can be due to missing tables in \
+                              ECCODES_DEFINITION_PATH or that the requested keys are \
+                              not yet implemented')
 
         ds_grib = self.sort_by_time(ds_grib)
 
@@ -509,7 +514,8 @@ class netcdf2read:
 
 
     def get_latlons(self, netcdf_file:str) -> tuple:
-        """Get latitudes and longitudes from file. Uses netcdf4-python as eccodes have no easy interface for that.
+        """Get latitudes and longitudes from file. Uses netcdf4-python as
+        eccodes have no easy interface for that.
 
         Parameters
         ----------

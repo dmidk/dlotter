@@ -51,7 +51,7 @@ class comeps:
         location = location.split(',')
 
         ref_lat = float(location[0])
-        ref_lon = float(loc ation[1])
+        ref_lon = float(location[1])
 
         dist, idx = tree.query((ref_lat,ref_lon))
         del dist
@@ -107,7 +107,8 @@ class comeps:
         precip_solid = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
         cloudcover = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
         visibility = np.zeros([nt, no_members, no_locations], dtype=np.single) + np.nan
-        night = np.zeros([nt, no_locations], dtype=np.single) + np.nan # 0 if day, 1 if night (note not dependent on number of members)
+        # night 0 if day, 1 if night (note not dependent on number of members)
+        night = np.zeros([nt, no_locations], dtype=np.single) + np.nan
 
         for l in range(no_locations):
             loc_idx = data_indexes[l]
@@ -137,7 +138,8 @@ class comeps:
 
                     if k==0 and m==0:
                         # We'll save some time and only calculate one sunset and sunrise
-                        sunrise, sunset = self.get_sunrise_sunset(data_lats[l], data_lons[l], forecast)
+                        sunrise, sunset = self.get_sunrise_sunset(data_lats[l], data_lons[l],
+                                                                  forecast)
                     if m==0:
                         night[k,l] = self.is_it_night(sunrise, sunset, forecast)
 
@@ -153,22 +155,30 @@ class comeps:
                         Ni = ec.codes_get(gid, 'Ni')
                         Nj = ec.codes_get(gid, 'Nj')
 
-                        if iop==61 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        if iop==61 and level==0 and typeOfLevel=='heightAboveGround' \
+                            and levelType=='sfc':
+
                             values = ec.codes_get_values(gid)
                             if k == 0:
                                 precip[k,m,l] = values[loc_idx]
                             else:
                                 precip[k,m,l] = values[loc_idx] - precip[k-1,m,l]
 
-                        if iop==71 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        if iop==71 and level==0 and typeOfLevel=='heightAboveGround' \
+                            and levelType=='sfc':
+
                             values = ec.codes_get_values(gid)
                             cloudcover[k,m,l] = values[loc_idx]
 
-                        if iop==20 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        if iop==20 and level==0 and typeOfLevel=='heightAboveGround' \
+                            and levelType=='sfc':
+
                             values = ec.codes_get_values(gid)
                             visibility[k,m,l] = values[loc_idx]
 
-                        if iop==185 and level==0 and typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        if iop==185 and level==0 and typeOfLevel=='heightAboveGround' \
+                            and levelType=='sfc':
+
                             values = ec.codes_get_values(gid)
                             if k == 0:
                                 precip_solid[k,m,l] = values[loc_idx]

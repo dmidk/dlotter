@@ -60,7 +60,8 @@ class arguments:
                         '--parameters',
                         metavar='PARAMETERS',
                         type=str,
-                        help='Parameters to plot. Seperate with ":", eg: "t2m:w10m:precip:slp:td2m:tcc:lmhc".',
+                        help='Parameters to plot. Seperate with ":",\
+                            eg: "t2m:w10m:precip:slp:td2m:tcc:lmhc".',
                         required=True)
 
         parser_plot.add_argument('-f',
@@ -101,7 +102,8 @@ class arguments:
                         '--limit-files',
                         metavar='LIMIT',
                         type=int,
-                        help='Only use the first LIMIT files. If set to 0, not limit is used. If Limit > 0, files will be sorted by name first',
+                        help='Only use the first LIMIT files. If set to 0, not limit is used. \
+                            If Limit > 0, files will be sorted by name first',
                         default=0,
                         required=False)
 

@@ -43,55 +43,65 @@ class plot:
 
         if 't2m' in parameters:
             if 't2m' not in avail_parameters:
-                print('t2m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('t2m was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_t2m(args, data)
 
         if 'td2m' in parameters:
             if 'td2m' not in avail_parameters:
-                print('td2m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('td2m was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_td2m(args, data)
 
         if 'w10m' in parameters:
             if 'u10m' not in avail_parameters or 'v10m' not in avail_parameters:
-                print('u10m/v10m was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('u10m/v10m was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_w10m(args, data)
 
         if 'precip' in parameters:
             if 'precip' not in avail_parameters:
-                print('precip was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('precip was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_precip(args, data)
 
         if 'slp' in parameters:
             if 'slp' not in avail_parameters:
-                print('slp was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('slp was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_slp(args, data)
 
         if 'tcc' in parameters:
             if 'tcc' not in avail_parameters:
-                print('tcc was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('tcc was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_tcc(args, data)
 
         if 'lmhc' in parameters:
-            if 'lcc' not in avail_parameters or 'mcc' not in avail_parameters or 'hcc' not in avail_parameters:
-                print('lmhc was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+            if 'lcc' not in avail_parameters or 'mcc' not in avail_parameters \
+                or 'hcc' not in avail_parameters:
+                print('lmhc was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_lmhc(args, data)
 
         if 'snow' in parameters:
             if 'snow' not in avail_parameters:
-                print('snow was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('snow was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_snow(args, data)
 
         if 'ws' in parameters:
             if 'ws' not in avail_parameters:
-                print('ws was not found in available parameters: {}, cannot plot'.format(avail_parameters), flush=True)
+                print('ws was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
                 sys.exit(1)
             self.plot_ws(args, data)
 
@@ -114,11 +124,9 @@ class plot:
             self.extent = [6, 16, 53, 59]
 
         if args.area == 'gl':
-            # self.projection = ccrs.AlbersEqualArea(central_longitude=-50.0, central_latitude=75.0,
-            #                         false_easting=0.0, false_northing=0.0,
-            #                         standard_parallels=(-50.0, 70.0), globe=None)
-            self.projection = ccrs.TransverseMercator(central_longitude=-50.0, central_latitude=75.0,
-                                     false_easting=0.0, false_northing=0.0,)
+            self.projection = ccrs.TransverseMercator(central_longitude=-50.0,
+                                    central_latitude=75.0, false_easting=0.0,
+                                    false_northing=0.0,)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-75, -15, 58, 88]
 
@@ -813,9 +821,11 @@ class plot:
         tuple
             Title_left, Title_center, Title_right
         """
-        title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%Mz'), fontsize=10, loc='left')
+        title_left = ax.set_title(validtime.strftime('Valid: %Y-%m-%d %H:%Mz'),
+                                  fontsize=10, loc='left')
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%Mz'), fontsize=10, loc='right')
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%Mz'),
+                                   fontsize=10, loc='right')
         return title_left, title_center, title_right
 
 
@@ -837,13 +847,15 @@ class plot:
         dlat = (data['lat'][1,0] - data['lat'][0,0]).values
         lons = data['lon'].values - dlon/2
         lats = data['lat'].values - dlat/2
-        # Add 1 grid spacing to the right column of lon array and concatenate it as an additional column to the right
+        # Add 1 grid spacing to the right column of lon array and concatenate it
+        # as an additional column to the right
         lons = np.c_[ lons, lons[:,-1]+dlon ]
         # Duplicate the bottom row of the lon array and concatenate it to the bottom
         lons = np.r_[ lons, [lons[-1,:]] ]
         # Duplicate the right-most column of lats array and concatenate it on the right
         lats = np.c_[ lats, lats[:,-1] ]
-        # Add 1 grid spacing to the bottom row of lat array and concatenate it as an additional row below
+        # Add 1 grid spacing to the bottom row of lat array and concatenate it
+        # as an additional row below
         lats = np.r_[ lats, [lats[-1,:]+dlat] ]
         return lons, lats
 
@@ -913,7 +925,8 @@ class levels_and_colors:
     class t2m:
         """Class for t2m levels and colors
         """
-        levels=[-24,-22,-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,22,24,26,28,30,32,34,36,38,40,42]
+        levels=[-24,-22,-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,
+                22,24,26,28,30,32,34,36,38,40,42]
 
         colors = [(0.14, 0.00, 0.15),(0.31, 0.00, 0.33), (0.49, 0.00, 0.54), (0.71, 0.00, 0.77),
                       (0.93, 0.00, 1.00),(0.70, 0.00, 1.00),(0.49, 0.00, 1.00),(0.30, 0.00, 1.00),
@@ -930,7 +943,8 @@ class levels_and_colors:
     class w10m:
         """Class for w10m levels and colors
         """
-        levels=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35]
+        levels=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,
+                27,28,29,30,31,32,33,34,35]
 
         colors =  [(0.00,0.00,1.00),(0.00,0.00,1.00),(0.04,0.25,1.00),(0.08,0.37,1.00),
                        (0.10,0.49,1.00),(0.14,0.60,1.00),(0.16,0.73,1.00),(0.20,0.88,0.93),
@@ -946,7 +960,8 @@ class levels_and_colors:
         """Class for precip levels and colors
         """
         # 17 levels
-        levels = [0.0, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 25.0, 30.0, 40.0, 50.0]
+        levels = [0.0, 0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0,
+                  20.0, 25.0, 30.0, 40.0, 50.0]
 
         # 16 colors
         colors = [(1.00, 1.00, 1.00), (0.84, 0.69, 0.63), (0.72, 0.56, 0.51), (0.80, 0.86, 1.00),
@@ -970,7 +985,7 @@ class levels_and_colors:
 
         # 8 Colors
         colors = [(1.00, 1.00, 1.00), (0.95, 0.95, 0.95), (0.90, 0.90, 0.90), (0.80, 0.80, 0.80),
-                      (0.70, 0.70, 0.70), (0.50, 0.50, 0.50), (0.40, 0.40, 0.40), (0.30, 0.30, 0.30)]
+                  (0.70, 0.70, 0.70), (0.50, 0.50, 0.50), (0.40, 0.40, 0.40), (0.30, 0.30, 0.30)]
 
     class lcc:
         """Class for lcc levels and colors
@@ -980,7 +995,7 @@ class levels_and_colors:
 
         # 8 Colors
         colors = [(0.70, 0.70, 0.70), (0.60, 0.60, 0.60),
-                      (0.50, 0.50, 0.50), (0.40, 0.40, 0.40), (0.30, 0.30, 0.30), (0.20, 0.20, 0.20)]
+                  (0.50, 0.50, 0.50), (0.40, 0.40, 0.40), (0.30, 0.30, 0.30), (0.20, 0.20, 0.20)]
 
     class mcc:
         """Class for mcc levels and colors
@@ -989,10 +1004,8 @@ class levels_and_colors:
         levels=[2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8]
 
         # 8 Colors
-        # colors = [(0.00, 0.40, 0.00), (0.00, 0.50, 0.00),
-        #               (0.00, 0.60, 0.00), (0.00, 0.70, 0.00), (0.00, 0.80, 0.00), (0.00, 0.90, 0.00)]
         colors = [(0.00, 0.90, 0.00), (0.00, 0.80, 0.00),
-                      (0.00, 0.70, 0.00), (0.00, 0.60, 0.00), (0.00, 0.50, 0.00), (0.00, 0.40, 0.00)]
+                  (0.00, 0.70, 0.00), (0.00, 0.60, 0.00), (0.00, 0.50, 0.00), (0.00, 0.40, 0.00)]
 
     class hcc:
         """Class for hcc levels and colors
@@ -1002,4 +1015,4 @@ class levels_and_colors:
 
         # 8 Colors
         colors = [(0.00, 0.00, 0.90), (0.00, 0.00, 0.80),
-                      (0.00, 0.00, 0.70), (0.00, 0.00, 0.60), (0.00, 0.00, 0.50), (0.00, 0.00, 0.40)]
+                  (0.00, 0.00, 0.70), (0.00, 0.00, 0.60), (0.00, 0.00, 0.50), (0.00, 0.00, 0.40)]

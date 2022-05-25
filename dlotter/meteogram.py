@@ -190,7 +190,8 @@ class meteogram:
         return fig, ax
 
 
-    def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
+    def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str,
+                  **kwargs:dict) -> tuple:
         """Add a title to the plot
 
         Parameters
@@ -208,12 +209,14 @@ class meteogram:
             Title for center position and right position
         """
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right', pad=20)
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'),
+                                   fontsize=10, loc='right', pad=20)
         return title_center, title_right
 
 
 
-    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float, night:float) -> str:
+    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str,
+                           visibility:float, night:float) -> str:
         """Get weather symbol
 
         Parameters
@@ -302,7 +305,8 @@ class meteogram:
             precip_type = 'ra' # Default value, in this case it will not be used
         elif precip != 0 and precip_solid == precip: # Everything is snow
             precip_type = 'sn'
-        elif precip != 0 and precip_solid > 0 and precip > precip_solid: # Both rain and snow, choose sleet
+        elif precip != 0 and precip_solid > 0 and precip > precip_solid:
+            # Both rain and snow, choose sleet
             precip_type = 'sl'
         else:
             precip_type = 'ra'
