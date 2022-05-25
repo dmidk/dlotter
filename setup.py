@@ -23,11 +23,14 @@ setuptools.setup(
          'cartopy',
          'eccodes',
          'pygrib',
+         'scipy',
          ],
      url="https://dmidk.github.io/dlotter/",
      classifiers=[
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
-     ]
+     ],
+     include_package_data=True,
+     data_files=[('dlotter', ['dlotter/icons/*'])],
  )

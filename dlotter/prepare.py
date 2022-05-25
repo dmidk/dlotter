@@ -10,13 +10,15 @@ from dmit import ostools
 class prepare:
 
     def __init__(self, args:argparse.Namespace) -> None:
-
-        self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc', 'snow', 'ws']
-
-        self.check_meta(args)
-
-        self.files_to_read = self.find_files_to_read(args)
         
+        if args.cmd == 'plot':
+            self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc', 'snow', 'ws']
+            self.check_meta(args)
+            self.files_to_read = self.find_files_to_read(args)
+        
+        # if args.cmd == 'epsmeteogram':
+        #     self.files_to_read = self.find_files_to_read(args, epsmode=True)
+
         return
 
 
@@ -46,7 +48,7 @@ class prepare:
         return
 
 
-    def find_files_to_read(self, args:argparse.Namespace) -> list:
+    def find_files_to_read(self, args:argparse.Namespace, epsmode:bool = False) -> list:
         """Finds the file(s) to read and plot from
 
         Parameters
@@ -62,26 +64,46 @@ class prepare:
 
         directory = args.directory
 
-        if args.limit_files > 0:
+        if not epsmode:
+            if args.limit_files > 0:
+                inorder = True
+            else:
+                inorder = False
+
+        if epsmode:
+            recursive = True
             inorder = True
         else:
-            inorder = False
+            recursive = False
 
         files = ostools.find_files(directory, 
-                                   prefix=args.prefix, 
-                                   postfix=args.postfix,
-                                   recursive=False, 
-                                   onlyfiles=True,
-                                   fullpath=True,
-                                   olderthan=None,
-                                   inorder=inorder)
+                                prefix=args.prefix, 
+                                postfix=args.postfix,
+                                recursive=recursive, 
+                                onlyfiles=True,
+                                fullpath=True,
+                                olderthan=None,
+                                inorder=inorder)
 
-        if args.limit_files > 0: 
-            if args.limit_files >= len(files):
-                limit = len(files)
-            else:
-                limit = args.limit_files
+        if not epsmode:
+            if args.limit_files > 0: 
+                if args.limit_files >= len(files):
+                    limit = len(files)
+                else:
+                    limit = args.limit_files
 
-            files = files[0:limit]
+                files = files[0:limit]
+
+        if epsmode:
+            epsfiles = []
+            for member in range(args.members):
+                for f in range(args.files_per_member):
+                    #Follows: /something/mbr000/000 
+                    epsfiles.append("{}/mbr{:03d}/{:03d}".format(directory,member,f))
+
+            if len(epsfiles) != len(files):
+                print('Number of automatic found files was different than specified', flush=True)
+            files = epsfiles
+
 
         return files

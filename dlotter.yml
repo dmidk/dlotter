@@ -11,8 +11,10 @@ dependencies:
   - pygrib
   - xarray
   - metpy
+  - sphinx
+  - netCDF4
+  - pygrib
   - nomkl
   - pip:
     - eccodes
     - dmit
-    

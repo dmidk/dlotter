@@ -22,6 +22,8 @@ from .prepare import prepare
 from .read import grib2Read, netcdf2read
 from .plot import plot
 from .arguments import arguments
+from .meteogram import meteogram
+from .comeps import comeps
 
 from dmit import ostools
 
@@ -67,3 +69,11 @@ if __name__ == '__main__':
             sys.exit(1)
 
         plotwork = plot(args, data)
+
+
+    if args.cmd == 'epsmeteogram':
+        eps = comeps(args)
+        data = eps.data
+
+        plotwork = meteogram(args, data)
+        #plotwork = meteogram(args)

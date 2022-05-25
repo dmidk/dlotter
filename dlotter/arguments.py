@@ -95,6 +95,57 @@ class arguments:
                         help='Verbose output', 
                         default=False)
 
+        # Parser for EPS Meteogram
+        parser_epsmeteogram = subparser.add_parser('epsmeteogram', help='Plot EPS meteogram')
+
+        parser_epsmeteogram.add_argument('-d',
+                            '--directory',
+                            type=str,
+                            help='directory to read data from',
+                            default='.')
+
+        parser_epsmeteogram.add_argument('-m',
+                            '--members',
+                            type=int,
+                            help='Number of members',
+                            required=True)
+
+        parser_epsmeteogram.add_argument('-f',
+                            '--files-per-member',
+                            type=int,
+                            help='Number of gribfiles per member',
+                            required=True)
+        
+        parser_epsmeteogram.add_argument('--latlon',
+                            type=str,
+                            help='Coordinates to plot. Seperate with ":", eg: "55,12:60,14"',
+                            required=True)
+
+        parser_epsmeteogram.add_argument('--prefix',
+                            type=str,
+                            help='Set to prefix of files if any',
+                            default='',
+                            required=False)
+
+        parser_epsmeteogram.add_argument('--postfix',
+                            type=str,
+                            help='Set to postfix of files if any',
+                            default='',
+                            required=False)
+
+        parser_epsmeteogram.add_argument('-o',
+                            '--output-dir',
+                            metavar='OUTDIR',
+                            type=str,
+                            help='Directory to place output into',
+                            default='.',
+                            required=False)
+
+        parser_epsmeteogram.add_argument('--verbose',
+                            action='store_true',
+                            help='Verbose output', 
+                            default=False)
+
 
         if len(sysargs)==1:
             parent_parser.print_help()
