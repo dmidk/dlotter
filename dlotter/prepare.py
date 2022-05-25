@@ -8,8 +8,17 @@ import argparse
 from dmit import ostools
 
 class prepare:
+    """Class for preparing input
+    """
 
     def __init__(self, args:argparse.Namespace) -> None:
+        """Constructor for prepare class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input to dlotter from command line
+        """
 
         if args.cmd == 'plot':
             self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc', 'snow', 'ws']

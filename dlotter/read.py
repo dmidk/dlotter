@@ -15,8 +15,21 @@ from dmit import regrot
 from typing import Union
 
 class grib2Read:
+    """Class for reading grib files
+    """
 
     def __init__(self, args:argparse.Namespace, files_to_read:list) -> None:
+        """Constructor for grib2Read class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Namespace containing all the arguments
+
+        files_to_read : list
+            List of files to read
+
+        """
         if args.verbose:
             print("Reading GRIB2", flush=True)
 
@@ -254,6 +267,18 @@ class grib2Read:
 
 
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
+        """Sort dataarray by time.
+
+        Parameters
+        ----------
+        dataarray : xr.Dataset
+            Dataarray to sort.
+
+        Returns
+        -------
+        xr.Dataset
+            Sortet dataarray.
+        """
 
         nt = dataarray.dims['time']
         parameters = list(dataarray.data_vars)
@@ -347,8 +372,19 @@ class grib2Read:
 
 
 class netcdf2read:
+    """Class for reading netcdf files.
+    """
 
     def __init__(self, args:argparse.Namespace, files_to_read:list) -> None:
+        """Constructor for netcdf2read class.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        files_to_read : list
+            List of files to read
+        """
         if args.verbose:
             print("Reading NetCDF", flush=True)
 
@@ -362,6 +398,8 @@ class netcdf2read:
 
 
     def set_bools(self) -> None:
+        """Set booleans for which variables to read.
+        """
 
         self.search_t2m = False
         self.found_t2m = False
@@ -377,6 +415,18 @@ class netcdf2read:
 
 
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
+        """Sort xarray dataset by time.
+
+        Parameters
+        ----------
+        dataarray : xr.Dataset
+            Dataset to sort
+
+        Returns
+        -------
+        xr.Dataset
+            Sorted dataset
+        """
 
         nt = dataarray.dims['time']
         parameters = list(dataarray.data_vars)

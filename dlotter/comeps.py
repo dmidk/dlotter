@@ -18,24 +18,59 @@ import gc
 from scipy.spatial import cKDTree
 
 class comeps:
+    """Class for reading COMEPS data
+    """
 
     def __init__(self, args:argparse.Namespace) -> None:
+        """Constructor for comeps class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from argparse
+        """
         self.data = self.read_comeps(args)
         return
 
 
-    def get_location_index(self, location, tree) -> int:
+    def get_location_index(self, location:str, tree:cKDTree) -> int:
+        """_summary_
+
+        Parameters
+        ----------
+        location : str
+            String of location with latitude and longitude
+        tree : cKDTree
+            scipy.spatial.cKDTree object
+
+        Returns
+        -------
+        int
+            Index of location in tree
+        """
         location = location.split(',')
 
         ref_lat = float(location[0])
-        ref_lon = float(location[1])
+        ref_lon = float(loc ation[1])
 
         dist, idx = tree.query((ref_lat,ref_lon))
-
+        del dist
         return idx
 
 
     def read_comeps(self, args:argparse.Namespace) -> xr.Dataset:
+        """Read COMEPS data
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from argparse
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset with COMEPS data
+        """
 
         base_file = "{}/mbr{:03d}/{:03d}".format(args.directory,0,0)
         if not ostools.does_file_exist(base_file):
@@ -165,7 +200,22 @@ class comeps:
 
 
     def get_sunrise_sunset(self, latitude:float, longitude:float, time:dt.datetime) -> tuple:
+        """Get time of sunrise and sunset for a given location and time.
 
+        Parameters
+        ----------
+        latitude : float
+            Latitude of location.
+        longitude : float
+            Longitude of location.
+        time : dt.datetime
+            Time (day) of interest.
+
+        Returns
+        -------
+        tuple
+            Sunrise and sunset time.
+        """
         sunrise = sun.calc_sun_time(longitude, latitude, time, setrise='sunrise')
         sunset = sun.calc_sun_time(longitude, latitude, time, setrise='sunset')
 
@@ -173,6 +223,22 @@ class comeps:
 
 
     def is_it_night(self, sunrise:dt.datetime, sunset:dt.datetime, time:dt.datetime) -> int:
+        """Get information if it is night or day.
+
+        Parameters
+        ----------
+        sunrise : dt.datetime
+            Time of sunrise
+        sunset : dt.datetime
+            Time of sunset
+        time : dt.datetime
+            current time
+
+        Returns
+        -------
+        int
+            0 if day, 1 if night
+        """
 
         if time.hour >= sunrise.hour and time.hour < sunset.hour:
             binary_day = 0 # Day

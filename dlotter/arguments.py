@@ -9,6 +9,13 @@ from argparse import ArgumentDefaultsHelpFormatter
 
 
 class MyParser(argparse.ArgumentParser):
+    """Parser for dlotter arguments
+
+    Parameters
+    ----------
+    argparse : argparse.ArgumentParser
+        Parser for dlotter arguments
+    """
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
@@ -16,13 +23,29 @@ class MyParser(argparse.ArgumentParser):
 
 
 class arguments:
+    """Holds all the arguments for dlotter
+    """
 
     def __init__(self) -> None:
+        """Constructor for arguments class
+        """
 
         return
 
 
     def get_args(self, sysargs):
+        """Get arguments from command line
+
+        Parameters
+        ----------
+        sysargs : sys.argv
+            Arguments given to dlotter on command line
+
+        Returns
+        -------
+        argparse.Namespace
+            Namespace with all the arguments
+        """
 
         parent_parser = MyParser(
             description='Plot data quick and dirty from NWP output',

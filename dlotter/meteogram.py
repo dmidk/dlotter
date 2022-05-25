@@ -16,9 +16,20 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 
 class meteogram:
+    """Class for plotting meteograms
+    """
 
 
     def __init__(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Constructor for meteogram class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments to dlotter from command line
+        data : xr.Dataset
+            Data to plot
+        """
 
         print('- Plotting', flush=True)
 
@@ -31,6 +42,8 @@ class meteogram:
 
 
     def define_icons(self) -> None:
+        """Define relative paths to icons
+        """
         #Day
         self.sun          = 'dlotter/icons/0.png'
         self.partcloud    = 'dlotter/icons/1.png'
@@ -77,6 +90,15 @@ class meteogram:
 
 
     def plot_epsmeteogram(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot EPS meteogram with weather icons
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input to dlotter from command line
+        data : xr.Dataset
+            Data to plot
+        """
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
@@ -133,15 +155,58 @@ class meteogram:
         return
 
 
-    def getImage(self, path):
+    def getImage(self, path:str) -> OffsetImage:
+        """Read image from file and return it as matplotlib.offsetbox.OffsetImage
+
+        Parameters
+        ----------
+        path : str
+            Path to image file
+
+        Returns
+        -------
+        OffsetImage
+            Image object
+        """
         return OffsetImage(plt.imread(path), zoom=0.1)
 
     def fig_ax(self, w:int, h:int, **kwargs:dict) -> tuple:
+        """Create figure and axes
+
+        Parameters
+        ----------
+        w : int
+            Width of figure
+        h : int
+            Height of figure
+
+        Returns
+        -------
+        tuple
+            Tuple of figure and axis
+        """
         fig = plt.figure(figsize=(w, h))
         ax = fig.subplots(1,1, **kwargs)
         return fig, ax
 
+
     def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
+        """Add a title to the plot
+
+        Parameters
+        ----------
+        ax : plt.subplots
+            Subplot axes
+        analysis : dt.datetime
+            Analysis time of the forecast
+        headline : str
+            Headline to add to plot
+
+        Returns
+        -------
+        tuple
+            Title for center position and right position
+        """
         title_center = ax.set_title(headline, fontsize=9, loc='center')
         title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right', pad=20)
         return title_center, title_right
@@ -149,6 +214,26 @@ class meteogram:
 
 
     def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float, night:float) -> str:
+        """Get weather symbol
+
+        Parameters
+        ----------
+        cloud : float
+            Cloud fraction
+        precip : float
+            Amount of precipitation
+        precip_type : str
+            Type of precipitation
+        visibility : float
+            Visibility in meters
+        night : float
+            1 if night, 0 otherwise
+
+        Returns
+        -------
+        str
+            Path to icon
+        """
 
         symbol = 0
 
@@ -198,6 +283,20 @@ class meteogram:
 
 
     def get_precip_type(self, precip:float, precip_solid:float) -> str:
+        """Get type of precipitation
+
+        Parameters
+        ----------
+        precip : float
+            Amount of precipitation
+        precip_solid : float
+            Amount of solid precipitation
+
+        Returns
+        -------
+        str
+            Type of precipitation (ra, sn, sl)
+        """
 
         if precip == 0:
             precip_type = 'ra' # Default value, in this case it will not be used
