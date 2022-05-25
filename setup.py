@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Master module for setup dlotter
+"""
 import setuptools
 
 with open("README.md", "r") as fh:

@@ -8,14 +8,24 @@ import argparse
 from dmit import ostools
 
 class prepare:
+    """Class for preparing input
+    """
 
     def __init__(self, args:argparse.Namespace) -> None:
-        
+        """Constructor for prepare class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input to dlotter from command line
+        """
+
         if args.cmd == 'plot':
-            self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m', 'tcc', 'lmhc', 'snow', 'ws']
+            self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m',
+                                     'tcc', 'lmhc', 'snow', 'ws']
             self.check_meta(args)
             self.files_to_read = self.find_files_to_read(args)
-        
+
         # if args.cmd == 'epsmeteogram':
         #     self.files_to_read = self.find_files_to_read(args, epsmode=True)
 
@@ -76,17 +86,17 @@ class prepare:
         else:
             recursive = False
 
-        files = ostools.find_files(directory, 
-                                prefix=args.prefix, 
+        files = ostools.find_files(directory,
+                                prefix=args.prefix,
                                 postfix=args.postfix,
-                                recursive=recursive, 
+                                recursive=recursive,
                                 onlyfiles=True,
                                 fullpath=True,
                                 olderthan=None,
                                 inorder=inorder)
 
         if not epsmode:
-            if args.limit_files > 0: 
+            if args.limit_files > 0:
                 if args.limit_files >= len(files):
                     limit = len(files)
                 else:
@@ -98,7 +108,7 @@ class prepare:
             epsfiles = []
             for member in range(args.members):
                 for f in range(args.files_per_member):
-                    #Follows: /something/mbr000/000 
+                    #Follows: /something/mbr000/000
                     epsfiles.append("{}/mbr{:03d}/{:03d}".format(directory,member,f))
 
             if len(epsfiles) != len(files):

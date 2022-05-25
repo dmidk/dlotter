@@ -4,21 +4,30 @@
 Called from dlotter.__main__
 Plots meteograms
 """
-import sys
 import argparse
 import xarray as xr
 import numpy as np
 import datetime as dt
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 
 
 class meteogram:
+    """Class for plotting meteograms
+    """
 
 
     def __init__(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Constructor for meteogram class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments to dlotter from command line
+        data : xr.Dataset
+            Data to plot
+        """
 
         print('- Plotting', flush=True)
 
@@ -31,6 +40,8 @@ class meteogram:
 
 
     def define_icons(self) -> None:
+        """Define relative paths to icons
+        """
         #Day
         self.sun          = 'dlotter/icons/0.png'
         self.partcloud    = 'dlotter/icons/1.png'
@@ -74,12 +85,21 @@ class meteogram:
         self.heavy_snow_night         = 'dlotter/icons/3120.png'
 
         return
-    
+
 
     def plot_epsmeteogram(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot EPS meteogram with weather icons
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input to dlotter from command line
+        data : xr.Dataset
+            Data to plot
+        """
         analysis = data['time'][0].values
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
-        
+
         x = np.arange(args.files_per_member)
         y = np.arange(args.members)
         xx, yy = np.meshgrid(x,y)
@@ -89,21 +109,21 @@ class meteogram:
         l=0
         for loc in locations:
 
-            fig, ax = plt.subplots(figsize=(14,8))
+            _, ax = plt.subplots(figsize=(14,8))
             self.add_title(ax, analysis, "location: {}".format(loc))
-            
+
             k = 0
             for x0, y0 in zip(xx.flatten(), yy.flatten()):
                 #filenumber = x0 #aka time-dimension
                 #member = y0
-                
+
                 cloud = data['tcc'][x0,y0,l]
                 precip = data['precip'][x0,y0,l]
                 precip_solid = data['precip_solid'][x0,y0,l]
                 visibility = data['visibility'][x0,y0,l]
 
                 precip_type = self.get_precip_type(precip, precip_solid)
-                
+
                 night = data['night'][x0,l]
 
                 symbol = self.get_weather_symbol(cloud, precip, precip_type, visibility, night)
@@ -133,28 +153,94 @@ class meteogram:
         return
 
 
-    def getImage(self, path):
+    def getImage(self, path:str) -> OffsetImage:
+        """Read image from file and return it as matplotlib.offsetbox.OffsetImage
+
+        Parameters
+        ----------
+        path : str
+            Path to image file
+
+        Returns
+        -------
+        OffsetImage
+            Image object
+        """
         return OffsetImage(plt.imread(path), zoom=0.1)
 
     def fig_ax(self, w:int, h:int, **kwargs:dict) -> tuple:
+        """Create figure and axes
+
+        Parameters
+        ----------
+        w : int
+            Width of figure
+        h : int
+            Height of figure
+
+        Returns
+        -------
+        tuple
+            Tuple of figure and axis
+        """
         fig = plt.figure(figsize=(w, h))
         ax = fig.subplots(1,1, **kwargs)
         return fig, ax
 
-    def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str, **kwargs:dict) -> tuple:
+
+    def add_title(self, ax:plt.subplots, analysis:dt.datetime, headline:str,
+                  **kwargs:dict) -> tuple:
+        """Add a title to the plot
+
+        Parameters
+        ----------
+        ax : plt.subplots
+            Subplot axes
+        analysis : dt.datetime
+            Analysis time of the forecast
+        headline : str
+            Headline to add to plot
+
+        Returns
+        -------
+        tuple
+            Title for center position and right position
+        """
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'), fontsize=10, loc='right', pad=20)
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'),
+                                   fontsize=10, loc='right', pad=20)
         return title_center, title_right
 
 
 
-    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str, visibility:float, night:float) -> str:
+    def get_weather_symbol(self, cloud:float, precip:float, precip_type:str,
+                           visibility:float, night:float) -> str:
+        """Get weather symbol
+
+        Parameters
+        ----------
+        cloud : float
+            Cloud fraction
+        precip : float
+            Amount of precipitation
+        precip_type : str
+            Type of precipitation
+        visibility : float
+            Visibility in meters
+        night : float
+            1 if night, 0 otherwise
+
+        Returns
+        -------
+        str
+            Path to icon
+        """
 
         symbol = 0
 
         is_night = False
         if night==1: is_night = True
-        
+
         bool_precip = False
 
 
@@ -198,12 +284,27 @@ class meteogram:
 
 
     def get_precip_type(self, precip:float, precip_solid:float) -> str:
+        """Get type of precipitation
+
+        Parameters
+        ----------
+        precip : float
+            Amount of precipitation
+        precip_solid : float
+            Amount of solid precipitation
+
+        Returns
+        -------
+        str
+            Type of precipitation (ra, sn, sl)
+        """
 
         if precip == 0:
             precip_type = 'ra' # Default value, in this case it will not be used
         elif precip != 0 and precip_solid == precip: # Everything is snow
             precip_type = 'sn'
-        elif precip != 0 and precip_solid > 0 and precip > precip_solid: # Both rain and snow, choose sleet
+        elif precip != 0 and precip_solid > 0 and precip > precip_solid:
+            # Both rain and snow, choose sleet
             precip_type = 'sl'
         else:
             precip_type = 'ra'

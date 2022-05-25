@@ -27,6 +27,13 @@ from .comeps import comeps
 from dmit import ostools
 
 class MyParser(argparse.ArgumentParser):
+    """Parser for dlotter arguments
+
+    Parameters
+    ----------
+    argparse : argparse.ArgumentParser
+        Parser for dlotter arguments
+    """
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
@@ -75,4 +82,3 @@ if __name__ == '__main__':
         data = eps.data
 
         plotwork = meteogram(args, data)
-        #plotwork = meteogram(args)
