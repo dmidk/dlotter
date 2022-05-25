@@ -4,13 +4,11 @@
 Called from dlotter.__main__
 Plots meteograms
 """
-import sys
 import argparse
 import xarray as xr
 import numpy as np
 import datetime as dt
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 

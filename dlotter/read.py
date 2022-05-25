@@ -3,7 +3,6 @@
 """Master module for dlotter.read
 Called from dlotter.__main__
 """
-import sys
 import argparse
 import xarray as xr
 import eccodes as ec

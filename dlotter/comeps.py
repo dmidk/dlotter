@@ -3,11 +3,9 @@
 """Master module for dlotter.comeps
 Called from dlotter.__main__
 """
-import sys
 import argparse
 import xarray as xr
 import eccodes as ec
-import pygrib
 import numpy as np
 import datetime as dt
 from dmit import ostools
