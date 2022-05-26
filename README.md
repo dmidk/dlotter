@@ -1,9 +1,15 @@
+|      | Master                                                                                                      | Develop                                                                                                       |
+|------|-------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
+| Lint | ![Lint Master](https://github.com/dmidk/dlotter/actions/workflows/code-quality.yml/badge.svg?branch=master) | ![Lint Develop](https://github.com/dmidk/dlotter/actions/workflows/code-quality.yml/badge.svg?branch=develop) |
+|      |                                                                                                             |                                                                                                               |
+|      |
+
 # dlotter
 Plot data from NWP output (BETA - in development).\
 The "word" *dlotter* is a contraction of *DMI* and *Plotter*.
 
 # Install
-Installation should be relatively simple. 
+Installation should be relatively simple.
 
 Install using pip: `pip install dlotter`
 
