@@ -1,0 +1,19 @@
+name: Linting
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: python-linting
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+    - run: pip install --upgrade pip
+    - run: pip install pylint
+    - run: pylint --disable=all
+            --enable=unused-import,trailing-whitespace,missing-class-docstring,line-too-long,
+            unused-variable,missing-docstring,missing-function-docstring,missing-module-docstring
+            $(git ls-files '*.py')

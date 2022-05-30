@@ -3,18 +3,32 @@
 """Master module for dlotter.read
 Called from dlotter.__main__
 """
-import sys
 import argparse
 import xarray as xr
 import eccodes as ec
+import netCDF4 as nc
 import pygrib
 import numpy as np
 import datetime as dt
 from dmit import regrot
+from typing import Union
 
 class grib2Read:
+    """Class for reading grib files
+    """
 
     def __init__(self, args:argparse.Namespace, files_to_read:list) -> None:
+        """Constructor for grib2Read class
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Namespace containing all the arguments
+
+        files_to_read : list
+            List of files to read
+
+        """
         if args.verbose:
             print("Reading GRIB2", flush=True)
 
@@ -33,19 +47,19 @@ class grib2Read:
 
         self.search_t2m = False
         self.found_t2m = False
-        if 't2m' in self.parameters: 
+        if 't2m' in self.parameters:
             self.search_t2m = True
 
         self.search_td2m = False
         self.found_td2m = False
         if 'td2m' in self.parameters:
             self.search_td2m = True
-            
-        self.search_uv=False    
+
+        self.search_uv=False
         self.found_u = False
         self.found_v = False
         self.found_uv=False
-        if 'w10m' in self.parameters: 
+        if 'w10m' in self.parameters:
             self.search_uv = True
 
         self.search_precip = False
@@ -69,6 +83,16 @@ class grib2Read:
         self.found_hcc = False
         if 'lmhc' in self.parameters:
             self.search_lmhc = True
+
+        self.search_snow = False
+        self.found_snow = False
+        if 'snow' in self.parameters:
+            self.search_snow = True
+
+        self.search_ws = False
+        self.found_ws = False
+        if 'ws' in self.parameters:
+            self.search_ws = True
 
         return
 
@@ -94,11 +118,11 @@ class grib2Read:
 
         Nt = len(files_to_read)
         Nt_coords = np.zeros(Nt, dtype=dt.datetime)
-        
+
         if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
         if self.search_td2m: td2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        if self.search_uv: 
+        if self.search_uv:
             u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
@@ -106,10 +130,14 @@ class grib2Read:
         if self.search_slp: slp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
         if self.search_tcc: tcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        if self.search_lmhc: 
+        if self.search_lmhc:
             lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
             hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
 
         for k,f in enumerate(files_to_read):
@@ -127,7 +155,7 @@ class grib2Read:
             forecast = analysis + dt.timedelta(minutes=lead)
             Nt_coords[k] = forecast
 
-            for i, gid in enumerate(gids):
+            for _, gid in enumerate(gids):
                 shortName = ec.codes_get(gid, 'shortName')
                 level = ec.codes_get(gid, 'level')
                 typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
@@ -162,8 +190,9 @@ class grib2Read:
                     self.found_v = True
                     v10[k,:,:] = values.reshape(Nj, Ni)
 
-                if self.search_precip and (shortName=='tp' or shortName=='tprate') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                if self.search_precip and (shortName=='tp' or shortName=='tprate') \
+                                        and level==0 and typeOfLevel=='heightAboveGround' \
+                                        and levelType=='sfc':
                     values = ec.codes_get_values(gid)
                     self.found_precip = True
                     precip[k,:,:] = values.reshape(Nj, Ni)
@@ -198,10 +227,22 @@ class grib2Read:
                     self.found_tcc = True
                     tcc[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_snow and (shortName=='tpsolid') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_snow = True
+                    snow[k,:,:] = values.reshape(Nj, Ni)
+
+                if self.search_ws and (shortName=='ws') and level==10 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_ws = True
+                    ws[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats), 
-                                     "lon": (["x","y"], lons), 
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                     "lon": (["x","y"], lons),
                                      "time": (["t"], Nt_coords)})
 
         if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
@@ -214,16 +255,32 @@ class grib2Read:
         if self.found_lcc: ds_grib['lcc'] = (['time', 'lat', 'lon'], lcc )
         if self.found_mcc: ds_grib['mcc'] = (['time', 'lat', 'lon'], mcc )
         if self.found_hcc: ds_grib['hcc'] = (['time', 'lat', 'lon'], hcc )
+        if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
+        if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
 
         if len(list(ds_grib.data_vars)) == 0:
-            raise SystemExit('No variables found. This can be due to missing tables in ECCODES_DEFINITION_PATH or that the requested keys are not yet implemented')
- 
+            raise SystemExit('No variables found. This can be due to missing tables \
+                              in ECCODES_DEFINITION_PATH or that the requested keys \
+                              are not yet implemented')
+
         ds_grib = self.sort_by_time(ds_grib)
 
         return ds_grib
 
-    
+
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
+        """Sort dataarray by time.
+
+        Parameters
+        ----------
+        dataarray : xr.Dataset
+            Dataarray to sort.
+
+        Returns
+        -------
+        xr.Dataset
+            Sortet dataarray.
+        """
 
         nt = dataarray.dims['time']
         parameters = list(dataarray.data_vars)
@@ -236,12 +293,13 @@ class grib2Read:
         for p in parameters:
             for k in range(nt):
                 da[p][k,:,:] = dataarray[p][idx[k],:,:]
-        
+
         return da
 
 
     def get_latlons(self, gribfile:str) -> tuple:
-        """Get latitudes and longitudes from file. Uses pygrib as eccodes have no easy interface for that.
+        """Get latitudes and longitudes from file. Uses pygrib as
+        eccodes have no easy interface for that.
 
         Parameters
         ----------
@@ -266,8 +324,8 @@ class grib2Read:
             latLast  = g.latitudeOfLastGridPointInDegrees
             lonFirst = (g.longitudeOfFirstGridPointInDegrees % 180.)-180.
             lonLast  = g.longitudeOfLastGridPointInDegrees
-            dy = g.jDirectionIncrementInDegrees
-            dx = g.iDirectionIncrementInDegrees
+            # dy = g.jDirectionIncrementInDegrees
+            # dx = g.iDirectionIncrementInDegrees
             latPole = g.latitudeOfSouthernPoleInDegrees
             lonPole = g.longitudeOfSouthernPoleInDegrees
 
@@ -282,60 +340,247 @@ class grib2Read:
 
         return lats, lons
 
-    
-    def get_gids(self, gribfile:str) -> list:
+
+    def get_gids(self, gribfile:str, TextIOWrapper:bool=False) -> list:
         """Get GribIDs (gid) for all the messages in one gribfile
 
         Parameters
         ----------
         gribfile : str
             path to gribfile
+        TextIOWrapper : bool
+            if file is open send the object instead and set TextIOWrapper to True
 
         Returns
         -------
         list
             list of grib-ids
         """
-        
-        f = open(gribfile, 'rb')
-        msg_count = ec.codes_count_in_file(f)
-        gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
-        f.close()
+
+        if not TextIOWrapper:
+            f = open(gribfile, 'rb')
+            msg_count = ec.codes_count_in_file(f)
+            gids = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
+            f.close()
+        else:
+            #gribfile has already been opened into a TextIOWrapper in this case
+            msg_count = ec.codes_count_in_file(gribfile)
+            gids = np.zeros(msg_count, dtype=int)
+            for i in range(msg_count):
+                gids[i] = ec.codes_grib_new_from_file(gribfile)
 
         return gids
 
 
 
+class netcdf2read:
+    """Class for reading netcdf files.
+    """
 
-#  print(gribfile)
-#         f = open(gribfile, 'rb')
-#         msg_count = ec.codes_count_in_file(f)
-#         gid_list = [ec.codes_grib_new_from_file(f) for i in range(msg_count)]
-#         f.close()
+    def __init__(self, args:argparse.Namespace, files_to_read:list) -> None:
+        """Constructor for netcdf2read class.
 
-    # gid = gid_list[0]
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        files_to_read : list
+            List of files to read
+        """
+        if args.verbose:
+            print("Reading NetCDF", flush=True)
+
+        self.parameters = args.parameters
+
+        self.set_bools()
+
+        self.data = self.read(args, files_to_read)
+
+        return
 
 
-    # def get_grid(self, gid: int) -> None:
+    def set_bools(self) -> None:
+        """Set booleans for which variables to read.
+        """
+
+        self.search_t2m = False
+        self.found_t2m = False
+        if 't2m' in self.parameters:
+            self.search_t2m = True
+
+        self.search_precip = False
+        self.found_precip = False
+        if 'precip' in self.parameters:
+            self.search_precip = True
+
+        return
 
 
-    #     Ni = ec.codes_get(gid, 'Ni')
-    #     Nj = ec.codes_get(gid, 'Nj')
+    def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
+        """Sort xarray dataset by time.
 
-    #     gridtype = ec.codes_get(gid, 'gridType')
+        Parameters
+        ----------
+        dataarray : xr.Dataset
+            Dataset to sort
 
-    #     test = ec.codes_grib_get_data(gid)
-    #     print(test)
-    #     # if gridtype == 'lambert':
-    #     #     projparams['proj']='lcc'
-    #     #     projparams['lon_0']=self['LoVInDegrees']
-    #     #     projparams['lat_0']=self['LaDInDegrees']
-    #     #     projparams['lat_1']=self['Latin1InDegrees']
-    #     #     projparams['lat_2']=self['Latin2InDegrees']
+        Returns
+        -------
+        xr.Dataset
+            Sorted dataset
+        """
 
-    #     lat_first = ec.codes_get(gid, 'latitudeOfFirstGridPointInDegrees')
-    #     lon_first = ec.codes_get(gid, 'longitudeOfFirstGridPointInDegrees')
-    #     # lat_last  = ec.codes_get(gid, 'latitudeOfLastGridPointInDegrees')
-    #     # lon_last  = ec.codes_get(gid, 'longitudeOfLastGridPointInDegrees')
-        
-    #     return 
+        nt = dataarray.dims['time']
+        parameters = list(dataarray.data_vars)
+
+        time = dataarray['time'].values
+        idx = np.argsort(time)
+
+        da = dataarray.sortby('time')
+
+        for p in parameters:
+            for k in range(nt):
+                da[p][k,:,:] = dataarray[p][idx[k],:,:]
+
+        return da
+
+
+    def read(self, args:argparse.Namespace, files_to_read:list) -> xr.Dataset:
+        """Fetch data from the netcdf files and return an xarray.Dataset()
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments to dlotter.__main__
+        files_to_read : list
+            List of str with paths to netcdf files
+
+        Returns
+        -------
+        xr.Dataset
+            Dataset with found parameters
+        """
+
+        lats, lons = self.get_latlons(files_to_read[0])
+
+        Nt = len(files_to_read)
+        Nt_coords = np.zeros(Nt, dtype=dt.datetime)
+
+        if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+        for k,f in enumerate(files_to_read):
+            print(k,f)
+
+            f = nc.Dataset(files_to_read[k])
+
+            forecast = f.getncattr('ValidDate')
+            forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
+
+            Nt_coords[k] = forecast
+
+            if self.search_t2m:
+                t2m_key = self.find_relevant_key(f, 't2m')
+                if t2m_key is not None:
+                    t2m[k,:,:] = f[t2m_key][:,:]
+                    self.found_t2m = True
+
+            if self.search_precip:
+                precip_key = self.find_relevant_key(f, 'precip')
+                if precip_key is not None:
+                    precip[k,:,:] = f[precip_key][:,:]
+                    self.found_precip = True
+
+
+            f.close()
+
+
+        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                     "lon": (["x","y"], lons),
+                                     "time": (["t"], Nt_coords)})
+
+        if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
+
+        if len(list(ds_grib.data_vars)) == 0:
+            raise SystemExit('No variables found. This can be due to missing tables in \
+                              ECCODES_DEFINITION_PATH or that the requested keys are \
+                              not yet implemented')
+
+        ds_grib = self.sort_by_time(ds_grib)
+
+        return ds_grib
+
+
+    def get_latlons(self, netcdf_file:str) -> tuple:
+        """Get latitudes and longitudes from file. Uses netcdf4-python as
+        eccodes have no easy interface for that.
+
+        Parameters
+        ----------
+        netcdf_file : str
+            Path to netcdf file
+
+        Returns
+        -------
+        tuple
+            tuple of latitudes, longitudes
+        """
+
+        f = nc.Dataset(netcdf_file)
+
+        latkey = self.find_relevant_key(f, 'latitude')
+        lonkey = self.find_relevant_key(f, 'longitude')
+
+        if latkey is None or lonkey is None:
+            raise SystemExit('No lat/lon found in netcdf file')
+
+        lats = f[latkey][:,:]
+        lons = f[lonkey][:,:]
+
+        f.close()
+
+        return lats, lons
+
+
+    def find_relevant_key(self, dataset:nc._netCDF4.Dataset, key:str) -> Union[str, None]:
+        """Check if a key is in the netcdf file.
+
+        Parameters
+        ----------
+        nc._netCDF4.Dataset
+            Netcdf file
+        key : str
+            Key to search for
+
+        Returns
+        -------
+        str
+            None if no key is found, otherwise returns the best guess key
+        """
+
+        available_keys = dataset.variables.keys()
+
+        return_key = None
+
+        if key == 'latitude':
+            if 'lat' in available_keys: return_key = 'lat'
+            elif 'latitude' in available_keys: return_key = 'latitude'
+            elif 'LAT' in available_keys: return_key = 'LAT'
+
+        elif key == 'longitude':
+            if 'lon' in available_keys: return_key = 'lon'
+            elif 'longitude' in available_keys: return_key = 'longitude'
+            elif 'LON' in available_keys: return_key = 'LON'
+
+        elif key == 't2m':
+            if 't2m' in available_keys: return_key = 't2m'
+            elif 't2maboveground' in available_keys: return_key = 't2maboveground'
+            elif 'T2M' in available_keys: return_key = 'T2M'
+
+        elif key == 'precip':
+            if 'precip' in available_keys: return_key = 'precip'
+            elif 'precipitation' in available_keys: return_key = 'precipitation'
+            elif 'PRECIP' in available_keys: return_key = 'PRECIP'
+
+        return return_key

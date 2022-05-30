@@ -16,16 +16,24 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('./dlotter/'))
 import argparse
-from argparse import ArgumentDefaultsHelpFormatter
 
 from .prepare import prepare
-from .read import grib2Read
+from .read import grib2Read, netcdf2read
 from .plot import plot
 from .arguments import arguments
+from .meteogram import meteogram
+from .comeps import comeps
 
 from dmit import ostools
 
 class MyParser(argparse.ArgumentParser):
+    """Parser for dlotter arguments
+
+    Parameters
+    ----------
+    argparse : argparse.ArgumentParser
+        Parser for dlotter arguments
+    """
     def error(self, message):
         sys.stderr.write('error: %s\n' % message)
         self.print_help()
@@ -55,12 +63,22 @@ if __name__ == '__main__':
         if args.verbose:
             print('Found the following files:', flush=True)
             print(files_to_read, flush=True)
-        
+
         if args.filetype == 'grib2':
             datareader = grib2Read(args, files_to_read)
+            data = datareader.data
+        elif args.filetype == 'nc':
+            datareader = netcdf2read(args, files_to_read)
             data = datareader.data
         else:
             print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
             sys.exit(1)
 
         plotwork = plot(args, data)
+
+
+    if args.cmd == 'epsmeteogram':
+        eps = comeps(args)
+        data = eps.data
+
+        plotwork = meteogram(args, data)

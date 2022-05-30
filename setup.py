@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""Master module for setup dlotter
+"""
 import setuptools
 
 with open("README.md", "r") as fh:
@@ -23,11 +27,14 @@ setuptools.setup(
          'cartopy',
          'eccodes',
          'pygrib',
+         'scipy',
          ],
      url="https://dmidk.github.io/dlotter/",
      classifiers=[
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
-     ]
+     ],
+     include_package_data=True,
+     data_files=[('dlotter', ['dlotter/icons/*'])],
  )
