@@ -147,8 +147,7 @@ class meteogram:
             ax.spines['left'].set_visible(False)
             ax.tick_params(axis='both', which='major', pad=25)
 
-            plt.savefig('{}/epsplot_{}_{}.png'.format(args.output_dir, l,
-                                                analysis.strftime('%Y%m%d%H%M')))
+            plt.savefig('{}/epsplot_{}.png'.format(args.output_dir, l))
             l+=1
 
         return
