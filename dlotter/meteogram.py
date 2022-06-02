@@ -207,7 +207,7 @@ class meteogram:
             Title for center position and right position
         """
         title_center = ax.set_title(headline, fontsize=9, loc='center')
-        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%M'),
+        title_right = ax.set_title(analysis.strftime('Analysis: %Y-%m-%d %H:%Mz'),
                                    fontsize=10, loc='right', pad=20)
         return title_center, title_right
 
