@@ -127,12 +127,13 @@ class comeps:
 
                     ec.codes_set(time_gid, 'stepUnits', 'm')
 
-                    date = ec.codes_get(time_gid, 'dataDate')
-                    time = ec.codes_get(time_gid, 'dataTime')
-                    lead = ec.codes_get(time_gid, 'step')
+                    if m == 0: # Only fetch time data from first member
+                        date = ec.codes_get(time_gid, 'dataDate')
+                        time = ec.codes_get(time_gid, 'dataTime')
+                        lead = ec.codes_get(time_gid, 'step')
 
-                    analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
-                    forecast = analysis + dt.timedelta(minutes=lead)
+                        analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
+                        forecast = analysis + dt.timedelta(minutes=lead)
 
                     if k==0 and m==0:
                         # We'll save some time and only calculate one sunset and sunrise
