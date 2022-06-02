@@ -3,13 +3,14 @@
 """Master module for setup dlotter
 """
 import setuptools
+from glob import glob
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
      name='dlotter',
-     version='0.0.2.2',
+     version='0.1.0',
      author="Kasper Hintz",
      author_email="kah@dmi.dk",
      description="Quick and dirty static plots of NWP output",
@@ -36,5 +37,5 @@ setuptools.setup(
          "Operating System :: OS Independent",
      ],
      include_package_data=True,
-     data_files=[('dlotter', ['dlotter/icons/*'])],
+     package_data={'dlotter': glob('dlotter/icons/*.png')},
  )
