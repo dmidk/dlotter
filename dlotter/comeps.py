@@ -131,8 +131,7 @@ class comeps:
                         date = ec.codes_get(time_gid, 'dataDate')
                         time = ec.codes_get(time_gid, 'dataTime')
                         lead = ec.codes_get(time_gid, 'step')
-
-                        analysis = dt.datetime.strptime(('%i-%.2i')%(date,time),'%Y%m%d-%H%M')
+                        dt.datetime.strptime(('%i-%04i')%(date,time),'%Y%m%d-%H%M')
                         forecast = analysis + dt.timedelta(minutes=lead)
 
                     if k==0 and m==0:
@@ -225,6 +224,7 @@ class comeps:
         tuple
             Sunrise and sunset time.
         """
+        print(time)
         sunrise = sun.calc_sun_time(longitude, latitude, time, setrise='sunrise')
         sunset = sun.calc_sun_time(longitude, latitude, time, setrise='sunset')
 
