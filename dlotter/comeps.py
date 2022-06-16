@@ -131,7 +131,7 @@ class comeps:
                         date = ec.codes_get(time_gid, 'dataDate')
                         time = ec.codes_get(time_gid, 'dataTime')
                         lead = ec.codes_get(time_gid, 'step')
-                        dt.datetime.strptime(('%i-%04i')%(date,time),'%Y%m%d-%H%M')
+                        analysis = dt.datetime.strptime(('%i-%04i')%(date,time),'%Y%m%d-%H%M')
                         forecast = analysis + dt.timedelta(minutes=lead)
 
                     if k==0 and m==0:
