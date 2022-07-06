@@ -156,7 +156,7 @@ class grib2Read:
 
             if lead in leadtimes:
                 print('{} already there!'.format(lead))
-            
+
             leadtimes.append(lead)
 
             forecast = analysis + dt.timedelta(minutes=lead)
