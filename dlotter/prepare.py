@@ -95,6 +95,15 @@ class prepare:
                                 olderthan=None,
                                 inorder=inorder)
 
+#       Use this with care
+        if args.harmonie_hourly:
+            new_files = []
+            for f in files:
+                filename = f.split('/')[-1]
+                if len(filename)<4: new_files.append(f)
+            files = new_files
+
+
         if not epsmode:
             if args.limit_files > 0:
                 if args.limit_files >= len(files):
