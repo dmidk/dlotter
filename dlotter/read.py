@@ -143,9 +143,10 @@ class grib2Read:
         if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
+        
         if self.search_cape: cape = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
+        leadtimes=[]
 
         for k,f in enumerate(files_to_read):
             gids = self.get_gids(f)
@@ -159,6 +160,12 @@ class grib2Read:
             lead = ec.codes_get(time_gid, 'step')
 
             analysis = dt.datetime.strptime("{:d}-{:04d}".format(date,time), '%Y%m%d-%H%M')
+
+            if lead in leadtimes:
+                print('{} already there!'.format(lead))
+
+            leadtimes.append(lead)
+
             forecast = analysis + dt.timedelta(minutes=lead)
             Nt_coords[k] = forecast
 
@@ -253,6 +260,7 @@ class grib2Read:
                     cape[k,:,:] = values.reshape(Nj, Ni)
 
                 ec.codes_release(gid)
+
 
         ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
                                      "lon": (["x","y"], lons),

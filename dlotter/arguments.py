@@ -115,6 +115,11 @@ class arguments:
                         default="dk",
                         required=False)
 
+        parser_plot.add_argument('--harmonie-hourly',
+                        action='store_true',
+                        help='Select only hourly output from harmonie, use with care!',
+                        default=False)
+
         parser_plot.add_argument('--verbose',
                         action='store_true',
                         help='Verbose output',
