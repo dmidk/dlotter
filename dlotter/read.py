@@ -143,7 +143,7 @@ class grib2Read:
         if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-        
+
         if self.search_cape: cape = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         leadtimes=[]
