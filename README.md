@@ -1,8 +1,6 @@
 |      | Master                                                                                                      | Develop                                                                                                       |
 |------|-------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|
 | Lint | ![Lint Master](https://github.com/dmidk/dlotter/actions/workflows/code-quality.yml/badge.svg?branch=master) | ![Lint Develop](https://github.com/dmidk/dlotter/actions/workflows/code-quality.yml/badge.svg?branch=develop) |
-|      |                                                                                                             |                                                                                                               |
-|      |
 
 # dlotter
 Plot data from NWP output (BETA - in development).\
