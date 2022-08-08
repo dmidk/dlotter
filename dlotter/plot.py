@@ -105,6 +105,13 @@ class plot:
                 sys.exit(1)
             self.plot_ws(args, data)
 
+        if 'cape' in parameters:
+            if 'cape' not in avail_parameters:
+                print('cape was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
+                sys.exit(1)
+            self.plot_cape(args, data)
+
         return
 
 
@@ -730,6 +737,62 @@ class plot:
         return
 
 
+    def plot_cape(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot cape
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.cape.colors)
+        levels = [k for k in levels_and_colors.cape.levels]
+
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['cape'][k,:,:]): continue
+
+            self.add_title(axes,valid_time,analysis,'CAPE')
+
+            cape = data['cape'][k,:,:].values
+
+            cs = plt.pcolormesh(plons, plats, cape,
+                                cmap=colors,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$J/kg$", rotation=270)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/CAPE_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
 
     def fig_ax(self, w:int, h:int, **kwargs:dict) -> tuple:
         """Get figure and axes
@@ -1012,3 +1075,19 @@ class levels_and_colors:
         # 8 Colors
         colors = [(0.00, 0.00, 0.90), (0.00, 0.00, 0.80),
                   (0.00, 0.00, 0.70), (0.00, 0.00, 0.60), (0.00, 0.00, 0.50), (0.00, 0.00, 0.40)]
+
+    class cape:
+        """Class for cape levels and colors
+        """
+        # 9 levels
+        levels=[0, 10, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000,
+                1100, 1200, 1300, 1400, 1500, 1750, 2000, 2250, 2500]
+
+        # 8 Colors
+        fcolors = [(0, 100, 254), (0, 150, 254), (0, 200, 254), (0, 224, 233), (6, 223, 155),
+                  (0, 224, 117), (5, 213, 110), (5, 219, 76), (6, 229, 38), (0, 238, 0),
+                  (243, 243, 0), (248, 195, 2), (245, 193, 7), (241, 166, 4), (247, 145, 2),
+                  (224, 121, 3), (221, 97, 1), (214, 72, 31), (193, 48, 30), (175, 24, 29),
+                  (165, 2, 29), (176, 0, 49), (193, 3, 97), (238, 4, 140)]
+
+        colors = [(k[0]/255, k[1]/255, k[2]/255) for k in fcolors]
