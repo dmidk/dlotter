@@ -96,8 +96,11 @@ class grib2Read:
 
         self.search_cape = False
         self.found_cape = False
+        self.search_cin = False
+        self.found_cin = False
         if 'cape' in self.parameters:
             self.search_cape = True
+            self.search_cin = True
 
         return
 
@@ -145,6 +148,7 @@ class grib2Read:
         if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         if self.search_cape: cape = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+        if self.search_cin: cin = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
         leadtimes=[]
 
@@ -259,6 +263,12 @@ class grib2Read:
                     self.found_cape = True
                     cape[k,:,:] = values.reshape(Nj, Ni)
 
+                if self.search_cape and (shortName=='cin') and level==0 and \
+                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                    values = ec.codes_get_values(gid)
+                    self.found_cin = True
+                    cin[k,:,:] = values.reshape(Nj, Ni)
+
                 ec.codes_release(gid)
 
 
@@ -279,6 +289,7 @@ class grib2Read:
         if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
         if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
         if self.found_cape: ds_grib['cape'] = (['time', 'lat', 'lon'], cape )
+        if self.found_cin: ds_grib['cin'] = (['time', 'lat', 'lon'], cin )
 
         if len(list(ds_grib.data_vars)) == 0:
             raise SystemExit('No variables found. This can be due to missing tables \
