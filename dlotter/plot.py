@@ -748,6 +748,9 @@ class plot:
             Data to plot
         """
 
+        cin_contour = True if 'cin' in list(data.keys()) else False
+
+        clons, clats = data['lon'], data['lat']
         plons, plats = self.get_pcolormesh_center_coordinates(data)
 
         colors = ListedColormap(levels_and_colors.cape.colors)
@@ -771,6 +774,10 @@ class plot:
             self.add_title(axes,valid_time,analysis,'CAPE')
 
             cape = data['cape'][k,:,:].values
+            if cin_contour:
+                cin = data['cin'][k,:,:].values
+                plt.figtext(0.17, 0.09, r"$-$ (contours): CIN", horizontalalignment='left')
+                #(right, up)
 
             cs = plt.pcolormesh(plons, plats, cape,
                                 cmap=colors,
@@ -780,6 +787,27 @@ class plot:
             cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
             cb.set_label(r"$J/kg$", rotation=270)
 
+
+            if cin_contour:
+                cin_levels = [k for k in levels_and_colors.cin.levels]
+
+                cl = self.add_contour(axes, clons, clats, cin, levels=cin_levels, colors='k',
+                                 transform=self.data_crs, linewidths=0.5, linestyles='solid')
+
+                for level in cl.collections:
+                    for kp,path in reversed(list(enumerate(level.get_paths()))):
+                        # go in reversed order due to deletions!
+                        # include test for "smallness" of your choice here:
+                        verts = path.vertices # (N,2)-shape array of contour line coordinates
+                        diameter = np.max(verts.max(axis=0) - verts.min(axis=0))
+
+                        if diameter<0.4: # threshold to be refined for actual dimensions!
+                            #print("removing contour {} with diameter {}".format(kp, diameter))
+                            del(level.get_paths()[kp])
+
+
+            cllabel = axes.clabel(cl, fmt='%2.0f', inline=True, fontsize=8)
+
             fig.canvas.draw()
 
             figure_name = "{}/CAPE_{}-{}.png".format(args.output_dir,
@@ -788,6 +816,9 @@ class plot:
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
+            if cin_contour:
+                [cl.collections[k].remove() for k in range(len(cl.collections))]
+                [lbl.remove() for lbl in cllabel]
             print("-- {}".format(figure_name), flush=True)
 
         return
@@ -837,8 +868,8 @@ class plot:
             contourset
         """
         cc = plt.contour(X, Y, data, levels, **kwargs)
-        ax.clabel(cc, fmt='%2.0f', inline=True, fontsize=10)
-        return cc
+        #cclabel = ax.clabel(cc, fmt='%2.0f', inline=True, fontsize=8)
+        return cc#, cclabel
 
 
     def add_coastlines(self, ax:plt.subplots, **kwargs:dict) -> tuple:
@@ -1091,3 +1122,8 @@ class levels_and_colors:
                   (165, 2, 29), (176, 0, 49), (193, 3, 97), (238, 4, 140)]
 
         colors = [(k[0]/255, k[1]/255, k[2]/255) for k in fcolors]
+
+    class cin:
+        """Class for cin levels
+        """
+        levels=[-400, -200, -50]
