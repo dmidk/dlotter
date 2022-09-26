@@ -180,6 +180,13 @@ class plot:
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-30.5, -20.5, 69.7, 73.7]
 
+        if args.area == 'tas':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-36., central_latitude=65,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-39.5, -35.5, 64.9, 67.]
+
         return
 
 
@@ -370,6 +377,7 @@ class plot:
                        transform=self.data_crs,
                        color='#404040')
 
+            self.add_coastlines(axes)
             fig.canvas.draw()
 
             figure_name = "{}/W10M_{}-{}.png".format(args.output_dir,
