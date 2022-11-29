@@ -130,7 +130,6 @@ class plot:
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-75, -15, 58, 88]
 
-
         if args.area == 'neu':
             self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
                                     false_easting=0.0, false_northing=0.0,
@@ -172,6 +171,20 @@ class plot:
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-30.5, -20.5, 69.7, 73.7]
+
+        if args.area == 'sgl':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-42.5, central_latitude=61,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-52, -37, 59, 63]
+
+        if args.area == 'tas':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-37.7, central_latitude=65.9,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-43.0, -32.4, 63.9, 67.9]
 
         return
 
