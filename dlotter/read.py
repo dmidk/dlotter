@@ -12,6 +12,7 @@ import numpy as np
 import datetime as dt
 from dmit import regrot
 from typing import Union
+import sys
 
 class grib2Read:
     """Class for reading grib files
@@ -94,6 +95,12 @@ class grib2Read:
         if 'ws' in self.parameters:
             self.search_ws = True
 
+        self.search_z = False
+        self.found_z = False
+        if 'z' in self.parameters:
+            self.search_z = True
+
+
         return
 
 
@@ -113,159 +120,200 @@ class grib2Read:
             Dataset with found parameters
         """
 
-        grid_idx = 0 # Set to 0
-        lats, lons = self.get_latlons(files_to_read[grid_idx])
+        data = []
+        for i,d in enumerate(args.directory.split(",")):
+            Nt = len(files_to_read[i])
+            Nt_coords = np.zeros(Nt, dtype=dt.datetime)
 
-        Nt = len(files_to_read)
-        Nt_coords = np.zeros(Nt, dtype=dt.datetime)
+            grid_idx = 0 # Set to 0
+            lats, lons = self.get_latlons(files_to_read[i][grid_idx])
 
-        if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-        if self.search_td2m: td2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_td2m: td2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_uv:
+                u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+                v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_slp: slp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_tcc: tcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_lmhc:
+                lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+                mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+                hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+            if self.search_z: z = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+    
+    
+            for k,f in enumerate(files_to_read[i]):
+                gids = self.get_gids(f)
+    
+                time_gid = gids[0]
+    
+                ec.codes_set(time_gid, 'stepUnits', 'm')
+    
+                date = ec.codes_get(time_gid, 'dataDate')
+                time = ec.codes_get(time_gid, 'dataTime')
+                lead = ec.codes_get(time_gid, 'step')
+    
+                analysis = dt.datetime.strptime("{:d}-{:04d}".format(date,time), '%Y%m%d-%H%M')
+                forecast = analysis + dt.timedelta(minutes=lead)
+                Nt_coords[k] = forecast
+    
+                for _, gid in enumerate(gids):
+                    shortName = ec.codes_get(gid, 'shortName')
+                    indicatorOfParameter = ec.codes_get(gid, 'indicatorOfParameter')
+                    level = ec.codes_get(gid, 'level')
+                    typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
+                    levelType = ec.codes_get(gid, 'levelType')
+    
+                    Ni = ec.codes_get(gid, 'Ni')
+                    Nj = ec.codes_get(gid, 'Nj')
+    
+                    if levelType=='103': levelType='sfc' # For grib2, leveltype 103 is surface
+    
+                    if self.search_t2m and (shortName=='t' or shortName=='2t' or indicatorOfParameter==11) and level==2 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_t2m = True
+                        t2m[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum t2m: {:.4f}  &   Maximum t2m: {:.4f}'.format(np.nanmin(t2m[k,:,:]),np.nanmax(t2m[k,:,:])))
+    
+                    if self.search_td2m and (shortName=='td' or shortName=='2td' or indicatorOfParameter==17) and level==2 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_td2m = True
+                        td2m[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum td2m: {:.4f}  &   Maximum td2m: {:.4f}'.format(np.nanmin(td2m[k,:,:]),np.nanmax(td2m[k,:,:])))
+    
+                    if self.search_uv and (shortName=='u' or shortName=='10u' or indicatorOfParameter==33) and level==10 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_u = True
+                        u10[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum u10: {:.4f}  &   Maximum u10: {:.4f}'.format(np.nanmin(u10[k,:,:]),np.nanmax(u10[k,:,:])))
+    
+                    if self.search_uv and (shortName=='v' or shortName=='10v' or indicatorOfParameter==34) and level==10 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_v = True
+                        v10[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum v10: {:.4f}  &   Maximum v10: {:.4f}'.format(np.nanmin(v10[k,:,:]),np.nanmax(v10[k,:,:])))
+    
+                    if self.search_precip and (shortName=='tp' or shortName=='tprate' or indicatorOfParameter==61) \
+                                            and level==0 and typeOfLevel=='heightAboveGround' \
+                                            and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_precip = True
+                        precip[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum precip: {:.4f}  &   Maximum precip: {:.4f}'.format(np.nanmin(precip[k,:,:]),np.nanmax(precip[k,:,:])))
+    
+                    if self.search_slp and (shortName=='pres' or indicatorOfParameter==1) and level==0 and \
+                                            typeOfLevel=='heightAboveSea' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_slp = True
+                        slp[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum slp: {:.4f}  &   Maximum slp: {:.4f}'.format(np.nanmin(slp[k,:,:]),np.nanmax(slp[k,:,:])))
+    
+                    if self.search_lmhc and (shortName=='lcc' or indicatorOfParameter==73) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_lcc = True
+                        lcc[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum lcc: {:.4f}  &   Maximum lcc: {:.4f}'.format(np.nanmin(lcc[k,:,:]),np.nanmax(lcc[k,:,:])))
+    
+                    if self.search_lmhc and (shortName=='mcc' or indicatorOfParameter==74) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_mcc = True
+                        mcc[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum mcc: {:.4f}  &   Maximum mcc: {:.4f}'.format(np.nanmin(mcc[k,:,:]),np.nanmax(mcc[k,:,:])))
+    
+                    if self.search_lmhc and (shortName=='hcc' or indicatorOfParameter==75) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_hcc = True
+                        hcc[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum hcc: {:.4f}  &   Maximum hcc: {:.4f}'.format(np.nanmin(hcc[k,:,:]),np.nanmax(hcc[k,:,:])))
+    
+                    if self.search_tcc and (shortName=='tcc' or indicatorOfParameter==71) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_tcc = True
+                        tcc[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum tcc: {:.4f}  &   Maximum tcc: {:.4f}'.format(np.nanmin(tcc[k,:,:]),np.nanmax(tcc[k,:,:])))
+    
+                    if self.search_snow and (shortName=='tpsolid' or indicatorOfParameter==185) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_snow = True
+                        snow[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum snow: {:.4f}  &   Maximum snow: {:.4f}'.format(np.nanmin(snow[k,:,:]),np.nanmax(snow[k,:,:])))
+    
+                    if self.search_ws and (shortName=='ws' or indicatorOfParameter==32) and level==10 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_ws = True
+                        ws[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum ws: {:.4f}  &   Maximum ws: {:.4f}'.format(np.nanmin(ws[k,:,:]),np.nanmax(ws[k,:,:])))
+    
+                    if self.search_z and (shortName=='z' or indicatorOfParameter==6) and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_z = True
+                        z[k,:,:] = values.reshape(Nj, Ni) / 9.82 # To go to unit m
+                        if args.verbose:
+                            print('Minimum z: {:.4f}  &   Maximum z: {:.4f}'.format(np.nanmin(z[k,:,:]),np.nanmax(z[k,:,:])))
+    
+    
+                    ec.codes_release(gid)
+    
+            ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                         "lon": (["x","y"], lons),
+                                         "time": (["t"], Nt_coords)})
+    
+            if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+            if self.found_td2m: ds_grib['td2m'] = (['time', 'lat', 'lon'], td2m - 273.15 )
+            if self.found_u: ds_grib['u10m'] = (['time', 'lat', 'lon'], u10 )
+            if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
+            if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip )
+            if self.found_slp: ds_grib['slp'] = (['time', 'lat', 'lon'], slp * 0.01)
+            if self.found_tcc: ds_grib['tcc'] = (['time', 'lat', 'lon'], tcc )
+            if self.found_lcc: ds_grib['lcc'] = (['time', 'lat', 'lon'], lcc )
+            if self.found_mcc: ds_grib['mcc'] = (['time', 'lat', 'lon'], mcc )
+            if self.found_hcc: ds_grib['hcc'] = (['time', 'lat', 'lon'], hcc )
+            if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
+            if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
+            if self.found_z: ds_grib['z'] = (['time', 'lat', 'lon'], z )
+    
+            if len(list(ds_grib.data_vars)) == 0:
+                raise SystemExit('No variables found. This can be due to missing tables \
+                                  in ECCODES_DEFINITION_PATH or that the requested keys \
+                                  are not yet implemented')
+    
+            ds_grib = self.sort_by_time(ds_grib)
+            data.append(ds_grib)
 
-        if self.search_uv:
-            u10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-            v10 = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-        if self.search_slp: slp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-        if self.search_tcc: tcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
-        if self.search_lmhc:
-            lcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-            mcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-            hcc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
-        if self.search_snow: snow = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
-        if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-
-
-        for k,f in enumerate(files_to_read):
-            gids = self.get_gids(f)
-
-            time_gid = gids[0]
-
-            ec.codes_set(time_gid, 'stepUnits', 'm')
-
-            date = ec.codes_get(time_gid, 'dataDate')
-            time = ec.codes_get(time_gid, 'dataTime')
-            lead = ec.codes_get(time_gid, 'step')
-
-            analysis = dt.datetime.strptime("{:d}-{:04d}".format(date,time), '%Y%m%d-%H%M')
-            forecast = analysis + dt.timedelta(minutes=lead)
-            Nt_coords[k] = forecast
-
-            for _, gid in enumerate(gids):
-                shortName = ec.codes_get(gid, 'shortName')
-                level = ec.codes_get(gid, 'level')
-                typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
-                levelType = ec.codes_get(gid, 'levelType')
-
-                Ni = ec.codes_get(gid, 'Ni')
-                Nj = ec.codes_get(gid, 'Nj')
-
-                if levelType=='103': levelType='sfc' # For grib2, leveltype 103 is surface
-
-                if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_t2m = True
-                    t2m[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_td2m and (shortName=='td' or shortName=='2td') and level==2 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_td2m = True
-                    td2m[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_uv and (shortName=='u' or shortName=='10u') and level==10 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_u = True
-                    u10[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_uv and (shortName=='v' or shortName=='10v') and level==10 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_v = True
-                    v10[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_precip and (shortName=='tp' or shortName=='tprate') \
-                                        and level==0 and typeOfLevel=='heightAboveGround' \
-                                        and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_precip = True
-                    precip[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_slp and (shortName=='pres') and level==0 and \
-                                        typeOfLevel=='heightAboveSea' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_slp = True
-                    slp[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_lmhc and (shortName=='lcc') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_lcc = True
-                    lcc[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_lmhc and (shortName=='mcc') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_mcc = True
-                    mcc[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_lmhc and (shortName=='hcc') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_hcc = True
-                    hcc[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_tcc and (shortName=='tcc') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_tcc = True
-                    tcc[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_snow and (shortName=='tpsolid') and level==0 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_snow = True
-                    snow[k,:,:] = values.reshape(Nj, Ni)
-
-                if self.search_ws and (shortName=='ws') and level==10 and \
-                                        typeOfLevel=='heightAboveGround' and levelType=='sfc':
-                    values = ec.codes_get_values(gid)
-                    self.found_ws = True
-                    ws[k,:,:] = values.reshape(Nj, Ni)
-
-                ec.codes_release(gid)
-
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
-                                     "lon": (["x","y"], lons),
-                                     "time": (["t"], Nt_coords)})
-
-        if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
-        if self.found_td2m: ds_grib['td2m'] = (['time', 'lat', 'lon'], td2m - 273.15 )
-        if self.found_u: ds_grib['u10m'] = (['time', 'lat', 'lon'], u10 )
-        if self.found_u: ds_grib['v10m'] = (['time', 'lat', 'lon'], v10 )
-        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip )
-        if self.found_slp: ds_grib['slp'] = (['time', 'lat', 'lon'], slp * 0.01)
-        if self.found_tcc: ds_grib['tcc'] = (['time', 'lat', 'lon'], tcc )
-        if self.found_lcc: ds_grib['lcc'] = (['time', 'lat', 'lon'], lcc )
-        if self.found_mcc: ds_grib['mcc'] = (['time', 'lat', 'lon'], mcc )
-        if self.found_hcc: ds_grib['hcc'] = (['time', 'lat', 'lon'], hcc )
-        if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
-        if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
-
-        if len(list(ds_grib.data_vars)) == 0:
-            raise SystemExit('No variables found. This can be due to missing tables \
-                              in ECCODES_DEFINITION_PATH or that the requested keys \
-                              are not yet implemented')
-
-        ds_grib = self.sort_by_time(ds_grib)
-
-        return ds_grib
+        return data
 
 
     def sort_by_time(self, dataarray:xr.Dataset) -> xr.Dataset:
@@ -461,55 +509,56 @@ class netcdf2read:
             Dataset with found parameters
         """
 
-        lats, lons = self.get_latlons(files_to_read[0])
+        data = []
+        for i,d in enumerate(args.directory.split(",")):
+            lats, lons = self.get_latlons(files_to_read[i])
 
-        Nt = len(files_to_read)
-        Nt_coords = np.zeros(Nt, dtype=dt.datetime)
+            Nt = len(files_to_read[i])
+            Nt_coords = np.zeros(Nt, dtype=dt.datetime)
 
-        if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
-        if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_t2m: t2m = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+            if self.search_precip: precip = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
-        for k,f in enumerate(files_to_read):
-            print(k,f)
+            for k,f in enumerate(files_to_read[i]):
+                print(k,f)
 
-            f = nc.Dataset(files_to_read[k])
+                f = nc.Dataset(files_to_read[k])
 
-            forecast = f.getncattr('ValidDate')
-            forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
+                forecast = f.getncattr('ValidDate')
+                forecast = dt.datetime.strptime(forecast, '%Y-%b-%d %H:%M:%S')
 
-            Nt_coords[k] = forecast
+                Nt_coords[k] = forecast
 
-            if self.search_t2m:
-                t2m_key = self.find_relevant_key(f, 't2m')
-                if t2m_key is not None:
-                    t2m[k,:,:] = f[t2m_key][:,:]
-                    self.found_t2m = True
+                if self.search_t2m:
+                    t2m_key = self.find_relevant_key(f, 't2m')
+                    if t2m_key is not None:
+                        t2m[k,:,:] = f[t2m_key][:,:]
+                        self.found_t2m = True
 
-            if self.search_precip:
-                precip_key = self.find_relevant_key(f, 'precip')
-                if precip_key is not None:
-                    precip[k,:,:] = f[precip_key][:,:]
-                    self.found_precip = True
-
-
-            f.close()
+                if self.search_precip:
+                    precip_key = self.find_relevant_key(f, 'precip')
+                    if precip_key is not None:
+                        precip[k,:,:] = f[precip_key][:,:]
+                        self.found_precip = True
 
 
-        ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
-                                     "lon": (["x","y"], lons),
-                                     "time": (["t"], Nt_coords)})
+                f.close()
 
-        if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
-        if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
 
-        if len(list(ds_grib.data_vars)) == 0:
-            raise SystemExit('No variables found. This can be due to missing tables in \
-                              ECCODES_DEFINITION_PATH or that the requested keys are \
-                              not yet implemented')
+            ds_grib = xr.Dataset(coords={"lat": (["x","y"], lats),
+                                         "lon": (["x","y"], lons),
+                                         "time": (["t"], Nt_coords)})
 
-        ds_grib = self.sort_by_time(ds_grib)
+            if self.found_t2m: ds_grib['t2m'] = (['time', 'lat', 'lon'], t2m - 273.15 )
+            if self.found_precip: ds_grib['precip'] = (['time', 'lat', 'lon'], precip)
 
-        return ds_grib
+            if len(list(ds_grib.data_vars)) == 0:
+                raise SystemExit('No variables found.')
+
+            ds_grib = self.sort_by_time(ds_grib)
+            data.append(ds_grib)
+
+        return data
 
 
     def get_latlons(self, netcdf_file:str) -> tuple:
