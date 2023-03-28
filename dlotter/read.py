@@ -168,7 +168,6 @@ class grib2Read:
     
                 for _, gid in enumerate(gids):
                     shortName = ec.codes_get(gid, 'shortName')
-                    indicatorOfParameter = ec.codes_get(gid, 'indicatorOfParameter')
                     level = ec.codes_get(gid, 'level')
                     typeOfLevel = ec.codes_get(gid, 'typeOfLevel')
                     levelType = ec.codes_get(gid, 'levelType')
@@ -178,7 +177,7 @@ class grib2Read:
     
                     if levelType=='103': levelType='sfc' # For grib2, leveltype 103 is surface
     
-                    if self.search_t2m and (shortName=='t' or shortName=='2t' or indicatorOfParameter==11) and level==2 and \
+                    if self.search_t2m and (shortName=='t' or shortName=='2t') and level==2 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_t2m = True
@@ -186,7 +185,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum t2m: {:.4f}  &   Maximum t2m: {:.4f}'.format(np.nanmin(t2m[k,:,:]),np.nanmax(t2m[k,:,:])))
     
-                    if self.search_td2m and (shortName=='td' or shortName=='2td' or indicatorOfParameter==17) and level==2 and \
+                    if self.search_td2m and (shortName=='td' or shortName=='2td') and level==2 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_td2m = True
@@ -194,7 +193,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum td2m: {:.4f}  &   Maximum td2m: {:.4f}'.format(np.nanmin(td2m[k,:,:]),np.nanmax(td2m[k,:,:])))
     
-                    if self.search_uv and (shortName=='u' or shortName=='10u' or indicatorOfParameter==33) and level==10 and \
+                    if self.search_uv and (shortName=='u' or shortName=='10u') and level==10 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_u = True
@@ -202,7 +201,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum u10: {:.4f}  &   Maximum u10: {:.4f}'.format(np.nanmin(u10[k,:,:]),np.nanmax(u10[k,:,:])))
     
-                    if self.search_uv and (shortName=='v' or shortName=='10v' or indicatorOfParameter==34) and level==10 and \
+                    if self.search_uv and (shortName=='v' or shortName=='10v') and level==10 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_v = True
@@ -210,7 +209,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum v10: {:.4f}  &   Maximum v10: {:.4f}'.format(np.nanmin(v10[k,:,:]),np.nanmax(v10[k,:,:])))
     
-                    if self.search_precip and (shortName=='tp' or shortName=='tprate' or indicatorOfParameter==61) \
+                    if self.search_precip and (shortName=='tp' or shortName=='tprate') \
                                             and level==0 and typeOfLevel=='heightAboveGround' \
                                             and levelType=='sfc':
                         values = ec.codes_get_values(gid)
@@ -219,7 +218,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum precip: {:.4f}  &   Maximum precip: {:.4f}'.format(np.nanmin(precip[k,:,:]),np.nanmax(precip[k,:,:])))
     
-                    if self.search_slp and (shortName=='pres' or indicatorOfParameter==1) and level==0 and \
+                    if self.search_slp and (shortName=='pres') and level==0 and \
                                             typeOfLevel=='heightAboveSea' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_slp = True
@@ -227,7 +226,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum slp: {:.4f}  &   Maximum slp: {:.4f}'.format(np.nanmin(slp[k,:,:]),np.nanmax(slp[k,:,:])))
     
-                    if self.search_lmhc and (shortName=='lcc' or indicatorOfParameter==73) and level==0 and \
+                    if self.search_lmhc and (shortName=='lcc') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_lcc = True
@@ -235,7 +234,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum lcc: {:.4f}  &   Maximum lcc: {:.4f}'.format(np.nanmin(lcc[k,:,:]),np.nanmax(lcc[k,:,:])))
     
-                    if self.search_lmhc and (shortName=='mcc' or indicatorOfParameter==74) and level==0 and \
+                    if self.search_lmhc and (shortName=='mcc') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_mcc = True
@@ -243,7 +242,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum mcc: {:.4f}  &   Maximum mcc: {:.4f}'.format(np.nanmin(mcc[k,:,:]),np.nanmax(mcc[k,:,:])))
     
-                    if self.search_lmhc and (shortName=='hcc' or indicatorOfParameter==75) and level==0 and \
+                    if self.search_lmhc and (shortName=='hcc') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_hcc = True
@@ -251,7 +250,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum hcc: {:.4f}  &   Maximum hcc: {:.4f}'.format(np.nanmin(hcc[k,:,:]),np.nanmax(hcc[k,:,:])))
     
-                    if self.search_tcc and (shortName=='tcc' or indicatorOfParameter==71) and level==0 and \
+                    if self.search_tcc and (shortName=='tcc') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_tcc = True
@@ -259,7 +258,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum tcc: {:.4f}  &   Maximum tcc: {:.4f}'.format(np.nanmin(tcc[k,:,:]),np.nanmax(tcc[k,:,:])))
     
-                    if self.search_snow and (shortName=='tpsolid' or indicatorOfParameter==185) and level==0 and \
+                    if self.search_snow and (shortName=='tpsolid') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_snow = True
@@ -267,7 +266,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum snow: {:.4f}  &   Maximum snow: {:.4f}'.format(np.nanmin(snow[k,:,:]),np.nanmax(snow[k,:,:])))
     
-                    if self.search_ws and (shortName=='ws' or indicatorOfParameter==32) and level==10 and \
+                    if self.search_ws and (shortName=='ws') and level==10 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_ws = True
@@ -275,7 +274,7 @@ class grib2Read:
                         if args.verbose:
                             print('Minimum ws: {:.4f}  &   Maximum ws: {:.4f}'.format(np.nanmin(ws[k,:,:]),np.nanmax(ws[k,:,:])))
     
-                    if self.search_z and (shortName=='z' or indicatorOfParameter==6) and level==0 and \
+                    if self.search_z and (shortName=='z') and level==0 and \
                                             typeOfLevel=='heightAboveGround' and levelType=='sfc':
                         values = ec.codes_get_values(gid)
                         self.found_z = True
