@@ -102,23 +102,23 @@ class prepare:
                                 fullpath=True,
                                 olderthan=None,
                                 inorder=inorder)
-    
+ 
             if not epsmode:
                 if args.limit_files > 0:
                     if args.limit_files >= len(f):
                         limit = len(f)
                     else:
                         limit = args.limit_files
-    
+
                     f = f[0:limit]
-    
+
             if epsmode:
                 epsfiles = []
                 for member in range(args.members):
                     for fm in range(args.files_per_member):
                         #Follows: /something/mbr000/000
                         epsfiles.append("{}/mbr{:03d}/{:03d}".format(directory,member,fm))
-    
+
                 if len(epsfiles) != len(f):
                     print('Number of automatic found files was different than specified', flush=True)
                 f = epsfiles

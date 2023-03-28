@@ -38,53 +38,53 @@ class plot:
 
         for data in data_list:
             avail_parameters = list(data.data_vars)
-    
+ 
             self.nt = data.dims['time']
-    
+ 
             print('- Plotting', flush=True)
-    
+ 
             if 't2m' in parameters:
                 if 't2m' not in avail_parameters:
                     print('t2m was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_t2m(args, data)
-    
+
             if 'td2m' in parameters:
                 if 'td2m' not in avail_parameters:
                     print('td2m was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_td2m(args, data)
-    
+
             if 'w10m' in parameters:
                 if 'u10m' not in avail_parameters or 'v10m' not in avail_parameters:
                     print('u10m/v10m was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_w10m(args, data)
-    
+
             if 'precip' in parameters:
                 if 'precip' not in avail_parameters:
                     print('precip was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_precip(args, data)
-    
+
             if 'slp' in parameters:
                 if 'slp' not in avail_parameters:
                     print('slp was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_slp(args, data)
-    
+
             if 'tcc' in parameters:
                 if 'tcc' not in avail_parameters:
                     print('tcc was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_tcc(args, data)
-    
+
             if 'lmhc' in parameters:
                 if 'lcc' not in avail_parameters or 'mcc' not in avail_parameters \
                     or 'hcc' not in avail_parameters:
@@ -92,21 +92,21 @@ class plot:
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_lmhc(args, data)
-    
+
             if 'snow' in parameters:
                 if 'snow' not in avail_parameters:
                     print('snow was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_snow(args, data)
-    
+
             if 'ws' in parameters:
                 if 'ws' not in avail_parameters:
                     print('ws was not found in available parameters: {},\
                            cannot plot'.format(avail_parameters), flush=True)
                     sys.exit(1)
                 self.plot_ws(args, data)
-    
+
             if 'z' in parameters:
                 if 'z' not in avail_parameters:
                     print('z was not found in available parameters: {},\

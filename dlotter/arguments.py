@@ -111,8 +111,8 @@ class arguments:
                         '--area',
                         metavar='AREA',
                         type=str,
-                        help='Over which area to plot (Options are: dk, gl, neu, sjalland, disko, europe, faroes, \
-                              scoresbysund, sgl, tas, nkb)',
+                        help='Over which area to plot (Options are: dk, gl, neu, sjalland, disko, \
+                              europe, faroes, scoresbysund, sgl, tas, nkb)',
                         default="dk",
                         required=False)
 
@@ -236,8 +236,8 @@ class arguments:
                         '--area',
                         metavar='AREA',
                         type=str,
-                        help='Over which area to plot (Options are: dk, gl, neu, sjalland, disko, europe, faroes, \
-                              scoresbysund, sgl, tas, nkb)',
+                        help='Over which area to plot (Options are: dk, gl, neu, sjalland, disko, \
+                              europe, faroes, scoresbysund, sgl, tas, nkb)',
                         default="dk",
                         required=False)
 

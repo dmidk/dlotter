@@ -9,10 +9,8 @@ import xarray as xr
 import numpy as np
 import datetime as dt
 
-import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-from matplotlib.colors import ListedColormap
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -201,12 +199,14 @@ class plotdiff:
             valid_time = data_list[0]['time'][k].values
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
-            if ( (self.check_for_empty_array(data_list[0]['t2m'][k,:,:])) | 
+            if ( (self.check_for_empty_array(data_list[0]['t2m'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['t2m'][k,:,:])) ): continue
 
-            self.add_title(axes,valid_time,analysis,'2m Temperature Difference: {}-{}'.format(exps[0],exps[1]))
+            self.add_title(axes,valid_time,analysis,'2m Temperature Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
 
-            cs = plt.pcolormesh(plons, plats, data_list[0]['t2m'][k,:,:]-data_list[1]['t2m'][k,:,:],
+            cs = plt.pcolormesh(plons, plats,
+                                data_list[0]['t2m'][k,:,:] - data_list[1]['t2m'][k,:,:],
                                 cmap=cmap,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -260,12 +260,14 @@ class plotdiff:
             valid_time = data_list[0]['time'][k].values
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
-            if ( (self.check_for_empty_array(data_list[0]['td2m'][k,:,:])) | 
+            if ( (self.check_for_empty_array(data_list[0]['td2m'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['td2m'][k,:,:])) ): continue
 
-            self.add_title(axes,valid_time,analysis,'2m Dew Point Temperature Difference: {}-{}'.format(exps[0],exps[1]))
+            self.add_title(axes,valid_time,analysis,'2m Dew Point Temperature Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
 
-            cs = plt.pcolormesh(plons, plats, data_list[0]['td2m'][k,:,:]-data_list[1]['td2m'][k,:,:],
+            cs = plt.pcolormesh(plons, plats, 
+                                data_list[0]['td2m'][k,:,:] - data_list[1]['td2m'][k,:,:],
                                 cmap=cmap,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -320,21 +322,22 @@ class plotdiff:
             valid_time = data_list[0]['time'][k].values
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
-            if ( (self.check_for_empty_array(data_list[0]['u10m'][k,:,:])) | 
+            if ( (self.check_for_empty_array(data_list[0]['u10m'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['u10m'][k,:,:])) ): continue
-            if ( (self.check_for_empty_array(data_list[0]['v10m'][k,:,:])) | 
+            if ( (self.check_for_empty_array(data_list[0]['v10m'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['v10m'][k,:,:])) ): continue
 
-            self.add_title(axes,valid_time,analysis,'10m Wind Difference: {}-{}'.format(exps[0],exps[1]))
+            self.add_title(axes,valid_time,analysis,'10m Wind Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
 
             w10m = []
             for i in range(len(data_list)):
                 u = data_list[i]['u10m'][k,:,:].values
                 v = data_list[i]['v10m'][k,:,:].values
-    
+ 
                 w10m.append(np.sqrt(u*u+v*v))
 
-            cs = plt.pcolormesh(plons, plats, w10m[0]-w10m[1],
+            cs = plt.pcolormesh(plons, plats, w10m[0] - w10m[1],
                                 cmap=cmap,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -388,13 +391,15 @@ class plotdiff:
             valid_time = data_list[0]['time'][k].values
             valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
 
-            if ( (self.check_for_empty_array(data_list[0]['precip'][k,:,:])) | 
+            if ( (self.check_for_empty_array(data_list[0]['precip'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['precip'][k,:,:])) ): continue
             
 
-            self.add_title(axes,valid_time,analysis,'Precipitation Difference: {}-{}'.format(exps[0],exps[1]))
+            self.add_title(axes,valid_time,analysis,'Precipitation Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
 
-            cs = plt.pcolormesh(plons, plats, data_list[0]['precip'][k,:,:].values-data_list[1]['precip'][k,:,:].values,
+            cs = plt.pcolormesh(plons, plats,
+                                data_list[0]['precip'][k,:,:] - data_list[1]['precip'][k,:,:],
                                 cmap=cmap,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -451,9 +456,11 @@ class plotdiff:
             if ( (self.check_for_empty_array(data_list[0]['z'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['z'][k,:,:])) ): continue
 
-            self.add_title(axes,valid_time,analysis,'Orography Difference: {}-{}'.format(exps[0],exps[1]))
+            self.add_title(axes,valid_time,analysis,'Orography Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
 
-            cs = plt.pcolormesh(plons, plats, data_list[0]['z'][k,:,:]-data_list[1]['z'][k,:,:],
+            cs = plt.pcolormesh(plons, plats,
+                                data_list[0]['z'][k,:,:] - data_list[1]['z'][k,:,:],
                                 cmap=cmap,
                                 norm=norm,
                                 transform=self.data_crs)
@@ -604,7 +611,7 @@ class levels_and_colors:
     class t2m:
         """Class for t2m levels and colors
         """
-        # 21 levels 
+        # 21 levels
         levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-0.5,0.,0.5,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
 
         # 22 colors
@@ -619,7 +626,7 @@ class levels_and_colors:
     class w10m:
         """Class for w10m levels and colors
         """
-        # 21 levels 
+        # 21 levels
         levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
 
         # 22 colors
@@ -662,4 +669,4 @@ class levels_and_colors:
                   (1.00, 0.74, 0.74), (1.00, 0.55, 0.55), (1.00, 0.36, 0.36),
                   (1.00, 0.18, 0.18), (0.99, 0.00, 0.00), (0.90, 0.00, 0.00),
                   (0.81, 0.00, 0.00), (0.71, 0.00, 0.00), (0.62, 0.00, 0.00), (0.52, 0.00, 0.00)]
- 
+

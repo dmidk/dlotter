@@ -87,7 +87,8 @@ if __name__ == '__main__':
 
     if args.cmd == 'plotdiff':
         if len(args.directory.split(",")) != 2:
-            print('Number of specified directories are {:d}, which is not supported. Must be 2.'.format(len(args.directory.split(","))), flush=True)
+            print('Number of specified directories are {:d}, which is not supported. \
+                   Must be 2.'.format(len(args.directory.split(","))), flush=True)
             sys.exit(1)
 
         prepwork = prepare(args)
