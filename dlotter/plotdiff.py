@@ -266,7 +266,7 @@ class plotdiff:
             self.add_title(axes,valid_time,analysis,'2m Dew Point Temperature Difference: \
                            {}-{}'.format(exps[0],exps[1]))
 
-            cs = plt.pcolormesh(plons, plats, 
+            cs = plt.pcolormesh(plons, plats,
                                 data_list[0]['td2m'][k,:,:] - data_list[1]['td2m'][k,:,:],
                                 cmap=cmap,
                                 norm=norm,
@@ -393,7 +393,7 @@ class plotdiff:
 
             if ( (self.check_for_empty_array(data_list[0]['precip'][k,:,:])) |
                  (self.check_for_empty_array(data_list[1]['precip'][k,:,:])) ): continue
-            
+
 
             self.add_title(axes,valid_time,analysis,'Precipitation Difference: \
                            {}-{}'.format(exps[0],exps[1]))
@@ -612,7 +612,8 @@ class levels_and_colors:
         """Class for t2m levels and colors
         """
         # 21 levels
-        levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-0.5,0.,0.5,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
+        levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-0.5,0.,
+                0.5,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
 
         # 22 colors
         colors = [(0.00, 0.00, 0.30), (0.00, 0.00, 0.43), (0.00, 0.00, 0.56), (0.00, 0.00, 0.70),
@@ -627,7 +628,8 @@ class levels_and_colors:
         """Class for w10m levels and colors
         """
         # 21 levels
-        levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.,1.,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
+        levels=[-10.0,-9.0,-8.0,-7.0,-6.0,-5.0,-4.0,-3.0,-2.0,-1.0,0.,
+                1.,2.,3.,4.,5.,6.,7.,8.,9.,10.0]
 
         # 22 colors
         colors = [(0.00, 0.00, 0.30), (0.00, 0.00, 0.43), (0.00, 0.00, 0.56), (0.00, 0.00, 0.70),
