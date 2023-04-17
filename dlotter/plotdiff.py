@@ -334,7 +334,7 @@ class plotdiff:
             for i in range(len(data_list)):
                 u = data_list[i]['u10m'][k,:,:].values
                 v = data_list[i]['v10m'][k,:,:].values
- 
+
                 w10m.append(np.sqrt(u*u+v*v))
 
             cs = plt.pcolormesh(plons, plats, w10m[0] - w10m[1],

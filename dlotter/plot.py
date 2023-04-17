@@ -38,11 +38,11 @@ class plot:
 
         for data in data_list:
             avail_parameters = list(data.data_vars)
- 
+
             self.nt = data.dims['time']
- 
+
             print('- Plotting', flush=True)
- 
+
             if 't2m' in parameters:
                 if 't2m' not in avail_parameters:
                     print('t2m was not found in available parameters: {},\
