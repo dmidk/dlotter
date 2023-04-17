@@ -805,7 +805,7 @@ class plot:
 
             fig.canvas.draw()
 
-            figure_name = "{}/z_{}-{}.png".format(args.output_dir,
+            figure_name = "{}/Z_{}-{}.png".format(args.output_dir,
                                                   analysis.strftime('%Y%m%d_%H%M'),
                                                   valid_time.strftime('%Y%m%d_%H%M'))
             plt.savefig(figure_name)
