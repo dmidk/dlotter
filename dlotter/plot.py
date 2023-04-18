@@ -21,89 +21,98 @@ class plot:
     """Class for creating geographic plots
     """
 
-    def __init__(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+    def __init__(self, args:argparse.Namespace, data_list:xr.Dataset) -> None:
         """Constructor for plot class
 
         Parameters
         ----------
         args : argparse.Namespace
             Input arguments from command line
-        data : xr.Dataset
+        data : list of xr.Dataset
             Data to plot
         """
 
         self.projections(args)
 
         parameters = args.parameters
-        avail_parameters = list(data.data_vars)
 
-        self.nt = data.dims['time']
+        for data in data_list:
+            avail_parameters = list(data.data_vars)
 
-        print('- Plotting', flush=True)
+            self.nt = data.dims['time']
 
-        if 't2m' in parameters:
-            if 't2m' not in avail_parameters:
-                print('t2m was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_t2m(args, data)
+            print('- Plotting', flush=True)
 
-        if 'td2m' in parameters:
-            if 'td2m' not in avail_parameters:
-                print('td2m was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_td2m(args, data)
+            if 't2m' in parameters:
+                if 't2m' not in avail_parameters:
+                    print('t2m was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_t2m(args, data)
 
-        if 'w10m' in parameters:
-            if 'u10m' not in avail_parameters or 'v10m' not in avail_parameters:
-                print('u10m/v10m was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_w10m(args, data)
+            if 'td2m' in parameters:
+                if 'td2m' not in avail_parameters:
+                    print('td2m was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_td2m(args, data)
 
-        if 'precip' in parameters:
-            if 'precip' not in avail_parameters:
-                print('precip was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_precip(args, data)
+            if 'w10m' in parameters:
+                if 'u10m' not in avail_parameters or 'v10m' not in avail_parameters:
+                    print('u10m/v10m was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_w10m(args, data)
 
-        if 'slp' in parameters:
-            if 'slp' not in avail_parameters:
-                print('slp was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_slp(args, data)
+            if 'precip' in parameters:
+                if 'precip' not in avail_parameters:
+                    print('precip was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_precip(args, data)
 
-        if 'tcc' in parameters:
-            if 'tcc' not in avail_parameters:
-                print('tcc was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_tcc(args, data)
+            if 'slp' in parameters:
+                if 'slp' not in avail_parameters:
+                    print('slp was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_slp(args, data)
 
-        if 'lmhc' in parameters:
-            if 'lcc' not in avail_parameters or 'mcc' not in avail_parameters \
-                or 'hcc' not in avail_parameters:
-                print('lmhc was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_lmhc(args, data)
+            if 'tcc' in parameters:
+                if 'tcc' not in avail_parameters:
+                    print('tcc was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_tcc(args, data)
 
-        if 'snow' in parameters:
-            if 'snow' not in avail_parameters:
-                print('snow was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_snow(args, data)
+            if 'lmhc' in parameters:
+                if 'lcc' not in avail_parameters or 'mcc' not in avail_parameters \
+                    or 'hcc' not in avail_parameters:
+                    print('lmhc was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_lmhc(args, data)
 
-        if 'ws' in parameters:
-            if 'ws' not in avail_parameters:
-                print('ws was not found in available parameters: {},\
-                       cannot plot'.format(avail_parameters), flush=True)
-                sys.exit(1)
-            self.plot_ws(args, data)
+            if 'snow' in parameters:
+                if 'snow' not in avail_parameters:
+                    print('snow was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_snow(args, data)
+
+            if 'ws' in parameters:
+                if 'ws' not in avail_parameters:
+                    print('ws was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_ws(args, data)
+
+            if 'z' in parameters:
+                if 'z' not in avail_parameters:
+                    print('z was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_z(args, data)
 
         return
 
@@ -129,7 +138,6 @@ class plot:
                                     false_northing=0.0,)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-75, -15, 58, 88]
-
 
         if args.area == 'neu':
             self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
@@ -172,6 +180,27 @@ class plot:
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-30.5, -20.5, 69.7, 73.7]
+
+        if args.area == 'sgl':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-42.5, central_latitude=61,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-52, -37, 59, 63]
+
+        if args.area == 'tas':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-37.7, central_latitude=65.9,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-43.0, -32.4, 63.9, 67.9]
+
+        if args.area == 'nkb':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-52.0, central_latitude=63.2,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-57.5, -46.5, 61.5, 68.5]
 
         return
 
@@ -731,6 +760,63 @@ class plot:
 
 
 
+    def plot_z(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot orography (surface geopotential)
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data['lon'], data['lat']
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.z.colors)
+        levels = [k for k in levels_and_colors.z.levels]
+
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['z'][k,:,:]): continue
+
+            self.add_title(axes,valid_time,analysis,'Orography')
+
+            cs = plt.pcolormesh(plons, plats, data['z'][k,:,:],
+                                cmap=colors,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$m$", rotation=270)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/Z_{}-{}.png".format(args.output_dir,
+                                                  analysis.strftime('%Y%m%d_%H%M'),
+                                                  valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
+
     def fig_ax(self, w:int, h:int, **kwargs:dict) -> tuple:
         """Get figure and axes
 
@@ -924,15 +1010,15 @@ class levels_and_colors:
         levels=[-24,-22,-20,-18,-16,-14,-12,-10,-8,-6,-4,-2,0,2,4,6,8,10,12,14,16,18,
                 22,24,26,28,30,32,34,36,38,40,42]
 
-        colors = [(0.14, 0.00, 0.15),(0.31, 0.00, 0.33), (0.49, 0.00, 0.54), (0.71, 0.00, 0.77),
-                      (0.93, 0.00, 1.00),(0.70, 0.00, 1.00),(0.49, 0.00, 1.00),(0.30, 0.00, 1.00),
-                      (0.13, 0.00, 1.00),(0.00, 0.00, 1.00),(0.05, 0.25, 1.00),(0.11, 0.49, 1.00),
-                      (0.16, 0.73, 1.00),(0.22, 1.00, 1.00),(0.24, 1.00, 0.71),(0.24, 1.00, 0.45),
-                      (0.24, 0.94, 0.19),(0.16, 0.85, 0.00),(0.08, 0.78, 0.00),(1.00, 1.00, 0.00),
-                      (0.98, 0.88, 0.00),(0.98, 0.76, 0.00),(0.97, 0.64, 0.00),(0.97, 0.53, 0.00),
-                      (0.96, 0.42, 0.00),(0.96, 0.31, 0.00),(0.96, 0.22, 0.00),(0.96, 0.12, 0.00),
-                      (0.96, 0.00, 0.00),(0.95, 0.00, 0.00),(0.95, 0.00, 0.13),(0.93, 0.00, 0.33),
-                      (0.96, 0.00, 0.54),(0.96, 0.00, 0.77)]
+        colors = [(0.14, 0.00, 0.15),(0.31, 0.00, 0.33),(0.49, 0.00, 0.54),(0.71, 0.00, 0.77),
+                  (0.93, 0.00, 1.00),(0.70, 0.00, 1.00),(0.49, 0.00, 1.00),(0.30, 0.00, 1.00),
+                  (0.13, 0.00, 1.00),(0.00, 0.00, 1.00),(0.05, 0.25, 1.00),(0.11, 0.49, 1.00),
+                  (0.16, 0.73, 1.00),(0.22, 1.00, 1.00),(0.24, 1.00, 0.71),(0.24, 1.00, 0.45),
+                  (0.24, 0.94, 0.19),(0.16, 0.85, 0.00),(0.08, 0.78, 0.00),(1.00, 1.00, 0.00),
+                  (0.98, 0.88, 0.00),(0.98, 0.76, 0.00),(0.97, 0.64, 0.00),(0.97, 0.53, 0.00),
+                  (0.96, 0.42, 0.00),(0.96, 0.31, 0.00),(0.96, 0.22, 0.00),(0.96, 0.12, 0.00),
+                  (0.96, 0.00, 0.00),(0.95, 0.00, 0.00),(0.95, 0.00, 0.13),(0.93, 0.00, 0.33),
+                  (0.96, 0.00, 0.54),(0.96, 0.00, 0.77)]
 
         contour_levels = [-10, -5, 0, 5, 10, 15, 20, 25]
 
@@ -943,14 +1029,14 @@ class levels_and_colors:
                 27,28,29,30,31,32,33,34,35]
 
         colors =  [(0.00,0.00,1.00),(0.00,0.00,1.00),(0.04,0.25,1.00),(0.08,0.37,1.00),
-                       (0.10,0.49,1.00),(0.14,0.60,1.00),(0.16,0.73,1.00),(0.20,0.88,0.93),
-                       (0.21,0.90,0.53),(0.21,0.91,0.33),(0.21,0.91,0.10),(0.22,0.96,0.00),
-                       (0.24,1.00,0.00),(1.00,1.00,0.00),(0.99,0.87,0.00),(0.98,0.76,0.00),
-                       (0.97,0.64,0.00),(0.97,0.53,0.00),(0.85,0.42,0.00),(0.85,0.32,0.00),
-                       (0.80,0.22,0.03),(0.70,0.13,0.06),(0.62,0.05,0.07),(0.58,0.00,0.08),
-                       (0.62,0.00,0.15),(0.71,0.00,0.33),(0.96,0.00,0.54),(0.96,0.00,0.77),
-                       (0.96,0.00,1.00),(0.82,0.00,0.90),(0.70,0.00,0.77),(0.60,0.00,0.65),
-                       (0.49,0.00,0.54),(0.39,0.00,0.44),(0.31,0.00,0.33)]
+                   (0.10,0.49,1.00),(0.14,0.60,1.00),(0.16,0.73,1.00),(0.20,0.88,0.93),
+                   (0.21,0.90,0.53),(0.21,0.91,0.33),(0.21,0.91,0.10),(0.22,0.96,0.00),
+                   (0.24,1.00,0.00),(1.00,1.00,0.00),(0.99,0.87,0.00),(0.98,0.76,0.00),
+                   (0.97,0.64,0.00),(0.97,0.53,0.00),(0.85,0.42,0.00),(0.85,0.32,0.00),
+                   (0.80,0.22,0.03),(0.70,0.13,0.06),(0.62,0.05,0.07),(0.58,0.00,0.08),
+                   (0.62,0.00,0.15),(0.71,0.00,0.33),(0.96,0.00,0.54),(0.96,0.00,0.77),
+                   (0.96,0.00,1.00),(0.82,0.00,0.90),(0.70,0.00,0.77),(0.60,0.00,0.65),
+                   (0.49,0.00,0.54),(0.39,0.00,0.44),(0.31,0.00,0.33)]
 
     class precip:
         """Class for precip levels and colors
@@ -1012,3 +1098,21 @@ class levels_and_colors:
         # 8 Colors
         colors = [(0.00, 0.00, 0.90), (0.00, 0.00, 0.80),
                   (0.00, 0.00, 0.70), (0.00, 0.00, 0.60), (0.00, 0.00, 0.50), (0.00, 0.00, 0.40)]
+
+    class z:
+        """Class for z levels and colors
+        """
+        # 22 levels
+        levels=[-100,0,100,200,300,400,500,600,700,800,900,1000,
+                1100,1200,1300,1400,1500,1600,1700,1800,1900,2000]
+
+        # 22 colors
+        colors = [(0.27,0.00,0.33),(0.28,0.07,0.40),(0.28,0.14,0.45),
+                  (0.28,0.19,0.50),(0.26,0.25,0.52),(0.24,0.31,0.54),
+                  (0.21,0.36,0.55),(0.19,0.40,0.56),(0.17,0.45,0.56),
+                  (0.15,0.49,0.56),(0.14,0.54,0.55),(0.12,0.58,0.55),
+                  (0.12,0.63,0.53),(0.14,0.67,0.51),(0.20,0.71,0.48),
+                  (0.27,0.75,0.44),(0.37,0.79,0.38),(0.48,0.82,0.32),
+                  (0.60,0.85,0.24),(0.72,0.87,0.16),(0.85,0.89,0.10),
+                  (0.96,0.90,0.12)]
+

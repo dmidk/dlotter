@@ -22,7 +22,11 @@ class prepare:
 
         if args.cmd == 'plot':
             self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m',
-                                     'tcc', 'lmhc', 'snow', 'ws']
+                                     'tcc', 'lmhc', 'snow', 'ws', 'z']
+            self.check_meta(args)
+            self.files_to_read = self.find_files_to_read(args)
+        if args.cmd == 'plotdiff':
+            self.valid_parameters = ['t2m', 'w10m', 'precip', 'td2m', 'z']
             self.check_meta(args)
             self.files_to_read = self.find_files_to_read(args)
 
@@ -41,10 +45,12 @@ class prepare:
             Input arguments to dlotter.__main__
         """
 
-        dir_state = ostools.does_dir_exist(args.directory)
-        if not dir_state:
-            print("Input directory: {}, does not exist".format(args.directory), flush=True)
-            sys.exit(1)
+        directory = args.directory.split(',')
+        for d in directory:
+            dir_state = ostools.does_dir_exist(d)
+            if not dir_state:
+                print("Input directory: {}, does not exist".format(args.directory), flush=True)
+                sys.exit(1)
 
         allowed_found = False
         parameters = args.parameters.split(':')
@@ -58,7 +64,7 @@ class prepare:
         return
 
 
-    def find_files_to_read(self, args:argparse.Namespace, epsmode:bool = False) -> list:
+    def find_files_to_read(self, args:argparse.Namespace, epsmode:bool=False) -> list:
         """Finds the file(s) to read and plot from
 
         Parameters
@@ -72,7 +78,7 @@ class prepare:
             List with path(s) to file(s)
         """
 
-        directory = args.directory
+        directory = args.directory.split(",")
 
         if not epsmode:
             if args.limit_files > 0:
@@ -86,7 +92,9 @@ class prepare:
         else:
             recursive = False
 
-        files = ostools.find_files(directory,
+        files = []
+        for d in directory:
+            f = ostools.find_files(d,
                                 prefix=args.prefix,
                                 postfix=args.postfix,
                                 recursive=recursive,
@@ -95,25 +103,28 @@ class prepare:
                                 olderthan=None,
                                 inorder=inorder)
 
-        if not epsmode:
-            if args.limit_files > 0:
-                if args.limit_files >= len(files):
-                    limit = len(files)
-                else:
-                    limit = args.limit_files
+            if not epsmode:
+                if args.limit_files > 0:
+                    if args.limit_files >= len(f):
+                        limit = len(f)
+                    else:
+                        limit = args.limit_files
 
-                files = files[0:limit]
+                    f = f[0:limit]
 
-        if epsmode:
-            epsfiles = []
-            for member in range(args.members):
-                for f in range(args.files_per_member):
-                    #Follows: /something/mbr000/000
-                    epsfiles.append("{}/mbr{:03d}/{:03d}".format(directory,member,f))
+            if epsmode:
+                epsfiles = []
+                for member in range(args.members):
+                    for fm in range(args.files_per_member):
+                        #Follows: /something/mbr000/000
+                        epsfiles.append("{}/mbr{:03d}/{:03d}".format(directory,member,fm))
 
-            if len(epsfiles) != len(files):
-                print('Number of automatic found files was different than specified', flush=True)
-            files = epsfiles
+                if len(epsfiles) != len(f):
+                    print('Number of automatic found files was different than specified', \
+                          flush=True)
+                f = epsfiles
+
+            files.append(f)
 
 
         return files

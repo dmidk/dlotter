@@ -20,6 +20,7 @@ import argparse
 from .prepare import prepare
 from .read import grib2Read, netcdf2read
 from .plot import plot
+from .plotdiff import plotdiff
 from .arguments import arguments
 from .meteogram import meteogram
 from .comeps import comeps
@@ -82,3 +83,30 @@ if __name__ == '__main__':
         data = eps.data
 
         plotwork = meteogram(args, data)
+
+
+    if args.cmd == 'plotdiff':
+        if len(args.directory.split(",")) != 2:
+            print('Number of specified directories are {:d}, which is not supported. \
+                   Must be 2.'.format(len(args.directory.split(","))), flush=True)
+            sys.exit(1)
+
+        prepwork = prepare(args)
+        files_to_read = prepwork.files_to_read
+
+        if args.verbose:
+            print('Found the following files:', flush=True)
+            print(files_to_read, flush=True)
+
+        if args.filetype == 'grib2':
+            datareader = grib2Read(args, files_to_read)
+            data = datareader.data
+        elif args.filetype == 'nc':
+            datareader = netcdf2read(args, files_to_read)
+            data = datareader.data
+        else:
+            print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
+            sys.exit(1)
+
+        plotwork = plotdiff(args, data)
+
