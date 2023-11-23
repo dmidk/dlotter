@@ -78,7 +78,10 @@ if __name__ == '__main__':
         plotwork = plot(args, data)
 
         if args.s3:
-            plot_files = ostools.find_files(args.output_dir, postfix='.png', recursive=False, fullpath=True)
+            plot_files = ostools.find_files(args.output_dir,
+                                            postfix='.png',
+                                            recursive=False,
+                                            fullpath=True)
             s3tool = s3util()
             s3tool.send_files_to_s3(plot_files, args.s3path) # args.s3path: 'ig', 'dini' etc.
 

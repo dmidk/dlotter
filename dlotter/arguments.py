@@ -120,7 +120,7 @@ class arguments:
                         action='store_true',
                         help='Verbose output',
                         default=False)
-        
+
         parser_plot.add_argument('--s3',
                         action='store_true',
                         help='Upload plots to S3',
@@ -183,7 +183,7 @@ class arguments:
                             action='store_true',
                             help='Verbose output',
                             default=False)
-        
+
         parser_epsmeteogram.add_argument('--s3',
                             action='store_true',
                             help='Upload plots to S3',
