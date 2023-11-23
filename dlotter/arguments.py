@@ -121,6 +121,18 @@ class arguments:
                         help='Verbose output',
                         default=False)
 
+        parser_plot.add_argument('--s3',
+                        action='store_true',
+                        help='Upload plots to S3',
+                        default=False)
+
+        parser_plot.add_argument('--s3path',
+                        type=str,
+                        help='Path to upload plots to on S3',
+                        default='ig',
+                        required=False)
+
+
         # Parser for EPS Meteogram
         parser_epsmeteogram = subparser.add_parser('epsmeteogram', help='Plot EPS meteogram')
 
@@ -170,6 +182,11 @@ class arguments:
         parser_epsmeteogram.add_argument('--verbose',
                             action='store_true',
                             help='Verbose output',
+                            default=False)
+
+        parser_epsmeteogram.add_argument('--s3',
+                            action='store_true',
+                            help='Upload plots to S3',
                             default=False)
 
         # Parser for difference of NWP deterministic

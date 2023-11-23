@@ -133,11 +133,11 @@ class plot:
             self.extent = [6, 16, 53, 59]
 
         if args.area == 'gl':
-            self.projection = ccrs.TransverseMercator(central_longitude=-50.0,
+            self.projection = ccrs.TransverseMercator(central_longitude=-36.0,
                                     central_latitude=75.0, false_easting=0.0,
                                     false_northing=0.0,)
             self.data_crs = ccrs.PlateCarree()
-            self.extent = [-75, -15, 58, 88]
+            self.extent = [-59, -15, 59, 84]
 
         if args.area == 'neu':
             self.projection = ccrs.AlbersEqualArea(central_longitude=11.0, central_latitude=0.0,
