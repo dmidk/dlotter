@@ -355,7 +355,7 @@ class plot:
         analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
 
         barbs_opts = {'height': 0.7, 'spacing': 0.2}
-        bt = self.barbs_thin(clons)
+        bt = self.barbs_thin(clons, args.area)
 
         fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
 
@@ -982,7 +982,7 @@ class plot:
         return empty
 
 
-    def barbs_thin(self, clons:np.array) -> int:
+    def barbs_thin(self, clons:np.array, area:str) -> int:
         """Thin barbs
 
         Parameters
@@ -995,8 +995,12 @@ class plot:
         int
             Thinning factor to use for barbs
         """
-        dx = abs(clons.flatten()[0] - clons.flatten()[1])
-        thinner = int(0.5/dx)
+        if area == 'gl':
+            dx = abs(clons.flatten()[0] - clons.flatten()[1])
+            thinner = int(2/dx)
+        else:
+            dx = abs(clons.flatten()[0] - clons.flatten()[1])
+            thinner = int(0.5/dx)
         return thinner
 
 
