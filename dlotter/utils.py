@@ -2,6 +2,7 @@ import os
 from dmit import dmitio
 
 class s3util:
+    """Class for uploading files to s3"""
 
     def __init__(self) -> None:
         """Constructor for s3 class
@@ -13,6 +14,20 @@ class s3util:
 
 
     def send_files_to_s3(self, files:list, s3path:str) -> None:
+        """Send files to s3
+
+        Parameters
+        ----------
+        files : list
+            List of files to send to s3
+        s3path : str
+            Path to s3 bucket
+
+        Returns
+        -------
+        None
+            None
+        """
 
         S3 = dmitio.s3(cert=False)
 
@@ -20,7 +35,7 @@ class s3util:
         files = list(sorted(files))
 
         # TODO: # If more than one analysis is present, this wont work
-        k=0 
+        k=0
         for file in files:
 
             # Use split to extract the date from the filename
