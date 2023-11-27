@@ -385,7 +385,7 @@ class plot:
 
 
             axes.barbs(clons[::bt,::bt], clats[::bt,::bt],
-                       u[::bt,::bt], v[::bt,::bt],
+                       u[::bt,::bt]*1.94384, v[::bt,::bt]*1.94384,
                        length=5,
                        sizes=barbs_opts,
                        linewidth=0.95,
