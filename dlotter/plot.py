@@ -114,6 +114,13 @@ class plot:
                     sys.exit(1)
                 self.plot_z(args, data)
 
+            if 'tskinsea' in parameters:
+                if 'tskinsea' not in avail_parameters:
+                    print('tskinsea was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_tskinsea(args, data)
+
         return
 
 
@@ -811,6 +818,71 @@ class plot:
             plt.savefig(figure_name)
             cb.remove()
             cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
+
+    def plot_tskinsea(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot sea skin temperature
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data['lon'], data['lat']
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.t2m.colors)
+        levels = [k for k in levels_and_colors.t2m.levels]
+        contour_levels = [k for k in levels_and_colors.t2m.contour_levels]
+
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['tskinsea'][k,:,:]): continue
+
+            self.add_title(axes,valid_time,analysis,'Sea Skin Temperature')
+
+            cs = plt.pcolormesh(plons, plats, data['tskinsea'][k,:,:],
+                                cmap=colors,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$^\circ C$", rotation=270)
+
+            cl = plt.contour(clons,clats,data['tskinsea'][k,:,:].values,
+                             colors='black',
+                             levels=contour_levels,
+                             linewidths=0.7,
+                             transform=self.data_crs)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/Tskin_sea_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            [cl.collections[k].remove() for k in range(len(cl.collections))]
             print("-- {}".format(figure_name), flush=True)
 
         return

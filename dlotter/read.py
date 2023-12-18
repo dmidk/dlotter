@@ -48,6 +48,7 @@ class grib2Read:
         self.search_t2m = False
         self.found_t2m = False
         if 't2m' in self.parameters:
+            print('found t2m')
             self.search_t2m = True
 
         self.search_td2m = False
@@ -99,6 +100,12 @@ class grib2Read:
         if 'z' in self.parameters:
             self.search_z = True
 
+        self.search_tskinsea = False
+        self.found_tskinsea = False
+        if 'tskinsea' in self.parameters:
+            print('found tskinsea')
+            self.search_tskinsea = True
+
 
         return
 
@@ -148,6 +155,8 @@ class grib2Read:
             if self.search_ws: ws = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
             if self.search_z: z = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+            if self.search_tskinsea: tskinsea = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
 
             for k,f in enumerate(files_to_read[i]):
@@ -294,6 +303,15 @@ class grib2Read:
                             print('Minimum z: {:.4f} & Maximum z: {:.4f}\
                                   '.format(np.nanmin(z[k,:,:]),np.nanmax(z[k,:,:])))
 
+                    if self.search_tskinsea and shortName=='t' and level==0 and \
+                                            typeOfLevel=='meanSea' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_tskinsea = True
+                        tskinsea[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum tskinsea: {:.4f} & Maximum tskinsea: {:.4f}\
+                                  '.format(np.nanmin(tskinsea[k,:,:]),np.nanmax(tskinsea[k,:,:])))
+
 
                     ec.codes_release(gid)
 
@@ -314,6 +332,7 @@ class grib2Read:
             if self.found_snow: ds_grib['snow'] = (['time', 'lat', 'lon'], snow )
             if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
             if self.found_z: ds_grib['z'] = (['time', 'lat', 'lon'], z )
+            if self.found_tskinsea: ds_grib['tskinsea'] = (['time', 'lat', 'lon'], tskinsea - 273.15 )
 
             if len(list(ds_grib.data_vars)) == 0:
                 raise SystemExit('No variables found. This can be due to missing tables \

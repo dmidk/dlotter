@@ -75,6 +75,14 @@ class plotdiff:
                 sys.exit(1)
             self.plotdiff_z(args, data_list)
 
+        if 'tskinsea' in parameters:
+            if 'tskinsea' not in avail_parameters:
+                print('tskinsea was not found in available parameters: {},\
+                       cannot plot'.format(avail_parameters), flush=True)
+                sys.exit(1)
+            self.plotdiff_tskinsea(args, data_list)
+
+
         return
 
 
@@ -479,6 +487,69 @@ class plotdiff:
             cs.remove()
             print("-- {}".format(figure_name), flush=True)
 
+
+        return
+
+
+
+    def plotdiff_tskinsea(self, args:argparse.Namespace, data_list:list) -> None:
+        """Plot 2m sea temperature difference
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data_list : list of xr.Dataset
+            Data to plot
+        """
+
+        exps = args.experiments.split(",")
+
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data_list[0]['lon'], data_list[0]['lat']
+        plons, plats = self.get_pcolormesh_center_coordinates(data_list[0])
+
+        colors = levels_and_colors.t2m.colors
+        levels = [k for k in levels_and_colors.t2m.levels]
+
+        cmap, norm = mcolors.from_levels_and_colors(levels, colors, extend='both')
+
+        analysis = data_list[0]['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data_list[0]['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if ( (self.check_for_empty_array(data_list[0]['tskinsea'][k,:,:])) |
+                 (self.check_for_empty_array(data_list[1]['tskinsea'][k,:,:])) ): continue
+
+            self.add_title(axes,valid_time,analysis,'Sea Skin Temperature Difference: \
+                           {}-{}'.format(exps[0],exps[1]))
+
+            cs = plt.pcolormesh(plons, plats,
+                                data_list[0]['tskinsea'][k,:,:] - data_list[1]['tskinsea'][k,:,:],
+                                cmap=cmap,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels, extend='both')
+            cb.set_label(r"$^\circ C$", rotation=270)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/Tskin_sea_diff_{}_{}_{}-{}.png".format(args.output_dir,
+                                                    exps[0], exps[1],
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
 
         return
 
