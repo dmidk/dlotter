@@ -252,7 +252,7 @@ class plot:
             cl = plt.contour(clons,clats,data['t2m'][k,:,:].values,
                              colors='black',
                              levels=contour_levels,
-                             linewidths=0.7,
+                             linewidths=0.8, #0.7 before
                              transform=self.data_crs)
 
             fig.canvas.draw()
