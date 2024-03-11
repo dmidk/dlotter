@@ -162,7 +162,7 @@ class grib2Read:
                 lead = ec.codes_get(time_gid, 'step')
 
                 analysis = dt.datetime.strptime("{:d}-{:04d}".format(date,time), '%Y%m%d-%H%M')
-                forecast = analysis + dt.timedelta(minutes=lead)
+                forecast = analysis + dt.timedelta(minutes=int(lead))
                 Nt_coords[k] = forecast
 
                 for _, gid in enumerate(gids):
