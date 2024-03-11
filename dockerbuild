@@ -1,6 +1,0 @@
-#!/bin/bash
-source env.sh
-
-#Build the Image
-#docker build -t $IMAGENAME .
-docker build --build-arg UID=$USERUID --build-arg GID=$USERGID --build-arg USER=$USER -t $IMAGENAME .

@@ -20,10 +20,11 @@ import argparse
 from .prepare import prepare
 from .read import grib2Read, netcdf2read
 from .plot import plot
+from .plotdiff import plotdiff
 from .arguments import arguments
 from .meteogram import meteogram
 from .comeps import comeps
-
+from .utils import s3util
 from dmit import ostools
 
 class MyParser(argparse.ArgumentParser):
@@ -76,9 +77,44 @@ if __name__ == '__main__':
 
         plotwork = plot(args, data)
 
+        if args.s3:
+            plot_files = ostools.find_files(args.output_dir,
+                                            postfix='.png',
+                                            recursive=False,
+                                            fullpath=True)
+            s3tool = s3util()
+            s3tool.send_files_to_s3(plot_files, args.s3path) # args.s3path: 'ig', 'dini' etc.
+
 
     if args.cmd == 'epsmeteogram':
         eps = comeps(args)
         data = eps.data
 
         plotwork = meteogram(args, data)
+
+
+    if args.cmd == 'plotdiff':
+        if len(args.directory.split(",")) != 2:
+            print('Number of specified directories are {:d}, which is not supported. \
+                   Must be 2.'.format(len(args.directory.split(","))), flush=True)
+            sys.exit(1)
+
+        prepwork = prepare(args)
+        files_to_read = prepwork.files_to_read
+
+        if args.verbose:
+            print('Found the following files:', flush=True)
+            print(files_to_read, flush=True)
+
+        if args.filetype == 'grib2':
+            datareader = grib2Read(args, files_to_read)
+            data = datareader.data
+        elif args.filetype == 'nc':
+            datareader = netcdf2read(args, files_to_read)
+            data = datareader.data
+        else:
+            print('Filetype: "{}", not supported.'.format(args.filetype), flush=True)
+            sys.exit(1)
+
+        plotwork = plotdiff(args, data)
+
