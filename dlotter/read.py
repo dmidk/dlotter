@@ -10,6 +10,7 @@ import netCDF4 as nc
 import pygrib
 import numpy as np
 import datetime as dt
+import re
 from dmit import regrot
 from typing import Union
 
@@ -179,6 +180,9 @@ class grib2Read:
                     print('{} already there!'.format(lead))
 
                 leadtimes.append(lead)
+
+                # Ensure we only have numeric characters
+                lead = int(re.findall(r'\d+', lead)[0])
 
                 forecast = analysis + dt.timedelta(minutes=lead)
                 Nt_coords[k] = forecast
