@@ -106,6 +106,24 @@ class grib2Read:
             print('found tskinsea')
             self.search_tskinsea = True
 
+        self.search_bli = False
+        self.found_bli = False
+        if 'bli' in self.parameters:
+            print('found bli')
+            self.search_bli = True
+
+        self.search_spc = False
+        self.found_spc = False
+        if 'spc' in self.parameters:
+            print('found spc')
+            self.search_spc = True
+
+        self.search_sp = False
+        self.found_sp  = False
+        if 'sp' in self.parameters:
+            self.search_sp = True
+
+
 
         return
 
@@ -157,6 +175,12 @@ class grib2Read:
             if self.search_z: z = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
             if self.search_tskinsea: tskinsea = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+            if self.search_bli: bli = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+            if self.search_spc: spc = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
+
+            if self.search_sp: sp = np.full([Nt,lats.shape[0],lons.shape[1]], np.nan)
 
 
             for k,f in enumerate(files_to_read[i]):
@@ -312,6 +336,33 @@ class grib2Read:
                             print('Minimum tskinsea: {:.4f} & Maximum tskinsea: {:.4f}\
                                   '.format(np.nanmin(tskinsea[k,:,:]),np.nanmax(tskinsea[k,:,:])))
 
+                    if self.search_bli and shortName=='bli' and level==0 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_bli = True
+                        bli[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum bli: {:.4f} & Maximum bli: {:.4f}\
+                                  '.format(np.nanmin(bli[k,:,:]),np.nanmax(bli[k,:,:])))
+
+                    if self.search_spc and shortName=='spc' and level==2 and \
+                                            typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_spc = True
+                        spc[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum spc: {:.4f} & Maximum spc: {:.4f}\
+                                  '.format(np.nanmin(spc[k,:,:]),np.nanmax(spc[k,:,:])))
+
+                    if self.search_sp and (shortName=='pres') and level==0 and \
+                                           typeOfLevel=='heightAboveGround' and levelType=='sfc':
+                        values = ec.codes_get_values(gid)
+                        self.found_sp = True
+                        sp[k,:,:] = values.reshape(Nj, Ni)
+                        if args.verbose:
+                            print('Minimum sp: {:.4f} & Maximum sp: {:.4f}\
+                                  '.format(np.nanmin(sp[k,:,:]),np.nanmax(sp[k,:,:])))
+
 
                     ec.codes_release(gid)
 
@@ -333,6 +384,9 @@ class grib2Read:
             if self.found_ws: ds_grib['ws'] = (['time', 'lat', 'lon'], ws )
             if self.found_z: ds_grib['z'] = (['time', 'lat', 'lon'], z )
             if self.found_tskinsea: ds_grib['tskinsea'] = (['time', 'lat', 'lon'], tskinsea - 273.15 )
+            if self.found_bli: ds_grib['bli'] = (['time', 'lat', 'lon'], bli )
+            if self.found_spc: ds_grib['spc'] = (['time', 'lat', 'lon'], spc )
+            if self.found_sp: ds_grib['sp'] = (['time', 'lat', 'lon'], sp * 0.01)
 
             if len(list(ds_grib.data_vars)) == 0:
                 raise SystemExit('No variables found. This can be due to missing tables \

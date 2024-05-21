@@ -22,7 +22,8 @@ class prepare:
 
         if args.cmd == 'plot':
             self.valid_parameters = ['t2m', 'w10m', 'precip', 'slp', 'td2m',
-                                     'tcc', 'lmhc', 'snow', 'ws', 'z','tskinsea']
+                                     'tcc', 'lmhc', 'snow', 'ws', 'z','tskinsea',
+                                     'bli', 'spc', 'sp']
             self.check_meta(args)
             self.files_to_read = self.find_files_to_read(args)
         if args.cmd == 'plotdiff':

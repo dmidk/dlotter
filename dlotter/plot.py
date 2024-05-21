@@ -121,6 +121,27 @@ class plot:
                     sys.exit(1)
                 self.plot_tskinsea(args, data)
 
+            if 'bli' in parameters:
+                if 'bli' not in avail_parameters:
+                    print('bli was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_bli(args, data)
+
+            if 'spc' in parameters:
+                if 'spc' not in avail_parameters:
+                    print('spc was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_spc(args, data)
+
+            if 'sp' in parameters:
+                if 'sp' not in avail_parameters:
+                    print('sp was not found in available parameters: {},\
+                           cannot plot'.format(avail_parameters), flush=True)
+                    sys.exit(1)
+                self.plot_sp(args, data)
+
         return
 
 
@@ -202,12 +223,33 @@ class plot:
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-43.0, -32.4, 63.9, 67.9]
 
-        if args.area == 'nkb':
+        if args.area == 'nuuk':
             self.projection = ccrs.AlbersEqualArea(central_longitude=-52.0, central_latitude=63.2,
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-57.5, -46.5, 61.5, 68.5]
+
+        if args.area == 'sc':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-25., central_latitude=71.5,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-32.5, -17.5, 67.7, 74.7]
+
+        if args.area == 'db':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-51.7, central_latitude=67,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-57.3, -44.7, 65.9, 71.8]
+
+        if args.area == 'qaan':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-70.1, central_latitude=76,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-75.3, -62.8, 74.5, 79.4]
 
         return
 
@@ -515,6 +557,7 @@ class plot:
 
         return
 
+
     def plot_tcc(self, args:argparse.Namespace, data:xr.Dataset) -> None:
         """Plot total cloud cover
 
@@ -766,7 +809,6 @@ class plot:
         return
 
 
-
     def plot_z(self, args:argparse.Namespace, data:xr.Dataset) -> None:
         """Plot orography (surface geopotential)
 
@@ -821,7 +863,6 @@ class plot:
             print("-- {}".format(figure_name), flush=True)
 
         return
-
 
 
     def plot_tskinsea(self, args:argparse.Namespace, data:xr.Dataset) -> None:
@@ -886,6 +927,169 @@ class plot:
             print("-- {}".format(figure_name), flush=True)
 
         return
+
+
+    def plot_bli(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot best lifted index (to 500 hPa)
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data['lon'], data['lat']
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.bli.colors)
+        levels = [k for k in levels_and_colors.bli.levels]
+
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['bli'][k,:,:]): continue
+
+            self.add_title(axes,valid_time,analysis,'Best Lifted Index')
+
+            cs = plt.pcolormesh(plons, plats, data['bli'][k,:,:],
+                                cmap=colors,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$K$", rotation=270)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/BLI_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
+    def plot_spc(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot speed of current
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+
+        plons, plats = self.get_pcolormesh_center_coordinates(data)
+
+        colors = ListedColormap(levels_and_colors.spc.colors)
+        levels = [k for k in levels_and_colors.spc.levels]
+
+        norm = self.color_norm(levels)
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['spc'][k,:,:]): continue
+
+            self.add_title(axes,valid_time,analysis,'Speed of current (spc)')
+
+            spc = data['spc'][k,:,:].values
+
+            cs = plt.pcolormesh(plons, plats, spc,
+                                cmap=colors,
+                                norm=norm,
+                                transform=self.data_crs)
+
+            cb = plt.colorbar(cs, fraction=0.046, pad=0.04, ticks=levels)
+            cb.set_label(r"$m/s$", rotation=270)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/SPC_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            cb.remove()
+            cs.remove()
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
+    def plot_sp(self, args:argparse.Namespace, data:xr.Dataset) -> None:
+        """Plot surface pressure
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            Input arguments from command line
+        data : xr.Dataset
+            Data to plot
+        """
+        # Fix that pcolormesh uses cell lower left corners
+        clons, clats = data['lon'], data['lat']
+
+        levels = [k for k in levels_and_colors.slp.levels]
+
+        analysis = data['time'][0].values
+        analysis = dt.datetime.utcfromtimestamp(analysis.astype(int) * 1e-9)
+
+        fig, axes = self.fig_ax(10, 8, subplot_kw={'projection': self.projection})
+
+        self.add_coastlines(axes)
+
+        for k in range(self.nt):
+            valid_time = data['time'][k].values
+            valid_time = dt.datetime.utcfromtimestamp(valid_time.astype(int) * 1e-9)
+
+            if self.check_for_empty_array(data['sp'][k,:,:]): continue
+            sp = data['sp'][k,:,:].values
+
+            self.add_title(axes,valid_time,analysis,'Sea Level Pressure')
+
+            cl = plt.contour(clons,clats,sp,
+                             colors='black',
+                             levels=levels,
+                             linewidths=0.8,
+                             transform=self.data_crs)
+
+            fig.canvas.draw()
+
+            figure_name = "{}/SP_{}-{}.png".format(args.output_dir,
+                                                    analysis.strftime('%Y%m%d_%H%M'),
+                                                    valid_time.strftime('%Y%m%d_%H%M'))
+            plt.savefig(figure_name)
+            [cl.collections[k].remove() for k in range(len(cl.collections))]
+            print("-- {}".format(figure_name), flush=True)
+
+        return
+
+
 
 
 
@@ -1187,4 +1391,38 @@ class levels_and_colors:
                   (0.27,0.75,0.44),(0.37,0.79,0.38),(0.48,0.82,0.32),
                   (0.60,0.85,0.24),(0.72,0.87,0.16),(0.85,0.89,0.10),
                   (0.96,0.90,0.12)]
+
+    class bli:
+        """Class for bli levels and colors
+        """
+        #levels=[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10]
+
+        #colors = [(0.14, 0.00, 0.15),(0.49, 0.00, 0.54),
+        #          (0.93, 0.00, 1.00),(0.49, 0.00, 1.00),
+        #          (0.13, 0.00, 1.00),(0.05, 0.25, 1.00),
+        #          (0.16, 0.73, 1.00),(0.24, 1.00, 0.71),(0.24, 1.00, 0.45),
+        #          (0.24, 0.94, 0.19),(0.16, 0.85, 0.00),(0.08, 0.78, 0.00),(1.00, 1.00, 0.00),
+        #          (0.98, 0.88, 0.00),(0.98, 0.76, 0.00),(0.97, 0.53, 0.00),
+        #          (0.96, 0.31, 0.00),(0.96, 0.12, 0.00),
+        #          (0.95, 0.00, 0.00),(0.93, 0.00, 0.33),
+        #          (0.96, 0.00, 0.77)]
+        levels=[0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000]
+
+        colors = [(0.27, 0.00, 0.33), (0.28, 0.10, 0.42), (0.28, 0.19, 0.49), (0.25, 0.27, 0.53),
+                  (0.22, 0.34, 0.55), (0.19, 0.41, 0.56), (0.16, 0.47, 0.56), (0.14, 0.53, 0.56),
+                  (0.12, 0.60, 0.54), (0.13, 0.66, 0.52), (0.21, 0.72, 0.47), (0.33, 0.77, 0.41),
+                  (0.48, 0.82, 0.32), (0.65, 0.86, 0.21), (0.82, 0.88, 0.11), (0.99, 0.91, 0.14)]
+
+    class spc:
+        """Class for spc levels and colors
+        """
+        levels=[0,2000,4000,6000,8000,10000,12000,14000,16000,18000,20000,22000,24000,
+                26000,28000,30000,32000,34000,36000,38000,40000]
+
+        colors = [(0.27, 0.00, 0.33), (0.28, 0.07, 0.40), (0.28, 0.14, 0.45), (0.28, 0.19, 0.50),
+                  (0.26, 0.25, 0.52), (0.23, 0.31, 0.54), (0.21, 0.36, 0.55), (0.19, 0.40, 0.56),
+                  (0.17, 0.45, 0.56), (0.15, 0.49, 0.56), (0.14, 0.54, 0.55), (0.12, 0.58, 0.55),
+                  (0.12, 0.63, 0.53), (0.14, 0.67, 0.51), (0.20, 0.71, 0.48), (0.27, 0.75, 0.44),
+                  (0.37, 0.79, 0.38), (0.48, 0.82, 0.32), (0.60, 0.85, 0.24), (0.72, 0.87, 0.16),
+                  (0.85, 0.89, 0.10), (0.96, 0.90, 0.12)]
 
