@@ -1,0 +1,37 @@
+[project]
+name = "dlotter"
+version = "0.1.0"
+description = "Plot NWP Grib files"
+authors = [
+    {name = "Kasper Hintz", email = "kah@dmi.dk"},
+]
+dependencies = [
+    "eccodes>=1.7.0",
+    "numpy>=1.26.4",
+    "xarray>=2024.5.0",
+    "matplotlib>=3.9.0",
+    "pygrib>=2.1.5",
+    "dmit>=0.5.1",
+    "netCDF4>=1.6.5",
+    "cartopy>=0.23.0",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+analysis = [
+    "cartopy>=0.22.0",
+    "matplotlib>=3.8.2",
+]
+[tool.pdm.dev-dependencies]
+dev = [
+    "pre-commit>=3.6.0",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[tool.isort]
+profile = "black"

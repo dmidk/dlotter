@@ -182,7 +182,7 @@ class grib2Read:
                 leadtimes.append(lead)
 
                 # Ensure we only have numeric characters
-                lead = int(re.findall(r'\d+', lead)[0])
+                lead = int(re.findall(r'\d+', str(lead))[0])
 
                 forecast = analysis + dt.timedelta(minutes=lead)
                 Nt_coords[k] = forecast
