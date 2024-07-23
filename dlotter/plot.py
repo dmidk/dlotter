@@ -193,7 +193,7 @@ class plot:
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
-            self.extent = [-52, -37, 59, 63]
+            self.extent = [-49.1, -40.7, 59.1, 62.7]
 
         if args.area == 'tas':
             self.projection = ccrs.AlbersEqualArea(central_longitude=-37.7, central_latitude=65.9,
@@ -202,12 +202,31 @@ class plot:
             self.data_crs = ccrs.PlateCarree()
             self.extent = [-41.1, -34.2, 64.6, 67.3]
 
-        if args.area == 'nkb':
+        if args.area == 'nuuk':
             self.projection = ccrs.AlbersEqualArea(central_longitude=-52.0, central_latitude=63.2,
                                     false_easting=0.0, false_northing=0.0,
                                     standard_parallels=(20.0, 50.0), globe=None)
             self.data_crs = ccrs.PlateCarree()
-            self.extent = [-57.5, -46.5, 61.5, 68.5]
+            self.extent = [-57.2, -47.1, 62.0, 68.0]
+
+        if args.area == 'sc':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-25., central_latitude=71.5,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-31.8, -17.3, 68.3, 74.6]
+
+        if args.area == 'db':
+            self.projection = ccrs.AlbersEqualArea(central_longitude=-52.0, central_latitude=63.2,
+                                    false_easting=0.0, false_northing=0.0,
+                                    standard_parallels=(20.0, 50.0), globe=None)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-57.6, -44.6, 66.0, 71.8]
+
+        if args.area == 'qaan':
+            self.projection = ccrs.Stereographic(central_latitude=70, central_longitude=-42)
+            self.data_crs = ccrs.PlateCarree()
+            self.extent = [-75.0, -62.6, 75.8, 78.4]
 
         return
 
@@ -1090,9 +1109,15 @@ class plot:
         int
             Thinning factor to use for barbs
         """
-        if area == 'gl':
+        if area in ['gl']:
             dx = abs(clons.flatten()[0] - clons.flatten()[1])
             thinner = int(2/dx)
+        elif area in ['sc']:
+            dx = abs(clons.flatten()[0] - clons.flatten()[1])
+            thinner = int(1/dx)
+        elif area in ['db', 'qaan']:
+            dx = abs(clons.flatten()[0] - clons.flatten()[1])
+            thinner = int(0.75/dx)
         else:
             dx = abs(clons.flatten()[0] - clons.flatten()[1])
             thinner = int(0.5/dx)

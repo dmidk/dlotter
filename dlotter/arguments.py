@@ -112,7 +112,7 @@ class arguments:
                         metavar='AREA',
                         type=str,
                         help='Over which area to plot (Options are: dk, gl, neu, sjalland, disko, \
-                              europe, faroes, scoresbysund, sgl, tas, nkb)',
+                              europe, faroes, scoresbysund, sgl, tas, nuuk, qaan, sc, db)',
                         default="dk",
                         required=False)
 
