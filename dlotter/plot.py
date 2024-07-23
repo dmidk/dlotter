@@ -224,12 +224,8 @@ class plot:
             self.extent = [-57.6, -44.6, 66.0, 71.8]
 
         if args.area == 'qaan':
-            #self.projection = ccrs.AlbersEqualArea(central_longitude=-52.0, central_latitude=63.2,
-            #                        false_easting=0.0, false_northing=0.0,
-            #                        standard_parallels=(20.0, 50.0), globe=None)
             self.projection = ccrs.Stereographic(central_latitude=70, central_longitude=-42)
             self.data_crs = ccrs.PlateCarree()
-            #self.extent = [-75.0, -62.6, 75.7, 78.6]
             self.extent = [-75.0, -62.6, 75.8, 78.4]
 
         return
